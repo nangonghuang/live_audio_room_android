@@ -3,7 +3,6 @@ package im.zego.liveaudioroom.entity;
 import java.util.Objects;
 
 public class ZegoLiveAudioRoomSeatAttribution {
-
     String user_id = "";
     int index;
     boolean is_muted;

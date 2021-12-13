@@ -1,7 +1,5 @@
 package im.zego.liveaudioroom.entity;
 
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomUserRole;
-
 import java.util.Objects;
 
 public class ZegoLiveAudioRoomUserInfo {

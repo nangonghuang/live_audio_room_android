@@ -1,9 +1,5 @@
 package im.zego.liveaudioroom.entity;
 
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomInvitationStatus;
-
-import im.zego.zim.entity.ZIMUserInfo;
-
 public class ZegoLiveAudioRoomInvitation {
     String fromUserID;
 

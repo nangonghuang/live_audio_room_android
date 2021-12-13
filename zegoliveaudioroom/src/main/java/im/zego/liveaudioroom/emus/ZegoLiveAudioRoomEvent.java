@@ -1,7 +1,5 @@
 package im.zego.liveaudioroom.emus;
 
-import im.zego.zim.enums.ZIMRoomEvent;
-
 public enum ZegoLiveAudioRoomEvent {
     SUCCESS(0),
     NETWORK_INTERRUPTED(1),
