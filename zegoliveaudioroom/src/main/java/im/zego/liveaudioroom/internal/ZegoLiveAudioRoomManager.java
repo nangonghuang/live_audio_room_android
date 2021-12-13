@@ -125,9 +125,6 @@ public class ZegoLiveAudioRoomManager {
 
     private void initZIMEventHandler() {
         zimEventHandler = new ZIMEventHandler() {
-            /**
-             消息管理中的回调参数
-             */
             @Override
             public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
                 super.onReceivePeerMessage(zim, messageList, fromUserID);
@@ -207,9 +204,6 @@ public class ZegoLiveAudioRoomManager {
                 }
             }
 
-            /**
-             用户模块的回调
-             */
             @Override
             public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
                 super.onRoomMemberJoined(zim, memberList, roomID);
@@ -238,9 +232,6 @@ public class ZegoLiveAudioRoomManager {
                 }
             }
 
-            /**
-             麦位变化监听回调（ZIM房间属性）
-             */
             @Override
             public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
                 super.onRoomAttributesUpdated(zim, info, roomID);
@@ -352,9 +343,6 @@ public class ZegoLiveAudioRoomManager {
         this.mRoomInfo = mRoomInfo;
     }
 
-    /**
-     * 在这里具体实现房间内的相应方法
-     */
     public void init(Long appID, String appSign, boolean isTestEnv, Application application) {
         zegoExpressEngine = ZegoExpressEngine.createEngine(appID, appSign, isTestEnv, ZegoScenario.GENERAL, application, null);
         zim = ZIM.create(appID, application);
@@ -525,10 +513,6 @@ public class ZegoLiveAudioRoomManager {
         ZegoExpressEngine.destroyEngine(null);
     }
 
-    /**
-     * 用户查询的功能
-     */
-
     public void queryRoomMember(String roomID, ZegoLiveAudioRoomQueryMemberConfig config, final OnQueryRoomMemberCallback onQueryRoomMember) {
         ZIMQueryMemberConfig zimConfig = new ZIMQueryMemberConfig();
         zimConfig.count = config.getCount();
@@ -619,12 +603,6 @@ public class ZegoLiveAudioRoomManager {
         return mRoomInfo;
     }
 
-    /**
-     * 消息模块，在这里实现消息通信的相关操作；
-     */
-    /*
-        消息模块的功能
-     */
     public void sendRoomMessage(String message, SendRoomMessageCallback sendRoomMessageCallback) {
         messageManager.sendRoomMessage(message, sendRoomMessageCallback);
     }
@@ -652,9 +630,6 @@ public class ZegoLiveAudioRoomManager {
         messageManager.muteAllMessage(isMuted, muteAllMessageCallback);
     }
 
-    /**
-     * 麦位管理
-     */
     public void kickUserToSeat(String userID, KickUserToSeatCallback kickUserToSeat) {
         speakerSeatManager.kickUserToSeat(userID, kickUserToSeat);
     }

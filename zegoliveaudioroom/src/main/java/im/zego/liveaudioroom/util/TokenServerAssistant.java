@@ -18,20 +18,11 @@ public class TokenServerAssistant {
     static final private int IV_LENGTH = 16;
     static final private String TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
-    /**
-     * 通过此变量控制在生成鉴权 token 过程中是否打印控制台信息
-     */
     static public boolean VERBOSE = false;
 
     static public class Privileges {
-        /**
-         * 是否允许登录房间, 默认无权限
-         */
         public boolean canLoginRoom;
 
-        /**
-         * 是否允许推流, 默认无权限
-         */
         public boolean canPublishStream;
 
         public Privileges() {
@@ -41,37 +32,13 @@ public class TokenServerAssistant {
     }
 
     public enum ErrorCode {
-        /**
-         * 生成鉴权 token 成功
-         */
         SUCCESS(0),
-        /**
-         * 传入 appId 参数错误
-         */
         ILLEGAL_APP_ID(1),
-        /**
-         * 传入 roomId 参数错误
-         */
         ILLEGAL_ROOM_ID(2),
-        /**
-         * 传入 userId 参数错误
-         */
         ILLEGAL_USER_ID(3),
-        /**
-         * 传入 privilege 参数错误
-         */
         ILLEGAL_PRIVILEGE(4),
-        /**
-         * 传入 secret 参数错误
-         */
         ILLEGAL_SECRET(5),
-        /**
-         * 传入 effectiveTimeInSeconds 参数错误
-         */
         ILLEGAL_EFFECTIVE_TIME(6),
-        /**
-         * 其它未定义错误
-         */
         OTHER(-1);
 
         ErrorCode(int code) {
@@ -96,18 +63,9 @@ public class TokenServerAssistant {
         }
     }
 
-    /**
-     * token 结构体
-     */
     static public class TokenInfo {
-        /**
-         * 根据提供的内容生成的 token 主体
-         */
         public String data = "";
 
-        /**
-         * 错误信息
-         */
         public ErrorInfo error;
 
         TokenInfo() {
@@ -123,15 +81,6 @@ public class TokenServerAssistant {
     private TokenServerAssistant() {
     }
 
-    /**
-     * 根据所提供的参数列表生成用于与即构服务端通信的鉴权 token
-     *
-     * @param appId                  Zego派发的数字ID, 各个开发者的唯一标识
-     * @param userId                 用户 ID
-     * @param secret                 由即构提供的与 appId 对应的密钥，请妥善保管，切勿外泄
-     * @param effectiveTimeInSeconds token 的有效时长，单位：秒
-     * @return 返回 token 内容，在使用前，请检查 error 字段是否为 SUCCESS
-     */
     static public TokenInfo generateToken(long appId, String userId, String secret,
                                           int effectiveTimeInSeconds) throws JSONException {
         TokenInfo token = new TokenInfo();

@@ -8,9 +8,6 @@ import android.view.ViewGroup;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * 控件想要收到点击事件的回调，需要设置 clickable = true
- */
 public class OnRecyclerViewItemTouchListener extends RecyclerView.SimpleOnItemTouchListener {
     private static final String TAG = "OnRecyclerViewItemTouch";
     private GestureDetectorCompat mGestureDetector;
@@ -74,7 +71,6 @@ public class OnRecyclerViewItemTouchListener extends RecyclerView.SimpleOnItemTo
                     if (result) {
                         return true;
                     } else {
-                        // 如果没找到，还要继续，不要return退出循环了
                         if (child.isClickable() && inRangeOfView(child, e)) {
                             return true;
                         }
@@ -111,46 +107,22 @@ public class OnRecyclerViewItemTouchListener extends RecyclerView.SimpleOnItemTo
         }
     }
 
-    /**
-     * 子view中没有找到可以响应点击事件的控件的时候，才会考虑整个item的点击事件
-     *
-     * @param vh
-     * @param itemChild
-     */
     public void onItemChildClick(RecyclerView.ViewHolder vh, View itemChild) {
 
     }
 
-    /**
-     * 子view中没有找到可以响应点击事件的控件的时候，并且整个item可点击，会触发这个回调
-     *
-     * @param vh
-     */
     public void onItemClick(RecyclerView.ViewHolder vh) {
 
     }
 
-    /**
-     * 整个item的按下事件,一般都会触发
-     *
-     * @param vh
-     */
     public void onItemDown(RecyclerView.ViewHolder vh) {
 
     }
 
-    /**
-     * 整个recyclerView的按下事件，总是会触发
-     */
     public void onRecyclerViewDown() {
 
     }
 
-    /**
-     * 整个item的长按事件
-     *
-     * @param holder
-     */
     public void onItemLongPress(RecyclerView.ViewHolder holder) {
 
     }

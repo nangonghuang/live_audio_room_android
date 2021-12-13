@@ -49,9 +49,6 @@ public class ZegoLiveAudioRoomImpl extends ZegoLiveAudioRoom {
         ZegoLiveAudioRoomManager.getInstance().setEventHandler(roomEventHandler);
     }
 
-    /**
-     * 房间模块
-     */
     @Override
     public void init(Long appID, String appSign, Application application) {
         ZegoLiveAudioRoomManager.getInstance().init(appID, appSign, false, application);
@@ -104,9 +101,6 @@ public class ZegoLiveAudioRoomImpl extends ZegoLiveAudioRoom {
     }
 
 
-    /**
-     * Message模块
-     */
     @Override
     public void sendRoomMessage(String message, SendRoomMessageCallback sendRoomMessageCallback) {
         ZegoLiveAudioRoomManager.getInstance().sendRoomMessage(message, sendRoomMessageCallback);
@@ -132,10 +126,6 @@ public class ZegoLiveAudioRoomImpl extends ZegoLiveAudioRoom {
         ZegoLiveAudioRoomManager.getInstance().muteAllMessage(isMuted, muteAllMessageCallback);
     }
 
-
-    /**
-     * 麦位管理
-     */
     @Override
     public void kickUserToSeat(String userID, KickUserToSeatCallback kickUserToSeat) {
         ZegoLiveAudioRoomManager.getInstance().kickUserToSeat(userID, kickUserToSeat);

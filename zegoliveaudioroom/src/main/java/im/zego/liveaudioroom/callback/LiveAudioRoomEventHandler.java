@@ -30,10 +30,6 @@ public abstract class LiveAudioRoomEventHandler {
     public void onRTCModuleError(int errorCode) {
     }
 
-    /**
-     * 房间回调设置
-     */
-
     public void onRoomStateUpdated(ZegoLiveAudioRoomState state, ZegoLiveAudioRoomEvent event, String roomID) {
     }
 
@@ -48,10 +44,6 @@ public abstract class LiveAudioRoomEventHandler {
 
     public void onRoomMemberJoined(ArrayList<ZegoLiveAudioRoomUser> userList) {
     }
-
-    /**
-     * 消息回调设置
-     */
 
     public void onReceiveRoomMassage(String message, String fromUserID) {
     }
@@ -74,10 +66,6 @@ public abstract class LiveAudioRoomEventHandler {
 
     public void onConnectionStateChanged(ZegoLiveAudioRoomState state, ZegoLiveAudioRoomEvent event, JSONObject extendedData) {
     }
-
-    /**
-     * 麦位回调
-     */
 
     public void onRoomSpeakerSeatUpdated(ArrayList<ZIMSpeakerSeatUpdateInfo> speakerSeatUpdateInfos) {
     }

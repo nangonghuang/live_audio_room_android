@@ -277,9 +277,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                                             ZegoLiveAudioRoom.getInstance().kickUserToSeat(userId, new KickUserToSeatCallback() {
                                                 @Override
                                                 public void kickUserToSeat(ZegoLiveAudioRoomErrorCode error) {
-                                                    if (error == ZegoLiveAudioRoomErrorCode.NOT_IN_SEAT) {
-                                                        ToastUtils.showShort(StringUtils.getString(R.string.the_user_is_no_longer_on_the_mic));
-                                                    } else {
+                                                    if (error != ZegoLiveAudioRoomErrorCode.SUCCESS) {
                                                         ToastUtils.showShort(R.string.toast_kickout_leave_seat_error, userId, error.getValue());
                                                     }
                                                 }
@@ -302,8 +300,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
                         }
                         if (hasOnSeat) {
                             ZegoLiveAudioRoom.getInstance().switchSeat(index, error -> {
-                                if (error == ZegoLiveAudioRoomErrorCode.SEAT_EXISTED) {
-                                    ToastUtils.showShort(StringUtils.getString(R.string.the_wheat_position_is_already_in_place));
+                                if (error != ZegoLiveAudioRoomErrorCode.SUCCESS) {
+                                    ToastUtils.showShort(StringUtils.getString(R.string.toast_take_speaker_seat_fail, error));
                                 }
                             });
                         } else {
@@ -323,8 +321,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
                         final String userId = seatListAdapter.getSeatListInRoom().get(index).getAttribution().getUser_id();
                         if (getMyUserID().equals(userId)) {
                             speakerLeaveSeat();
-                        } else {
-                            ToastUtils.showShort(StringUtils.getString(R.string.the_wheat_position_is_already_in_place));
                         }
                     }
                 }
@@ -398,7 +394,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
             @Override
             public void onRoomInfoUpdated(ZegoLiveAudioRoomInfo roomInfo) {
-                //更新整个房间属性的值
                 if (roomInfo == null) {
                     ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
                     finish();

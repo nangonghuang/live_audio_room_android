@@ -52,9 +52,6 @@ import im.zego.liveaudioroom.entity.ZIMSpeakerSeat;
 import im.zego.liveaudioroom.entity.ZIMSpeakerSeatUpdateInfo;
 import im.zego.liveaudioroom.util.GsonChanger;
 
-/**
- * 麦位管理模块，在这里实现麦位的相关操作，邀请上麦等等操作，
- */
 public class ZegoLiveAudioSpeakerSeatManager {
     ZIM zim;
     ZegoExpressEngine zegoExpressEngine;
@@ -347,12 +344,6 @@ public class ZegoLiveAudioSpeakerSeatManager {
         }
     }
 
-    /**
-     * 在这里具体实现麦位操作的相应方法
-     */
-    /*
-    房主端的操作
-     */
     public void kickUserToSeat(String userID, final KickUserToSeatCallback kickUserToSeatCallback) {
 
         ZIMSpeakerSeat roomSeat = getZegoLiveAudioRoomSeatByUserID(userID);
@@ -464,11 +455,6 @@ public class ZegoLiveAudioSpeakerSeatManager {
             muteSeatCallback.muteSeat(ZegoLiveAudioRoomErrorCode.NOT_IN_SEAT);
         }
     }
-
-
-    /*
-    所有操作
-     */
 
     public void enterSeat(final int seatIndex, boolean isSwitchSeat, final EnterSeatCallback enterSeatCallback) {
 

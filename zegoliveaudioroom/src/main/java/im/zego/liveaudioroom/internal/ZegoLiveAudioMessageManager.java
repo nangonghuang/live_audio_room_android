@@ -32,9 +32,6 @@ import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
 import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
 import im.zego.liveaudioroom.util.GsonChanger;
 
-/**
- * 消息管理模块，在这里实现消息的相关操作，邀请消息等等操作，
- */
 public class ZegoLiveAudioMessageManager {
     ZIM zim;
     ZegoLiveAudioRoomUser user;
@@ -79,10 +76,6 @@ public class ZegoLiveAudioMessageManager {
         this.roomInfo = roomInfo;
 
     }
-
-    /**
-     * 在这里具体实现消息的相应方法
-     */
 
     public void sendRoomMessage(String message, final SendRoomMessageCallback sendRoomMessageCallback) {
 
