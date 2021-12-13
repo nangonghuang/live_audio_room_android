@@ -2,13 +2,10 @@ package im.zego.liveaudioroom.util;
 
 import com.google.gson.Gson;
 
-import im.zego.liveaudioroom.entity.ZIMChatRoomMessage;
-import im.zego.liveaudioroom.entity.ZIMChatRoomSeatAttribution;
-import im.zego.liveaudioroom.internal.entity.ZIMChatRoomInfo;
+import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomMessage;
+import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomSeatAttribution;
+import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
 
-/**
- * 这个工具类是为了将ChatRoom中传递的信息进行json处理
- */
 public class GsonChanger {
     private static GsonChanger instance;
     private final Gson gson;
@@ -24,27 +21,27 @@ public class GsonChanger {
         return instance;
     }
 
-    public ZIMChatRoomMessage getZIMChatRoomMessage(String json) {
-        return gson.fromJson(json, ZIMChatRoomMessage.class);
+    public ZegoLiveAudioRoomMessage getZegoLiveAudioRoomMessage(String json) {
+        return gson.fromJson(json, ZegoLiveAudioRoomMessage.class);
     }
 
-    public String getJsonOfZIMChatRoomMessage(ZIMChatRoomMessage zimChatRoomMessage) {
-        return gson.toJson(zimChatRoomMessage);
+    public String getJsonOfZegoLiveAudioRoomMessage(ZegoLiveAudioRoomMessage ZegoLiveAudioRoomMessage) {
+        return gson.toJson(ZegoLiveAudioRoomMessage);
     }
 
-    public ZIMChatRoomInfo getZIMChatRoomInfo(String json) {
-        return gson.fromJson(json, ZIMChatRoomInfo.class);
+    public ZegoLiveAudioRoomInfo getZegoLiveAudioRoomInfo(String json) {
+        return gson.fromJson(json, ZegoLiveAudioRoomInfo.class);
     }
 
-    public String getJsonOfZIMChatRoomInfo(ZIMChatRoomInfo zimChatRoomInfo) {
-        return gson.toJson(zimChatRoomInfo);
+    public String getJsonOfZegoLiveAudioRoomInfo(ZegoLiveAudioRoomInfo ZegoLiveAudioRoomInfo) {
+        return gson.toJson(ZegoLiveAudioRoomInfo);
     }
 
-    public ZIMChatRoomSeatAttribution getZIMChatRoomSeatAttribution(String json) {
-        return gson.fromJson(json, ZIMChatRoomSeatAttribution.class);
+    public ZegoLiveAudioRoomSeatAttribution getZegoLiveAudioRoomSeatAttribution(String json) {
+        return gson.fromJson(json, ZegoLiveAudioRoomSeatAttribution.class);
     }
 
-    public String getJsonOfZIMChatRoomSeat(ZIMChatRoomSeatAttribution seatAttributes) {
+    public String getJsonOfZegoLiveAudioRoomSeat(ZegoLiveAudioRoomSeatAttribution seatAttributes) {
         return gson.toJson(seatAttributes);
     }
 }

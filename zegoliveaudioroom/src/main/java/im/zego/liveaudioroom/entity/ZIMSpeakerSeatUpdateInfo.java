@@ -1,12 +1,12 @@
 package im.zego.liveaudioroom.entity;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomSeatEvent;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomSeatEvent;
 
 public class ZIMSpeakerSeatUpdateInfo {
     ZIMSpeakerSeat speakerSeat;
-    ZIMChatRoomSeatEvent event;
+    ZegoLiveAudioRoomSeatEvent event;
 
-    public ZIMSpeakerSeatUpdateInfo(ZIMSpeakerSeat speakerSeat, ZIMChatRoomSeatEvent event) {
+    public ZIMSpeakerSeatUpdateInfo(ZIMSpeakerSeat speakerSeat, ZegoLiveAudioRoomSeatEvent event) {
         this.speakerSeat = speakerSeat;
         this.event = event;
     }
@@ -19,11 +19,11 @@ public class ZIMSpeakerSeatUpdateInfo {
         this.speakerSeat = speakerSeat;
     }
 
-    public ZIMChatRoomSeatEvent getEvent() {
+    public ZegoLiveAudioRoomSeatEvent getEvent() {
         return event;
     }
 
-    public void setEvent(ZIMChatRoomSeatEvent event) {
+    public void setEvent(ZegoLiveAudioRoomSeatEvent event) {
         this.event = event;
     }
 }

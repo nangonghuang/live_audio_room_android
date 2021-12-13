@@ -1,13 +1,13 @@
 package im.zego.liveaudioroom.emus;
 
-public enum ZIMChatRoomState {
+public enum ZegoLiveAudioRoomState {
     DISCONNECTED(0),
     CONNECTING(1),
     CONNECTED(2),
     RECONNECTING(3);
     private int value;
 
-    ZIMChatRoomState(int value) {
+    ZegoLiveAudioRoomState(int value) {
         this.value = value;
     }
 
@@ -19,7 +19,7 @@ public enum ZIMChatRoomState {
         this.value = value;
     }
 
-    public static ZIMChatRoomState getZIMChatRoomState(int value) {
+    public static ZegoLiveAudioRoomState getZegoLiveAudioRoomState(int value) {
         try {
             if (DISCONNECTED.value == value) {
                 return DISCONNECTED;

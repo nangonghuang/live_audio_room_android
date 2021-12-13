@@ -1,8 +1,8 @@
 package im.zego.liveaudioroom.callback;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomErrorCode;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 
 
 public interface MuteSeatCallback {
-    void muteSeat(ZIMChatRoomErrorCode error);
+    void muteSeat(ZegoLiveAudioRoomErrorCode error);
 }

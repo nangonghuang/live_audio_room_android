@@ -2,7 +2,7 @@ package im.zego.liveaudioroom.entity;
 
 import java.util.Objects;
 
-public class ZIMChatRoomSeatAttribution {
+public class ZegoLiveAudioRoomSeatAttribution {
 
     String user_id = "";
     int index;
@@ -10,14 +10,14 @@ public class ZIMChatRoomSeatAttribution {
     boolean is_locked;
     String extras;
 
-    public ZIMChatRoomSeatAttribution() {
+    public ZegoLiveAudioRoomSeatAttribution() {
         this.user_id = "";
         this.index = -1;
         this.is_muted = false;
         extras = "";
     }
 
-    public ZIMChatRoomSeatAttribution(String user_id, int index) {
+    public ZegoLiveAudioRoomSeatAttribution(String user_id, int index) {
         this.user_id = user_id;
         this.index = index;
     }
@@ -66,7 +66,7 @@ public class ZIMChatRoomSeatAttribution {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ZIMChatRoomSeatAttribution that = (ZIMChatRoomSeatAttribution) o;
+        ZegoLiveAudioRoomSeatAttribution that = (ZegoLiveAudioRoomSeatAttribution) o;
         return index == that.index && is_muted == that.is_muted && is_locked == that.is_locked && Objects.equals(user_id, that.user_id) && Objects.equals(extras, that.extras);
     }
 
@@ -77,7 +77,7 @@ public class ZIMChatRoomSeatAttribution {
 
     @Override
     public String toString() {
-        return "ZIMChatRoomSeatAttribution{" +
+        return "ZegoLiveAudioRoomSeatAttribution{" +
                 "user_id='" + user_id + '\'' +
                 ", index=" + index +
                 ", is_muted=" + is_muted +

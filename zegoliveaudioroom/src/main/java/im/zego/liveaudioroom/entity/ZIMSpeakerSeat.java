@@ -1,34 +1,34 @@
 package im.zego.liveaudioroom.entity;
 
-import static im.zego.liveaudioroom.emus.ZIMChatRoomVoiceStatus.UNUSED;
+import static im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus.UNUSED;
 
 import java.util.Objects;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomVoiceStatus;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus;
 
 public class ZIMSpeakerSeat {
-    ZIMChatRoomVoiceStatus status;
-    ZIMChatRoomSeatAttribution attribution;
+    ZegoLiveAudioRoomVoiceStatus status;
+    ZegoLiveAudioRoomSeatAttribution attribution;
     float soundLevel;
 
     public ZIMSpeakerSeat() {
         status = UNUSED;
-        attribution = new ZIMChatRoomSeatAttribution();
+        attribution = new ZegoLiveAudioRoomSeatAttribution();
     }
 
-    public ZIMChatRoomVoiceStatus getStatus() {
+    public ZegoLiveAudioRoomVoiceStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ZIMChatRoomVoiceStatus status) {
+    public void setStatus(ZegoLiveAudioRoomVoiceStatus status) {
         this.status = status;
     }
 
-    public ZIMChatRoomSeatAttribution getAttribution() {
+    public ZegoLiveAudioRoomSeatAttribution getAttribution() {
         return attribution;
     }
 
-    public void setAttribution(ZIMChatRoomSeatAttribution attribution) {
+    public void setAttribution(ZegoLiveAudioRoomSeatAttribution attribution) {
         this.attribution = attribution;
     }
 

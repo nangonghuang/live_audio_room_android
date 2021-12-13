@@ -1,6 +1,6 @@
 package im.zego.liveaudioroom.entity;
 
-public class ZIMChatRoomText {
+public class ZegoLiveAudioRoomText {
     private String fromUserID = "";
     private String content;
 

@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.ZegoLiveAudioRoom" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.App" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#0055ff</item>
         <item name="colorPrimaryVariant">#0055ff</item>
@@ -83,7 +83,7 @@
         <item name="android:textCursorDrawable">@null</item>
     </style>
 
-    <style name="ChatRoomButtonStyle">
+    <style name="RoomButtonStyle">
         <item name="android:layout_width">34dp</item>
         <item name="android:layout_height">34dp</item>
         <item name="android:layout_marginBottom">11dp</item>

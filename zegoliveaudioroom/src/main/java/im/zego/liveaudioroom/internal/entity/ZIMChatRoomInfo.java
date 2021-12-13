@@ -2,17 +2,17 @@ package im.zego.liveaudioroom.internal.entity;
 
 import java.util.Objects;
 
-public class ZIMChatRoomInfo {
+public class ZegoLiveAudioRoomInfo {
     String room_name;
     String room_id;
     String author;
     int seat_count;
     boolean is_mute_msg;
 
-    public ZIMChatRoomInfo() {
+    public ZegoLiveAudioRoomInfo() {
     }
 
-    public ZIMChatRoomInfo(String room_name, String room_id) {
+    public ZegoLiveAudioRoomInfo(String room_name, String room_id) {
         this.room_name = room_name;
         this.room_id = room_id;
     }
@@ -61,7 +61,7 @@ public class ZIMChatRoomInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ZIMChatRoomInfo that = (ZIMChatRoomInfo) o;
+        ZegoLiveAudioRoomInfo that = (ZegoLiveAudioRoomInfo) o;
         return seat_count == that.seat_count && is_mute_msg == that.is_mute_msg && Objects.equals(room_name, that.room_name) && Objects.equals(room_id, that.room_id) && Objects.equals(author, that.author);
     }
 

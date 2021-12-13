@@ -4,21 +4,21 @@ import android.graphics.drawable.Drawable;
 
 import com.blankj.utilcode.util.ResourceUtils;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomUserRole;
-import im.zego.liveaudioroom.entity.ZIMChatRoomUser;
-import im.zego.liveaudioroom.internal.ZIMChatRoomManager;
-import im.zego.liveaudioroom.internal.entity.ZIMChatRoomInfo;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomUserRole;
+import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
+import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
+import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
 
 public final class UserInfoHelper {
     private static final int MAX_INDEX = 8;
 
     public static boolean isSelfOwner() {
-        ZIMChatRoomUser selfUser = ZIMChatRoomManager.getInstance().getMyUserInfo();
-        return selfUser.getUserRole() == ZIMChatRoomUserRole.OWNER;
+        ZegoLiveAudioRoomUser selfUser = ZegoLiveAudioRoomManager.getInstance().getMyUserInfo();
+        return selfUser.getUserRole() == ZegoLiveAudioRoomUserRole.OWNER;
     }
 
     public static boolean isUserOwner(String userId) {
-        ZIMChatRoomInfo roomInfo = ZIMChatRoomManager.getInstance().getChatRoomInfo();
+        ZegoLiveAudioRoomInfo roomInfo = ZegoLiveAudioRoomManager.getInstance().getRoomInfo();
         String ownerID = roomInfo.getAuthor();
         return ownerID.equals(userId);
     }

@@ -5,7 +5,7 @@ import android.app.Application;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
 
-import im.zego.liveaudioroom.ZIMChatRoom;
+import im.zego.liveaudioroom.ZegoLiveAudioRoom;
 
 public class App extends Application {
     @Override
@@ -14,7 +14,7 @@ public class App extends Application {
         Utils.init(this);
         LogUtils.getConfig().setLogHeadSwitch(false);
         LogUtils.getConfig().setBorderSwitch(false);
-        // init ChatRoom SDK
-        ZIMChatRoom.getInstance().init(KeyCenter.appID(), KeyCenter.appExpressSign(), this);
+        // init LiveAudioRoom SDK
+        ZegoLiveAudioRoom.getInstance().init(KeyCenter.appID(), KeyCenter.appExpressSign(), this);
     }
 }

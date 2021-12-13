@@ -2,11 +2,11 @@ package im.zego.liveaudioroom.entity;
 
 import java.util.List;
 
-public class ZIMChatRoomGiftBroadcast {
+public class ZegoLiveAudioRoomGiftBroadcast {
     List<String> toUserIDList;
     int giftType;
 
-    public ZIMChatRoomGiftBroadcast() {
+    public ZegoLiveAudioRoomGiftBroadcast() {
     }
 
 

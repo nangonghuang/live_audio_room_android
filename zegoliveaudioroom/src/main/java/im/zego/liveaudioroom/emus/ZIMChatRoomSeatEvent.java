@@ -1,6 +1,6 @@
 package im.zego.liveaudioroom.emus;
 
-public enum ZIMChatRoomSeatEvent {
+public enum ZegoLiveAudioRoomSeatEvent {
     ENTERED(0),
     LEFT(1),
     LOCKED(2),
@@ -9,7 +9,7 @@ public enum ZIMChatRoomSeatEvent {
     UNMUTED(5);
     private int value;
 
-    ZIMChatRoomSeatEvent(int value) {
+    ZegoLiveAudioRoomSeatEvent(int value) {
         this.value = value;
     }
 

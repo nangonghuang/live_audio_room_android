@@ -1,6 +1,6 @@
 package im.zego.liveaudioroom.emus;
 
-public enum ZIMChatRoomMessageAction {
+public enum ZegoLiveAudioRoomMessageAction {
     TEXT(0),
     GIFT(1),
     INVITATION(2),
@@ -8,7 +8,7 @@ public enum ZIMChatRoomMessageAction {
     GIFT_BROADCAST(4);
     private int value;
 
-    ZIMChatRoomMessageAction(int value) {
+    ZegoLiveAudioRoomMessageAction(int value) {
         this.value = value;
     }
 

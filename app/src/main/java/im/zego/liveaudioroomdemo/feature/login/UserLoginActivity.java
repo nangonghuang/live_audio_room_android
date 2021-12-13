@@ -14,9 +14,9 @@ import org.json.JSONException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import im.zego.liveaudioroom.ZIMChatRoom;
-import im.zego.liveaudioroom.emus.ZIMChatRoomErrorCode;
-import im.zego.liveaudioroom.entity.ZIMChatRoomUserInfo;
+import im.zego.liveaudioroom.ZegoLiveAudioRoom;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
+import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUserInfo;
 import im.zego.liveaudioroom.util.TokenServerAssistant;
 import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
@@ -59,14 +59,14 @@ public class UserLoginActivity extends BaseActivity {
                 return;
             }
 
-            ZIMChatRoomUserInfo user = new ZIMChatRoomUserInfo();
+            ZegoLiveAudioRoomUserInfo user = new ZegoLiveAudioRoomUserInfo();
             if (!(TextUtils.isEmpty(userID))) {
                 user.setUserID(userID);
                 user.setUserName(userName);
                 try {
                     // Call Chat Room SDK
-                    ZIMChatRoom.getInstance().login(user, TokenServerAssistant.generateToken(KeyCenter.appID(), userID, KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data, error -> {
-                        if (error == ZIMChatRoomErrorCode.SUCCESS) {
+                    ZegoLiveAudioRoom.getInstance().login(user, TokenServerAssistant.generateToken(KeyCenter.appID(), userID, KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data, error -> {
+                        if (error == ZegoLiveAudioRoomErrorCode.SUCCESS) {
                             RoomLoginActivity.startActivity(UserLoginActivity.this);
                         } else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_login_fail, error.getValue()));

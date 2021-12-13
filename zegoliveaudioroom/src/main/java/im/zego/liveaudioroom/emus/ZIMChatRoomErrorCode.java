@@ -1,6 +1,6 @@
 package im.zego.liveaudioroom.emus;
 
-public enum ZIMChatRoomErrorCode {
+public enum ZegoLiveAudioRoomErrorCode {
     SUCCESS(0),
     ERROR(1),
     ROOM_EXISTED(1001),
@@ -12,7 +12,7 @@ public enum ZIMChatRoomErrorCode {
     NOT_IN_SEAT(2005);
     private int value;
 
-    ZIMChatRoomErrorCode(int value) {
+    ZegoLiveAudioRoomErrorCode(int value) {
         this.value = value;
     }
 

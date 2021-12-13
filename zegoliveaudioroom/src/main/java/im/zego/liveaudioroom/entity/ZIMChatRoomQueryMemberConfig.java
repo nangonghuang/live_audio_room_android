@@ -1,10 +1,10 @@
 package im.zego.liveaudioroom.entity;
 
-public class ZIMChatRoomQueryMemberConfig {
+public class ZegoLiveAudioRoomQueryMemberConfig {
     String nextFlag;
     int count;
 
-    public ZIMChatRoomQueryMemberConfig() {
+    public ZegoLiveAudioRoomQueryMemberConfig() {
 
     }
 

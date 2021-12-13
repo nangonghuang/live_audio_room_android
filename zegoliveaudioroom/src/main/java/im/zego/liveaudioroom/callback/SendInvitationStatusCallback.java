@@ -1,10 +1,10 @@
 package im.zego.liveaudioroom.callback;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomErrorCode;
-import im.zego.liveaudioroom.emus.ZIMChatRoomInvitationStatus;
-import im.zego.liveaudioroom.emus.ZIMChatRoomVoiceStatus;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomInvitationStatus;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus;
 
 
 public interface SendInvitationStatusCallback {
-    void sendInvitationStatus(ZIMChatRoomErrorCode errorCode);
+    void sendInvitationStatus(ZegoLiveAudioRoomErrorCode errorCode);
 }

@@ -1,13 +1,13 @@
 package im.zego.liveaudioroom.emus;
 
-public enum ZIMChatRoomUserRole {
+public enum ZegoLiveAudioRoomUserRole {
     OWNER(0),
     VISITOR(1),
     ;
 
     private int value;
 
-    ZIMChatRoomUserRole(int value) {
+    ZegoLiveAudioRoomUserRole(int value) {
         this.value = value;
     }
 

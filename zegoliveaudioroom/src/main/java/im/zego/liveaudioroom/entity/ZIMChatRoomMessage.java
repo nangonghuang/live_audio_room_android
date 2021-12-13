@@ -1,85 +1,85 @@
 package im.zego.liveaudioroom.entity;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomMessageAction;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomMessageAction;
 
-public class ZIMChatRoomMessage {
-    ZIMChatRoomMessageAction action;
-    ZIMChatRoomInvitation invitationMessage;
-    ZIMChatRoomGift giftMessage;
-    ZIMChatRoomText textMessage;
-    ZIMChatRoomInvitationRespond invitationRespond;
-    ZIMChatRoomGiftBroadcast giftBroadcast;
+public class ZegoLiveAudioRoomMessage {
+    ZegoLiveAudioRoomMessageAction action;
+    ZegoLiveAudioRoomInvitation invitationMessage;
+    ZegoLiveAudioRoomGift giftMessage;
+    ZegoLiveAudioRoomText textMessage;
+    ZegoLiveAudioRoomInvitationRespond invitationRespond;
+    ZegoLiveAudioRoomGiftBroadcast giftBroadcast;
 
-    public ZIMChatRoomMessage(ZIMChatRoomMessageAction action, ZIMChatRoomText textMessage) {
+    public ZegoLiveAudioRoomMessage(ZegoLiveAudioRoomMessageAction action, ZegoLiveAudioRoomText textMessage) {
         this.action = action;
         this.textMessage = textMessage;
     }
 
-    public ZIMChatRoomMessage(ZIMChatRoomMessageAction action, ZIMChatRoomInvitation invitationMessage) {
+    public ZegoLiveAudioRoomMessage(ZegoLiveAudioRoomMessageAction action, ZegoLiveAudioRoomInvitation invitationMessage) {
         this.action = action;
         this.invitationMessage = invitationMessage;
     }
 
-    public ZIMChatRoomMessage(ZIMChatRoomMessageAction action, ZIMChatRoomGift giftMessage) {
+    public ZegoLiveAudioRoomMessage(ZegoLiveAudioRoomMessageAction action, ZegoLiveAudioRoomGift giftMessage) {
         this.action = action;
         this.giftMessage = giftMessage;
     }
 
-    public ZIMChatRoomMessage(ZIMChatRoomMessageAction action, ZIMChatRoomInvitationRespond invitationRespond) {
+    public ZegoLiveAudioRoomMessage(ZegoLiveAudioRoomMessageAction action, ZegoLiveAudioRoomInvitationRespond invitationRespond) {
         this.action = action;
         this.invitationRespond = invitationRespond;
     }
 
-    public ZIMChatRoomMessage(ZIMChatRoomMessageAction action, ZIMChatRoomGiftBroadcast giftBroadcast) {
+    public ZegoLiveAudioRoomMessage(ZegoLiveAudioRoomMessageAction action, ZegoLiveAudioRoomGiftBroadcast giftBroadcast) {
         this.action = action;
         this.giftBroadcast = giftBroadcast;
     }
 
-    public ZIMChatRoomInvitationRespond getInvitationRespond() {
+    public ZegoLiveAudioRoomInvitationRespond getInvitationRespond() {
         return invitationRespond;
     }
 
-    public void setInvitationRespond(ZIMChatRoomInvitationRespond invitationRespond) {
+    public void setInvitationRespond(ZegoLiveAudioRoomInvitationRespond invitationRespond) {
         this.invitationRespond = invitationRespond;
     }
 
-    public ZIMChatRoomMessageAction getAction() {
+    public ZegoLiveAudioRoomMessageAction getAction() {
         return action;
     }
 
-    public void setAction(ZIMChatRoomMessageAction action) {
+    public void setAction(ZegoLiveAudioRoomMessageAction action) {
         this.action = action;
     }
 
-    public ZIMChatRoomInvitation getInvitationMessage() {
+    public ZegoLiveAudioRoomInvitation getInvitationMessage() {
         return invitationMessage;
     }
 
-    public void setInvitationMessage(ZIMChatRoomInvitation invitationMessage) {
+    public void setInvitationMessage(ZegoLiveAudioRoomInvitation invitationMessage) {
         this.invitationMessage = invitationMessage;
     }
 
-    public ZIMChatRoomGift getGiftMessage() {
+    public ZegoLiveAudioRoomGift getGiftMessage() {
         return giftMessage;
     }
 
-    public void setGiftMessage(ZIMChatRoomGift giftMessage) {
+    public void setGiftMessage(ZegoLiveAudioRoomGift giftMessage) {
         this.giftMessage = giftMessage;
     }
 
-    public ZIMChatRoomText getTextMessage() {
+    public ZegoLiveAudioRoomText getTextMessage() {
         return textMessage;
     }
 
-    public void setTextMessage(ZIMChatRoomText textMessage) {
+    public void setTextMessage(ZegoLiveAudioRoomText textMessage) {
         this.textMessage = textMessage;
     }
 
-    public ZIMChatRoomGiftBroadcast getGiftBroadcast() {
+    public ZegoLiveAudioRoomGiftBroadcast getGiftBroadcast() {
         return giftBroadcast;
     }
 
-    public void setGiftBroadcast(ZIMChatRoomGiftBroadcast giftBroadcast) {
+    public void setGiftBroadcast(ZegoLiveAudioRoomGiftBroadcast giftBroadcast) {
         this.giftBroadcast = giftBroadcast;
     }
 }

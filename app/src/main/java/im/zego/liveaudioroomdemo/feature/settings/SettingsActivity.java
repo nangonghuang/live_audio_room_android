@@ -10,8 +10,8 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
-import im.zego.liveaudioroom.ZIMChatRoom;
-import im.zego.liveaudioroom.emus.ZIMChatRoomErrorCode;
+import im.zego.liveaudioroom.ZegoLiveAudioRoom;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 
@@ -46,15 +46,15 @@ public class SettingsActivity extends BaseActivity {
     }
 
     protected void initData() {
-        mTvRtcSdkVersion.setText(ZIMChatRoom.getRTCVersion());
-        mTvZimSdkVersion.setText(ZIMChatRoom.getZIMVersion());
+        mTvRtcSdkVersion.setText(ZegoLiveAudioRoom.getRTCVersion());
+        mTvZimSdkVersion.setText(ZegoLiveAudioRoom.getZIMVersion());
     }
 
     protected void initListener() {
         mIvBack.setOnClickListener(v -> finish());
         mTvLogout.setOnClickListener(v -> logout());
-        mShareLog.setOnClickListener(v -> ZIMChatRoom.getInstance().uploadLog(errorCode -> {
-            if (errorCode == ZIMChatRoomErrorCode.SUCCESS) {
+        mShareLog.setOnClickListener(v -> ZegoLiveAudioRoom.getInstance().uploadLog(errorCode -> {
+            if (errorCode == ZegoLiveAudioRoomErrorCode.SUCCESS) {
                 ToastUtils.showShort(R.string.toast_upload_log_success);
             } else {
                 ToastUtils.showShort(R.string.toast_upload_log_fail,errorCode.getValue());
@@ -63,7 +63,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void logout() {
-        ZIMChatRoom.getInstance().logout();
+        ZegoLiveAudioRoom.getInstance().logout();
         ActivityUtils.finishAllActivities();
         ActivityUtils.startLauncherActivity();
     }

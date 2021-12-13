@@ -96,7 +96,7 @@
 
     <ImageView
         android:id="@+id/iv_im"
-        style="@style/ChatRoomButtonStyle"
+        style="@style/RoomButtonStyle"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:src="@drawable/im_btn_selector"
@@ -105,7 +105,7 @@
 
     <ImageView
         android:id="@+id/iv_mic"
-        style="@style/ChatRoomButtonStyle"
+        style="@style/RoomButtonStyle"
         android:layout_height="wrap_content"
         android:layout_marginEnd="18dp"
         android:src="@drawable/icon_mic"
@@ -114,7 +114,7 @@
 
     <ImageView
         android:id="@+id/iv_member"
-        style="@style/ChatRoomButtonStyle"
+        style="@style/RoomButtonStyle"
         android:layout_height="wrap_content"
         android:layout_marginEnd="18dp"
         android:src="@drawable/icon_member"
@@ -123,7 +123,7 @@
 
     <ImageView
         android:id="@+id/iv_gift"
-        style="@style/ChatRoomButtonStyle"
+        style="@style/RoomButtonStyle"
         android:layout_marginEnd="18dp"
         android:src="@drawable/icon_gift"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -131,7 +131,7 @@
 
     <ImageView
         android:id="@+id/iv_settings"
-        style="@style/ChatRoomButtonStyle"
+        style="@style/RoomButtonStyle"
         android:layout_marginEnd="16dp"
         android:src="@drawable/icon_settings"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -139,7 +139,7 @@
 
     <ImageView
         android:id="@+id/iv_more"
-        style="@style/ChatRoomButtonStyle"
+        style="@style/RoomButtonStyle"
         android:layout_marginEnd="16dp"
         android:src="@drawable/icon_more2"
         android:visibility="gone"

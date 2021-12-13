@@ -1,10 +1,10 @@
 package im.zego.liveaudioroom.entity;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomInvitationStatus;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomInvitationStatus;
 
-public class ZIMChatRoomInvitationRespond {
+public class ZegoLiveAudioRoomInvitationRespond {
     String fromUserID;
-    ZIMChatRoomInvitationStatus status;
+    ZegoLiveAudioRoomInvitationStatus status;
 
     public String getFromUserID() {
         return fromUserID;
@@ -14,11 +14,11 @@ public class ZIMChatRoomInvitationRespond {
         this.fromUserID = fromUserID;
     }
 
-    public ZIMChatRoomInvitationStatus getStatus() {
+    public ZegoLiveAudioRoomInvitationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ZIMChatRoomInvitationStatus status) {
+    public void setStatus(ZegoLiveAudioRoomInvitationStatus status) {
         this.status = status;
     }
 }

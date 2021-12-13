@@ -1,7 +1,7 @@
 package im.zego.liveaudioroom.callback;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomErrorCode;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 
 public interface LogUploadedCallback {
-    void onLogUploaded(ZIMChatRoomErrorCode errorCode);
+    void onLogUploaded(ZegoLiveAudioRoomErrorCode errorCode);
 }

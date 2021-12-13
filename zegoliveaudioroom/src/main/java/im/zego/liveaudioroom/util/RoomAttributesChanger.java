@@ -1,7 +1,7 @@
 package im.zego.liveaudioroom.util;
 
-import im.zego.liveaudioroom.internal.entity.ZIMChatRoomInfo;
-import im.zego.liveaudioroom.entity.ZIMChatRoomSeatAttribution;
+import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
+import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomSeatAttribution;
 
 public class RoomAttributesChanger {
 
@@ -21,28 +21,28 @@ public class RoomAttributesChanger {
         return instance;
     }
 
-    public Byte[] getZIMChatRoomSeatAttributionToBytes(ZIMChatRoomSeatAttribution seat) {
+    public Byte[] getZegoLiveAudioRoomSeatAttributionToBytes(ZegoLiveAudioRoomSeatAttribution seat) {
 
-        String string = gsonChanger.getJsonOfZIMChatRoomSeat(seat);
+        String string = gsonChanger.getJsonOfZegoLiveAudioRoomSeat(seat);
         return transformer.transformToByteArray(string);
     }
 
-    public ZIMChatRoomSeatAttribution getBytesToZIMChatRoomSeatAttribution(Byte[] bytes) {
+    public ZegoLiveAudioRoomSeatAttribution getBytesToZegoLiveAudioRoomSeatAttribution(Byte[] bytes) {
 
         String s = transformer.transformToString(bytes);
-        return gsonChanger.getZIMChatRoomSeatAttribution(s);
+        return gsonChanger.getZegoLiveAudioRoomSeatAttribution(s);
     }
 
 
-    public Byte[] getZIMChatRoomInfoToBytes(ZIMChatRoomInfo roomInfo) {
+    public Byte[] getZegoLiveAudioRoomInfoToBytes(ZegoLiveAudioRoomInfo roomInfo) {
 
-        String string = gsonChanger.getJsonOfZIMChatRoomInfo(roomInfo);
+        String string = gsonChanger.getJsonOfZegoLiveAudioRoomInfo(roomInfo);
         return transformer.transformToByteArray(string);
     }
 
-    public ZIMChatRoomInfo getBytesToZZIMChatRoomInfo(Byte[] bytes) {
+    public ZegoLiveAudioRoomInfo getBytesToZZegoLiveAudioRoomInfo(Byte[] bytes) {
 
         String s = transformer.transformToString(bytes);
-        return gsonChanger.getZIMChatRoomInfo(s);
+        return gsonChanger.getZegoLiveAudioRoomInfo(s);
     }
 }

@@ -1,10 +1,10 @@
 package im.zego.liveaudioroom.entity;
 
-import im.zego.liveaudioroom.emus.ZIMChatRoomUserRole;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomUserRole;
 
 import java.util.Objects;
 
-public class ZIMChatRoomUserInfo {
+public class ZegoLiveAudioRoomUserInfo {
     private String userID;
     private String userName;
 
@@ -12,7 +12,7 @@ public class ZIMChatRoomUserInfo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ZIMChatRoomUserInfo user = (ZIMChatRoomUserInfo) o;
+        ZegoLiveAudioRoomUserInfo user = (ZegoLiveAudioRoomUserInfo) o;
         return Objects.equals(userID, user.userID) && Objects.equals(userName, user.userName);
     }
 

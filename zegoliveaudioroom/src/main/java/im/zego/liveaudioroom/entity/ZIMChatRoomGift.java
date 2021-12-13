@@ -2,7 +2,7 @@ package im.zego.liveaudioroom.entity;
 
 import im.zego.zim.entity.ZIMUserInfo;
 
-public class ZIMChatRoomGift {
+public class ZegoLiveAudioRoomGift {
     String fromUserID;
     int giftType;
 

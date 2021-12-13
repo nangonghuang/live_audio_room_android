@@ -19,20 +19,20 @@ import com.blankj.utilcode.util.ToastUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import im.zego.liveaudioroom.ZIMChatRoom;
-import im.zego.liveaudioroom.callback.ZIMChatRoomEventHandler;
-import im.zego.liveaudioroom.emus.ZIMChatRoomErrorCode;
-import im.zego.liveaudioroom.emus.ZIMChatRoomEvent;
-import im.zego.liveaudioroom.emus.ZIMChatRoomState;
-import im.zego.liveaudioroom.entity.ZIMChatRoomUser;
-import im.zego.liveaudioroom.internal.ZIMChatRoomManager;
+import im.zego.liveaudioroom.ZegoLiveAudioRoom;
+import im.zego.liveaudioroom.callback.LiveAudioRoomEventHandler;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomEvent;
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomState;
+import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
+import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
 import im.zego.liveaudioroom.util.TokenServerAssistant;
 import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
 import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
-import im.zego.liveaudioroomdemo.feature.chatroom.ChatRoomActivity;
-import im.zego.liveaudioroomdemo.feature.chatroom.dialog.CreateRoomDialog;
+import im.zego.liveaudioroomdemo.feature.room.LiveAudioRoomActivity;
+import im.zego.liveaudioroomdemo.feature.room.dialog.CreateRoomDialog;
 import im.zego.liveaudioroomdemo.feature.settings.SettingsActivity;
 
 public class RoomLoginActivity extends BaseActivity implements View.OnClickListener {
@@ -53,12 +53,12 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
         setContentView(R.layout.activity_room_login);
         initUI();
 
-        ZIMChatRoomManager.getInstance().setEventHandler(new ZIMChatRoomEventHandler() {
+        ZegoLiveAudioRoomManager.getInstance().setEventHandler(new LiveAudioRoomEventHandler() {
             @Override
-            public void onConnectionStateChanged(ZIMChatRoomState state, ZIMChatRoomEvent event, JSONObject extendedData) {
+            public void onConnectionStateChanged(ZegoLiveAudioRoomState state, ZegoLiveAudioRoomEvent event, JSONObject extendedData) {
                 super.onConnectionStateChanged(state, event, extendedData);
                 Log.d(TAG, "onConnectionStateChanged() called with: state = [" + state + "], event = [" + event + "], extendedData = [" + extendedData + "]");
-                if(state == ZIMChatRoomState.DISCONNECTED && (event == ZIMChatRoomEvent.KICKED_OUT || event == ZIMChatRoomEvent.ACTIVE_CREATE)){
+                if(state == ZegoLiveAudioRoomState.DISCONNECTED && (event == ZegoLiveAudioRoomEvent.KICKED_OUT || event == ZegoLiveAudioRoomEvent.ACTIVE_CREATE)){
                     ToastUtils.showShort(R.string.toast_kickout_error);
                     ActivityUtils.startActivity(RoomLoginActivity.this,UserLoginActivity.class);
                 }
@@ -91,11 +91,11 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
             }
 
             try {
-                ZIMChatRoomUser selfUser = ZIMChatRoomManager.getInstance().getMyUserInfo();
-                ZIMChatRoom.getInstance().joinChatRoom(roomID, TokenServerAssistant.generateToken(KeyCenter.appID(), selfUser.getUserID(), KeyCenter.appZIMServerSecret(), 660).data, error -> {
-                    if (error == ZIMChatRoomErrorCode.SUCCESS) {
-                        ChatRoomActivity.startActivity(RoomLoginActivity.this);
-                    } else if (error == ZIMChatRoomErrorCode.ROOM_NOT_FOUND) {
+                ZegoLiveAudioRoomUser selfUser = ZegoLiveAudioRoomManager.getInstance().getMyUserInfo();
+                ZegoLiveAudioRoom.getInstance().joinRoom(roomID, TokenServerAssistant.generateToken(KeyCenter.appID(), selfUser.getUserID(), KeyCenter.appZIMServerSecret(), 660).data, error -> {
+                    if (error == ZegoLiveAudioRoomErrorCode.SUCCESS) {
+                        LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
+                    } else if (error == ZegoLiveAudioRoomErrorCode.ROOM_NOT_FOUND) {
                         ToastUtils.showShort(StringUtils.getString(R.string.toast_room_not_exist_fail));
                     } else {
                         ToastUtils.showShort(StringUtils.getString(R.string.toast_join_room_fail, error.getValue()));
@@ -131,11 +131,11 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                 privileges.canPublishStream = true;
 
                 if ((!TextUtils.isEmpty(roomID)) && (!TextUtils.isEmpty(roomName))) {
-                    ZIMChatRoomUser selfUser = ZIMChatRoomManager.getInstance().getMyUserInfo();
-                    ZIMChatRoom.getInstance().createChatRoom(roomID, roomName, ZegoRTCServerAssistant.generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges, KeyCenter.appExpressSign(), 660).data, error -> {
+                    ZegoLiveAudioRoomUser selfUser = ZegoLiveAudioRoomManager.getInstance().getMyUserInfo();
+                    ZegoLiveAudioRoom.getInstance().createRoom(roomID, roomName, ZegoRTCServerAssistant.generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges, KeyCenter.appExpressSign(), 660).data, error -> {
                         dialog.dismiss();
-                        if (error == ZIMChatRoomErrorCode.SUCCESS) {
-                            ChatRoomActivity.startActivity(RoomLoginActivity.this);
+                        if (error == ZegoLiveAudioRoomErrorCode.SUCCESS) {
+                            LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_success));
                         } else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_fail, error.getValue()));
@@ -151,12 +151,12 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        ZIMChatRoom.getInstance().logout();
+        ZegoLiveAudioRoom.getInstance().logout();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ZIMChatRoom.getInstance().logout();
+        ZegoLiveAudioRoom.getInstance().logout();
     }
 }

@@ -2,7 +2,7 @@ package im.zego.liveaudioroom.emus;
 
 import im.zego.zim.enums.ZIMRoomEvent;
 
-public enum ZIMChatRoomEvent {
+public enum ZegoLiveAudioRoomEvent {
     SUCCESS(0),
     NETWORK_INTERRUPTED(1),
     NETWORK_DISCONNECTED(2),
@@ -14,7 +14,7 @@ public enum ZIMChatRoomEvent {
     KICKED_OUT(8);
     private int value;
 
-    ZIMChatRoomEvent(int value) {
+    ZegoLiveAudioRoomEvent(int value) {
         this.value = value;
     }
 
@@ -26,7 +26,7 @@ public enum ZIMChatRoomEvent {
         this.value = value;
     }
 
-    public static ZIMChatRoomEvent getZIMChatRoomEvent(int value) {
+    public static ZegoLiveAudioRoomEvent getZegoLiveAudioRoomEvent(int value) {
         try {
             if (SUCCESS.value == value) {
                 return SUCCESS;

@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.StringUtils;
 
-import im.zego.liveaudioroomdemo.feature.chatroom.dialog.ConfirmDialog;
+import im.zego.liveaudioroomdemo.feature.room.dialog.ConfirmDialog;
 
 public final class DialogHelper {
     public static void showAlertDialog(
