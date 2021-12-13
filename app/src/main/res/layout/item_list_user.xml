@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="54dp"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/iv_user_avatar"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="18dp"
+        tools:src="@drawable/icon_avatar_1" />
+
+    <TextView
+        android:id="@+id/tv_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:textColor="#ff1b1b1b"
+        android:textSize="14sp"
+        tools:text="Hannah" />
+
+    <TextView
+        android:id="@+id/tv_user_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="23dp"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:textColor="#ff989ba8"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="Owner" />
+
+    <ImageView
+        android:id="@+id/iv_invite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="13dp"
+        android:layout_weight="1"
+        android:scaleType="fitEnd"
+        android:src="@drawable/icon_more_menu"
+        android:visibility="gone" />
+</LinearLayout>

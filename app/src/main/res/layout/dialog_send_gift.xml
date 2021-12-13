@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    android:background="@drawable/white_fill_half_round_rectangle_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_gift_title"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/room_page_gift"
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_gift_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/ll_gift_bottom"
+        app:layout_constraintTop_toBottomOf="@id/tv_gift_title" />
+
+    <LinearLayout
+        android:id="@+id/ll_gift_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="11dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/tv_gift_choose_member"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="18dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_choose_member_button"
+            android:gravity="center_vertical"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:text="@string/room_page_select_default"
+            android:textColor="#1b1b1b"
+            android:textSize="13sp"
+            app:drawableEndCompat="@drawable/down_arrow" />
+
+        <TextView
+            android:id="@+id/tv_gift_send"
+            android:layout_width="94dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="11dp"
+            android:layout_marginEnd="18dp"
+            android:background="@drawable/bg_blue_btn_selector"
+            android:gravity="center"
+            android:text="@string/room_page_send_gift"
+            android:textColor="#ffffff"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
