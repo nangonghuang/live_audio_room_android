@@ -16,13 +16,13 @@ public class ZegoRoomInfo {
     @SerializedName("hostID")
     private String hostID;
     // speaker seat count
-    @SerializedName("count")
+    @SerializedName("num")
     private int seatNum;
     // whether to mute message
-    @SerializedName("mute")
+    @SerializedName("disable")
     private boolean isTextMessageDisabled;
     // whether to lock seat
-    @SerializedName("lock")
+    @SerializedName("close")
     private boolean isClosed;
 
     public String getRoomID() {
