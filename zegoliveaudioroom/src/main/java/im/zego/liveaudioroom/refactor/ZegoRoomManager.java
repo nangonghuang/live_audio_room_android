@@ -43,7 +43,6 @@ public class ZegoRoomManager {
         return singleton;
     }
 
-    private ZegoExpressEngine zegoExpressEngine;
     public ZegoRoomService roomService;
     public ZegoUserService userService;
 
@@ -51,7 +50,7 @@ public class ZegoRoomManager {
         roomService = new ZegoRoomService();
         userService = new ZegoUserService();
 
-        zegoExpressEngine = ZegoExpressEngine.createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, null);
+        ZegoExpressEngine.createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, null);
 
         ZegoZIMManager.getInstance().createZIM(appID, application);
         // distribute to specific services which listening what they want
@@ -126,6 +125,6 @@ public class ZegoRoomManager {
     }
 
     public void uploadLog(final ZegoRoomCallback callback) {
-        ZegoZIMManager.getInstance().zim.uploadLog(errorInfo -> callback.onRoomCallback(errorInfo.code.value()));
+        ZegoZIMManager.getInstance().zim.uploadLog(errorInfo -> callback.roomCallback(errorInfo.code.value()));
     }
 }

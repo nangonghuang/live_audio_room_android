@@ -17,13 +17,13 @@ public class ZegoRoomInfo {
     private String hostID;
     // speaker seat count
     @SerializedName("count")
-    private int seatCount;
+    private int seatNum;
     // whether to mute message
     @SerializedName("mute")
-    private boolean isMuteMessage;
+    private boolean isTextMessageDisabled;
     // whether to lock seat
     @SerializedName("lock")
-    private boolean isLock;
+    private boolean isClosed;
 
     public String getRoomID() {
         return roomID;
@@ -49,28 +49,28 @@ public class ZegoRoomInfo {
         this.hostID = hostID;
     }
 
-    public int getSeatCount() {
-        return seatCount;
+    public int getSeatNum() {
+        return seatNum;
     }
 
-    public void setSeatCount(int seatCount) {
-        this.seatCount = seatCount;
+    public void setSeatNum(int seatNum) {
+        this.seatNum = seatNum;
     }
 
-    public boolean isMuteMessage() {
-        return isMuteMessage;
+    public boolean isTextMessageDisabled() {
+        return isTextMessageDisabled;
     }
 
-    public void setMuteMessage(boolean muteMessage) {
-        isMuteMessage = muteMessage;
+    public void setTextMessageDisabled(boolean textMessageDisabled) {
+        isTextMessageDisabled = textMessageDisabled;
     }
 
-    public boolean isLock() {
-        return isLock;
+    public boolean isClosed() {
+        return isClosed;
     }
 
-    public void setLock(boolean lock) {
-        isLock = lock;
+    public void setClosed(boolean closed) {
+        isClosed = closed;
     }
 
     @Override
@@ -79,9 +79,9 @@ public class ZegoRoomInfo {
                 "roomID='" + roomID + '\'' +
                 ", roomName='" + roomName + '\'' +
                 ", hostID='" + hostID + '\'' +
-                ", seatCount=" + seatCount +
-                ", isMuteMessage=" + isMuteMessage +
-                ", isLock=" + isLock +
+                ", seatCount=" + seatNum +
+                ", isMuteMessage=" + isTextMessageDisabled +
+                ", isLock=" + isClosed +
                 '}';
     }
 }

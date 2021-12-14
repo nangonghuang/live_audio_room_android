@@ -9,16 +9,16 @@ import java.util.Set;
 
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
+import im.zego.liveaudioroom.refactor.callback.ZegoOnlineRoomUsersCallback;
 import im.zego.liveaudioroom.refactor.callback.ZegoRoomCallback;
-import im.zego.liveaudioroom.refactor.callback.ZegoRoomMemberCountCallback;
 import im.zego.liveaudioroom.refactor.constants.ZegoRoomConstants;
+import im.zego.liveaudioroom.refactor.helper.ZegoRoomAttributesHelper;
 import im.zego.liveaudioroom.refactor.listener.ZegoRoomServiceListener;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomUserRole;
 import im.zego.zim.ZIM;
 import im.zego.zim.callback.ZIMEventHandler;
 import im.zego.zim.entity.ZIMRoomAdvancedConfig;
-import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.entity.ZIMRoomInfo;
 import im.zego.zim.enums.ZIMConnectionEvent;
@@ -43,9 +43,9 @@ public class ZegoRoomService extends ZIMEventHandler {
         roomInfo.setRoomID(roomID);
         roomInfo.setRoomName(roomName);
         roomInfo.setHostID(ZegoRoomManager.getInstance().userService.localUserInfo.getUserID());
-        roomInfo.setSeatCount(8);
-        roomInfo.setMuteMessage(false);
-        roomInfo.setLock(false);
+        roomInfo.setSeatNum(8);
+        roomInfo.setTextMessageDisabled(false);
+        roomInfo.setClosed(false);
 
         ZIMRoomInfo zimRoomInfo = new ZIMRoomInfo();
         zimRoomInfo.roomID = roomID;
@@ -66,7 +66,7 @@ public class ZegoRoomService extends ZIMEventHandler {
 //                });
             }
             if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value());
+                callback.roomCallback(errorInfo.code.value());
             }
         });
     }
@@ -85,7 +85,7 @@ public class ZegoRoomService extends ZIMEventHandler {
 //                });
             }
             if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value());
+                callback.roomCallback(errorInfo.code.value());
             }
         });
     }
@@ -94,35 +94,30 @@ public class ZegoRoomService extends ZIMEventHandler {
     public void leaveRoom(final ZegoRoomCallback callback) {
         ZegoZIMManager.getInstance().zim.leaveRoom(roomInfo.getRoomID(), errorInfo -> {
             if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value());
+                callback.roomCallback(errorInfo.code.value());
             }
         });
     }
 
     // query the number of chat rooms available online
-    public void queryOnlineRoomUsers(final ZegoRoomMemberCountCallback callback) {
+    public void queryOnlineRoomUsers(final ZegoOnlineRoomUsersCallback callback) {
         ZegoZIMManager.getInstance().zim.queryRoomOnlineMemberCount(roomInfo.getRoomID(), (count, errorInfo) -> {
             if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value(), count);
+                callback.userCountCallback(errorInfo.code.value(), count);
             }
         });
     }
 
     // disable text chat for all
     public void disableTextMessage(boolean isMuted, ZegoRoomCallback callback) {
-        HashMap<String, String> roomConfig = new HashMap<>();
-        roomInfo.setMuteMessage(isMuted);
-
-        roomConfig.put(ZegoRoomConstants.KEY_ROOM_INFO, new Gson().toJson(roomInfo));
-
-        ZIMRoomAttributesSetConfig setConfig = new ZIMRoomAttributesSetConfig();
-        setConfig.isForce = true;
-        setConfig.isDeleteAfterOwnerLeft = true;
-        ZegoZIMManager.getInstance().zim.setRoomAttributes(roomConfig, roomInfo.getRoomID(), setConfig, errorInfo -> {
-            if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value());
-            }
-        });
+        ZegoZIMManager.getInstance().zim.setRoomAttributes(
+                ZegoRoomAttributesHelper.getRoomConfigByTextMessage(isMuted, roomInfo),
+                roomInfo.getRoomID(),
+                ZegoRoomAttributesHelper.getAttributesSetConfig(), errorInfo -> {
+                    if (callback != null) {
+                        callback.roomCallback(errorInfo.code.value());
+                    }
+                });
     }
 
     public void setListener(ZegoRoomServiceListener listener) {

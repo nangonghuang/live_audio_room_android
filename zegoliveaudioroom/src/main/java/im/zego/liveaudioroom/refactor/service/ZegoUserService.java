@@ -42,7 +42,7 @@ public class ZegoUserService extends ZIMEventHandler {
                 localUserInfo.setUserName(userInfo.getUserName());
             }
             if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value());
+                callback.roomCallback(errorInfo.code.value());
             }
         });
     }
