@@ -1,13 +1,12 @@
 package im.zego.liveaudioroom.refactor.model;
 
 /**
- * enum used to describe Speaker seat Status.
- * [ZegoSpeakerSeatStatusUntaken] means available to use,
- * [ZegoSpeakerSeatStatusOccupied] means occupied by other user,
- * [ZegoSpeakerSeatStatusClosed] means the seat is not allowed to use
+ * enum used to describe Speaker seat Status. [ZegoSpeakerSeatStatusUntaken] means available to use,
+ * [ZegoSpeakerSeatStatusOccupied] means occupied by other user, [ZegoSpeakerSeatStatusClosed] means
+ * the seat is not allowed to use
  */
 public enum ZegoSpeakerSeatStatus {
-    ZegoSpeakerSeatStatusUntaken,   // untaken
-    ZegoSpeakerSeatStatusOccupied,      // occupied
-    ZegoSpeakerSeatStatusClosed         // closed
+    Untaken,
+    Occupied,
+    Closed
 }
