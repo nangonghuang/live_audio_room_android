@@ -119,6 +119,9 @@ public class ZegoRoomManager {
                 if (roomService != null) {
                     roomService.onRoomAttributesUpdated(zim, info, roomID);
                 }
+                if (speakerSeatService != null) {
+                    speakerSeatService.onRoomAttributesUpdated(zim, info, roomID);
+                }
             }
 
             @Override
