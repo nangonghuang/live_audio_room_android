@@ -2,6 +2,9 @@ package im.zego.liveaudioroom.refactor;
 
 import android.app.Application;
 
+import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
+import im.zego.liveaudioroom.refactor.service.ZegoMessageService;
+import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -45,10 +48,16 @@ public class ZegoRoomManager {
 
     public ZegoRoomService roomService;
     public ZegoUserService userService;
+    public ZegoSpeakerSeatService speakerSeatService;
+    public ZegoMessageService messageService;
+    public ZegoGiftService giftService;
 
     public void init(long appID, String appSign, Application application) {
         roomService = new ZegoRoomService();
         userService = new ZegoUserService();
+        speakerSeatService = new ZegoSpeakerSeatService();
+        messageService = new ZegoMessageService();
+        giftService = new ZegoGiftService();
 
         ZegoExpressEngine.createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, null);
 
