@@ -90,6 +90,12 @@ public class ZegoRoomManager {
             @Override
             public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
                 super.onReceiveRoomMessage(zim, messageList, fromRoomID);
+                if (giftService != null) {
+                    giftService.onReceiveRoomMessage(zim,messageList,fromRoomID);
+                }
+                if (messageService != null) {
+                    messageService.onReceiveRoomMessage(zim,messageList,fromRoomID);
+                }
             }
 
             @Override
@@ -118,6 +124,9 @@ public class ZegoRoomManager {
                 super.onRoomAttributesUpdated(zim, info, roomID);
                 if (roomService != null) {
                     roomService.onRoomAttributesUpdated(zim, info, roomID);
+                }
+                if (speakerSeatService != null) {
+                    speakerSeatService.onRoomAttributesUpdated(zim, info, roomID);
                 }
             }
 
