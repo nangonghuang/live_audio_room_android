@@ -35,13 +35,6 @@ public class ZegoSpeakerSeatService {
 
     public ZegoSpeakerSeatService() {
         speakerSeatList = new ArrayList<>();
-        int seatNum = ZegoRoomManager.getInstance().roomService.roomInfo.getSeatNum();
-        for (int i = 0; i < seatNum; i++) {
-            ZegoSpeakerSeatModel model = new ZegoSpeakerSeatModel();
-            model.seatIndex = i;
-            model.status = ZegoSpeakerSeatStatus.Untaken;
-            speakerSeatList.add(model);
-        }
     }
 
     public void setSpeakerSeatServiceCallback(ZegoSpeakerSeatServiceCallback callback) {
@@ -49,7 +42,7 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * remove user from seat,make it unTaken status
+     * remove user from seat,make it unTaken status.
      *
      * @param seatIndex index
      * @param callback  operation result callback
@@ -100,7 +93,7 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * mute self's mic and broadcast to all room users
+     * mute self's mic and broadcast to all room users.
      *
      * @param isMuted  micPhone state
      * @param callback operation result callback
@@ -290,6 +283,25 @@ public class ZegoSpeakerSeatService {
                 ZegoSpeakerSeatModel model = gson.fromJson(jsonValue, ZegoSpeakerSeatModel.class);
                 onSpeakerSeatStatusChanged(model);
             }
+        }
+    }
+
+    void reset() {
+        for (ZegoSpeakerSeatModel model : speakerSeatList) {
+            model.userID = "";
+            model.status = ZegoSpeakerSeatStatus.Untaken;
+        }
+        speakerSeatServiceCallback = null;
+    }
+
+    void initRoomSeat() {
+        int seatNum = ZegoRoomManager.getInstance().roomService.roomInfo.getSeatNum();
+        for (int i = 0; i < seatNum; i++) {
+            ZegoSpeakerSeatModel model = new ZegoSpeakerSeatModel();
+            model.seatIndex = i;
+            model.userID = "";
+            model.status = ZegoSpeakerSeatStatus.Untaken;
+            speakerSeatList.add(model);
         }
     }
 }

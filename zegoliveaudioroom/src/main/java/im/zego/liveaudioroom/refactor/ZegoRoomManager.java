@@ -90,6 +90,12 @@ public class ZegoRoomManager {
             @Override
             public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
                 super.onReceiveRoomMessage(zim, messageList, fromRoomID);
+                if (giftService != null) {
+                    giftService.onReceiveRoomMessage(zim,messageList,fromRoomID);
+                }
+                if (messageService != null) {
+                    messageService.onReceiveRoomMessage(zim,messageList,fromRoomID);
+                }
             }
 
             @Override
