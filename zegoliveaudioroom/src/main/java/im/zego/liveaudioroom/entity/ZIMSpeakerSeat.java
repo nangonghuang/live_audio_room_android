@@ -5,10 +5,12 @@ import static im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus.UNUSED;
 import java.util.Objects;
 
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus;
+import im.zego.liveaudioroom.refactor.model.ZegoNetWorkQuality;
 
 public class ZIMSpeakerSeat {
     ZegoLiveAudioRoomVoiceStatus status;
     ZegoLiveAudioRoomSeatAttribution attribution;
+    ZegoNetWorkQuality netWorkQuality = ZegoNetWorkQuality.Good;
     float soundLevel;
 
     public ZIMSpeakerSeat() {
@@ -38,6 +40,10 @@ public class ZIMSpeakerSeat {
 
     public void setSoundLevel(float soundLevel) {
         this.soundLevel = soundLevel;
+    }
+
+    public ZegoNetWorkQuality getNetWorkQuality() {
+        return netWorkQuality;
     }
 
     @Override

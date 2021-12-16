@@ -9,7 +9,7 @@ import im.zego.zim.enums.ZIMConnectionState;
  */
 public interface ZegoRoomServiceListener {
     // room info update
-    void receiveRoomInfoUpdate(ZegoRoomInfo roomInfo);
+    void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo);
 
-    void connectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event);
+    void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event);
 }

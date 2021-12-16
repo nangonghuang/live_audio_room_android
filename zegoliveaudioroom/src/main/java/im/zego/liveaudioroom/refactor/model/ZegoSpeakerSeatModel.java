@@ -19,5 +19,5 @@ public class ZegoSpeakerSeatModel {
     public ZegoSpeakerSeatStatus status;
 
     public transient float soundLevel;
-    public transient float network;
+    public transient ZegoNetWorkQuality network;
 }
