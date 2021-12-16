@@ -6,31 +6,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.blankj.utilcode.util.SizeUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
+import im.zego.liveaudioroom.refactor.ZegoRoomManager;
+import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
+import im.zego.liveaudioroom.refactor.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.helper.OnRecyclerViewItemTouchListener;
 import im.zego.liveaudioroomdemo.helper.RecyclerDivider;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * display room speakerseat users to send gift to.
+ */
 public class GiftTargetPopWindow extends PopupWindow {
+
     private static final String TAG = "GiftTargetPopWindow";
     private GiftTargetListener giftTargetListener;
     List<String> target = new ArrayList<>();
 
     public GiftTargetPopWindow(Context context, List<String> userList, int width) {
         super(context);
-        ViewGroup viewGroup = (ViewGroup) View.inflate(context, R.layout.popwindow_gift_target, null);
+        ViewGroup viewGroup = (ViewGroup) View
+            .inflate(context, R.layout.popwindow_gift_target, null);
         RecyclerView recyclerView = viewGroup.findViewById(R.id.rv_gift_target_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(new GiftTargetAdapter(userList));
@@ -51,7 +54,7 @@ public class GiftTargetPopWindow extends PopupWindow {
                     target.add(user);
                 }
                 if (giftTargetListener != null) {
-                    giftTargetListener.onGiftTargetSelected(adapterPosition,target);
+                    giftTargetListener.onGiftTargetSelected(adapterPosition, target);
                 }
                 dismiss();
             }
@@ -60,7 +63,8 @@ public class GiftTargetPopWindow extends PopupWindow {
         setContentView(viewGroup);
         setWidth(width);
         setHeight(SizeUtils.dp2px(200f));
-        setBackgroundDrawable(AppCompatResources.getDrawable(context, R.drawable.gray_fill_round_rectangle_bg));
+        setBackgroundDrawable(
+            AppCompatResources.getDrawable(context, R.drawable.gray_fill_round_rectangle_bg));
         setOutsideTouchable(true);
         getContentView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
@@ -103,7 +107,8 @@ public class GiftTargetPopWindow extends PopupWindow {
         this.giftTargetListener = giftTargetListener;
     }
 
-    private static class GiftTargetAdapter extends RecyclerView.Adapter {
+    private static class GiftTargetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
         private List<String> userList;
 
         public GiftTargetAdapter(List<String> users) {
@@ -115,7 +120,7 @@ public class GiftTargetPopWindow extends PopupWindow {
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View inflate = View.inflate(parent.getContext(), R.layout.item_gift_target, null);
             inflate.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, SizeUtils.dp2px(42)));
+                ViewGroup.LayoutParams.MATCH_PARENT, SizeUtils.dp2px(42)));
             return new RecyclerView.ViewHolder(inflate) {
             };
         }
@@ -131,7 +136,8 @@ public class GiftTargetPopWindow extends PopupWindow {
                 }
             } else {
                 String userID = userList.get(position - 1);
-                String userName = ZegoLiveAudioRoomManager.getInstance().getRoomUserName(userID);
+                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                String userName = userService.getUserName(userID);
                 itemView.setText(userName);
             }
         }
@@ -143,6 +149,7 @@ public class GiftTargetPopWindow extends PopupWindow {
     }
 
     public interface GiftTargetListener {
-        void onGiftTargetSelected(int index,List<String> targetList);
+
+        void onGiftTargetSelected(int index, List<String> targetList);
     }
 }

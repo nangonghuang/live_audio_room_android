@@ -7,12 +7,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.blankj.utilcode.util.KeyboardUtils;
-
 import im.zego.liveaudioroomdemo.R;
 
 public class IMInputDialog extends BaseDialog {

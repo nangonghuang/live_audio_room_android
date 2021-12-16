@@ -2,28 +2,26 @@ package im.zego.liveaudioroomdemo.feature.room.enums;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
-
+import im.zego.liveaudioroomdemo.R;
 import java.io.Serializable;
 
-import im.zego.liveaudioroomdemo.R;
-
 public enum RoomGift implements Serializable {
-    GIFT_HEART(0, R.string.room_page_gift_heart, R.drawable.gift1);
+    GIFT_HEART("0", R.string.room_page_gift_heart, R.drawable.gift1);
 
-    private int type;
+    private final String id;
     @StringRes
-    private int name;
+    private final int name;
     @IdRes
-    private int res;
+    private final int res;
 
-    RoomGift(int type, int name, int res) {
-        this.type = type;
+    RoomGift(String id, int name, int res) {
+        this.id = id;
         this.name = name;
         this.res = res;
     }
 
-    public int getType() {
-        return type;
+    public String getId() {
+        return id;
     }
 
     public int getName() {

@@ -3,25 +3,25 @@ package im.zego.liveaudioroomdemo.feature.room.dialog;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-
-import java.util.List;
-
-import im.zego.liveaudioroom.ZegoLiveAudioRoom;
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
-import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
-import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
+import im.zego.liveaudioroom.refactor.ZegoRoomManager;
+import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
+import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
+import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
+import im.zego.liveaudioroom.refactor.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.GiftListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
+import java.util.List;
+import java.util.Map;
 
 public class SendGiftDialog extends BaseBottomDialog {
+
     private static final String TAG = "SendGiftDialog";
     private TextView tvSendGift;
     private TextView tvChooseMember;
@@ -55,13 +55,15 @@ public class SendGiftDialog extends BaseBottomDialog {
             RoomGift selectedGift = giftListAdapter.getSelectedGift();
             if (giftTargetPopWindow != null) {
                 List<String> giftTargetUsers = giftTargetPopWindow.getGiftTargetUsers();
-                ZegoLiveAudioRoom.getInstance().sendGiftMessage(selectedGift.getType(), giftTargetUsers, (error, sendFailToUsers) -> {
-                    if (error == ZegoLiveAudioRoomErrorCode.SUCCESS) {
+                ZegoGiftService giftService = ZegoRoomManager.getInstance().giftService;
+                giftService.sendGift(selectedGift.getId(), giftTargetUsers, errorCode -> {
+                    if (errorCode == ZegoLiveAudioRoomErrorCode.SUCCESS.getValue()) {
                         if (sendGiftListener != null) {
-                            sendGiftListener.onSendGift(giftTargetUsers, selectedGift.getType());
+                            sendGiftListener.onSendGift(giftTargetUsers, selectedGift.getId());
                         }
                     } else {
-                        ToastUtils.showShort(R.string.toast_send_gift_error, error.getValue());
+                        ToastUtils
+                            .showShort(R.string.toast_send_gift_error, errorCode);
                     }
                 });
             }
@@ -69,10 +71,14 @@ public class SendGiftDialog extends BaseBottomDialog {
 
         });
         tvChooseMember.setOnClickListener(view -> {
-            List<String> seatedUserList = ZegoLiveAudioRoomManager.getInstance().getSeatedIDList();
-            ZegoLiveAudioRoomUser myUserInfo = ZegoLiveAudioRoomManager.getInstance().getMyUserInfo();
-            seatedUserList.remove(myUserInfo.getUserID());
-            giftTargetPopWindow = new GiftTargetPopWindow(getContext(), seatedUserList, tvChooseMember.getWidth());
+            ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager
+                .getInstance().speakerSeatService;
+            List<String> seatedUserList = speakerSeatService.getSeatedUserList();
+
+            String myUserID = ZegoRoomManager.getInstance().userService.localUserInfo.getUserID();
+            seatedUserList.remove(myUserID);
+            giftTargetPopWindow = new GiftTargetPopWindow(getContext(), seatedUserList,
+                tvChooseMember.getWidth());
             giftTargetPopWindow.setGiftTargetListener((index, targetList) -> {
                 if (index == 0) {
                     if (targetList.size() > 0) {
@@ -81,8 +87,8 @@ public class SendGiftDialog extends BaseBottomDialog {
                 } else {
                     if (targetList.size() > 0) {
                         String userID = targetList.get(0);
-                        String userName = ZegoLiveAudioRoomManager.getInstance().getRoomUserName(userID);
-                        tvChooseMember.setText(userName);
+                        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                        tvChooseMember.setText(userService.getUserName(userID));
                     }
                 }
                 tvSendGift.setEnabled(targetList.size() > 0);
@@ -96,6 +102,7 @@ public class SendGiftDialog extends BaseBottomDialog {
     }
 
     public interface SendGiftListener {
-        void onSendGift(List<String> sendTo, int giftType);
+
+        void onSendGift(List<String> sendTo, String giftID);
     }
 }

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
+import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,21 +23,21 @@ import im.zego.liveaudioroomdemo.feature.room.model.MemberInfo;
 import im.zego.liveaudioroomdemo.helper.DialogHelper;
 
 public class MemberListDialog extends BaseBottomDialog {
-    private List<ZIMSpeakerSeat> usersInSeat;
+    private List<ZegoSpeakerSeatModel> usersInSeat;
     private List<ZegoLiveAudioRoomUser> userIDs;
 
     private RecyclerView recyclerView;
     private TextView tvTitle;
     private boolean canNotTakeSeat;
 
-    public MemberListDialog(Context context, boolean canNotTakeSeat, List<ZIMSpeakerSeat> usersInSeat, List<ZegoLiveAudioRoomUser> userList) {
+    public MemberListDialog(Context context, boolean canNotTakeSeat, List<ZegoSpeakerSeatModel> usersInSeat, List<ZegoLiveAudioRoomUser> userList) {
         super(context);
         this.canNotTakeSeat = canNotTakeSeat;
         this.usersInSeat = usersInSeat;
         this.userIDs = userList;
     }
 
-    public void updateInfo(boolean canNotTakeSeat, List<ZIMSpeakerSeat> usersInSeat, List<ZegoLiveAudioRoomUser> userList) {
+    public void updateInfo(boolean canNotTakeSeat, List<ZegoSpeakerSeatModel> usersInSeat, List<ZegoLiveAudioRoomUser> userList) {
         this.canNotTakeSeat = canNotTakeSeat;
         this.usersInSeat = usersInSeat;
         this.userIDs = userList;
@@ -62,11 +63,11 @@ public class MemberListDialog extends BaseBottomDialog {
         ArrayList<MemberInfo> arrayList = new ArrayList<>();
         for (ZegoLiveAudioRoomUser user : userIDs) {
             MemberInfo info = new MemberInfo();
-            for (ZIMSpeakerSeat seat : usersInSeat) {
-                String user_id = seat.getAttribution().getUser_id();
+            for (ZegoSpeakerSeatModel seat : usersInSeat) {
+                String user_id = seat.userID;
                 if (user_id != null && !"".equals(user_id) && user.getUserID().equals(user_id)) {
                     info.showInvitation = false;
-                    info.index = seat.getAttribution().getIndex();
+                    info.index = seat.seatIndex;
                     ++onSeatMemberCounts;
                     break;
                 } else {
