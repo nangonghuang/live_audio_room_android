@@ -5,21 +5,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Show the gift list and click on the gift UI to display the gift page.
  */
 public class GiftListAdapter extends RecyclerView.Adapter<GiftListAdapter.GiftInRoomListHolder> {
+
     public List<RoomGift> giftList = new ArrayList<>();
 
     public GiftListAdapter() {
@@ -29,14 +27,16 @@ public class GiftListAdapter extends RecyclerView.Adapter<GiftListAdapter.GiftIn
     @NonNull
     @Override
     public GiftInRoomListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_gift, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+            .inflate(R.layout.item_gift, parent, false);
         return new GiftInRoomListHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull GiftInRoomListHolder holder, int position) {
         RoomGift roomGift = giftList.get(position);
-        holder.ivGift.setImageDrawable(ResourcesCompat.getDrawable(holder.itemView.getResources(), roomGift.getRes(), null));
+        holder.ivGift.setImageDrawable(
+            ResourcesCompat.getDrawable(holder.itemView.getResources(), roomGift.getRes(), null));
         holder.tvGiftName.setText(roomGift.getName());
     }
 
@@ -45,11 +45,12 @@ public class GiftListAdapter extends RecyclerView.Adapter<GiftListAdapter.GiftIn
         return giftList.size();
     }
 
-    public RoomGift getSelectedGift(){
+    public RoomGift getSelectedGift() {
         return RoomGift.GIFT_HEART;
     }
 
     static class GiftInRoomListHolder extends RecyclerView.ViewHolder {
+
         public ImageView ivGift;
         public TextView tvGiftName;
 

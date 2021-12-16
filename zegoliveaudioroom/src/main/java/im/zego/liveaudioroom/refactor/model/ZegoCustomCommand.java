@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * send gift or invitation.
  */
-public class ZegoCoustomCommand extends ZIMCustomMessage {
+public class ZegoCustomCommand extends ZIMCustomMessage {
 
     public static final int INVITATION = 1;
     public static final int Gift = 2;

@@ -5,114 +5,110 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.blankj.utilcode.util.LanguageUtils;
 import com.blankj.utilcode.util.ResourceUtils;
-
+import im.zego.liveaudioroom.refactor.ZegoRoomManager;
+import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
+import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
+import im.zego.liveaudioroom.refactor.service.ZegoUserService;
+import im.zego.liveaudioroomdemo.R;
+import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus;
-import im.zego.liveaudioroom.entity.ZIMSpeakerSeat;
-import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
-import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
-import im.zego.liveaudioroomdemo.R;
-import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
-
 public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatListHolder> {
+
     private static final String TAG = "SeatListAdapter";
     private static final float SOUND_LEVEL_THRESHOLD = 10F;
 
-    public IChatListItemListener itemListener = null;
+    public OnSeatClickListener onSeatClickListener = null;
 
-    private List<ZIMSpeakerSeat> seatList;
+    private List<ZegoSpeakerSeatModel> seatList;
 
     public SeatListAdapter() {
-        this.seatList = initAllSeatListInRoom();
-    }
-
-    private List<ZIMSpeakerSeat> initAllSeatListInRoom() {
-        ArrayList<ZIMSpeakerSeat> allSeats = new ArrayList<>();
-        for (int i = 0; i <= 7; i++) {
-            ZIMSpeakerSeat speakerSeat = new ZIMSpeakerSeat();
-            speakerSeat.getAttribution().setIndex(i);
-            allSeats.add(speakerSeat);
-        }
-        return allSeats;
-    }
-
-    public List<ZIMSpeakerSeat> getSeatListInRoom() {
-        return seatList;
+        this.seatList = new ArrayList<>();
     }
 
     @NonNull
     @Override
     public SeatListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_seat_user, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+            .inflate(R.layout.item_seat_user, parent, false);
         return new SeatListHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SeatListHolder holder, int position) {
+        ZegoSpeakerSeatModel speakerSeatModel = seatList.get(position);
         holder.itemView.setOnClickListener(v -> {
-            if (itemListener != null) {
-                itemListener.onClick(position);
+            if (onSeatClickListener != null) {
+                onSeatClickListener.onClick(speakerSeatModel);
             }
         });
 
-        boolean isSelfUserOnSeat = isSelfUserOnSeat();
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        boolean isSelfUserOnSeat = false;
+        for (ZegoSpeakerSeatModel model : seatList) {
+            ZegoUserInfo localUserInfo = userService.localUserInfo;
+            if (localUserInfo.getUserID().equals(model.userID)) {
+                isSelfUserOnSeat = true;
+                break;
+            }
+        }
 
-        ZIMSpeakerSeat speakerSeat = seatList.get(position);
-
-        switch (speakerSeat.getStatus()) {
-            case USED:
+        switch (speakerSeatModel.status) {
+            case Occupied:
                 holder.toOnSeatUI();
 
-                String user_id = speakerSeat.getAttribution().getUser_id();
-                String userName = ZegoLiveAudioRoomManager.getInstance().getRoomUserName(user_id);
+                String userID = speakerSeatModel.userID;
+                String userName = userService.getUserName(userID);
                 holder.tvUserName.setText(userName);
                 holder.ivAvatar.setImageDrawable(UserInfoHelper.getUserAvatar(position));
 
-                if (UserInfoHelper.isUserOwner(user_id)) {
+                if (UserInfoHelper.isUserOwner(userID)) {
                     holder.ivOwnerAvatar.setVisibility(View.VISIBLE);
                     if (LanguageUtils.getSystemLanguage().equals(Locale.CHINESE)) {
-                        holder.ivOwnerAvatar.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_owner_zh));
+                        holder.ivOwnerAvatar
+                            .setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_owner_zh));
                     } else {
-                        holder.ivOwnerAvatar.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_owner));
+                        holder.ivOwnerAvatar
+                            .setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_owner));
                     }
                 } else {
                     holder.ivOwnerAvatar.setVisibility(View.INVISIBLE);
                 }
 
-                if (canShowSoundWaves(speakerSeat.getSoundLevel())) {
+                if (canShowSoundWaves(speakerSeatModel.soundLevel)) {
                     holder.ivAvatarTalking.setVisibility(View.VISIBLE);
                 } else {
                     holder.ivAvatarTalking.setVisibility(View.INVISIBLE);
                 }
 
-                if (speakerSeat.getAttribution().isIs_muted()) {
+                if (speakerSeatModel.isMicMuted) {
                     holder.ivMicOff.setVisibility(View.VISIBLE);
                 } else {
                     holder.ivMicOff.setVisibility(View.INVISIBLE);
                 }
 
-                switch (speakerSeat.getNetWorkQuality()) {
+                switch (speakerSeatModel.network) {
                     case Good:
-                        holder.ivNetworkStatus.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_network_good));
+                        holder.ivNetworkStatus.setImageDrawable(
+                            ResourceUtils.getDrawable(R.drawable.icon_network_good));
                         break;
                     case Medium:
-                        holder.ivNetworkStatus.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_network_medium));
+                        holder.ivNetworkStatus.setImageDrawable(
+                            ResourceUtils.getDrawable(R.drawable.icon_network_medium));
                         break;
                     case Bad:
-                        holder.ivNetworkStatus.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_network_bad));
+                        holder.ivNetworkStatus.setImageDrawable(
+                            ResourceUtils.getDrawable(R.drawable.icon_network_bad));
                         break;
                 }
                 break;
-            case UNUSED:
+            case Untaken:
                 holder.toOffSeatUI();
 
                 holder.ivLock.setVisibility(View.INVISIBLE);
@@ -124,7 +120,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
                     holder.ivJoin.setVisibility(View.VISIBLE);
                 }
                 break;
-            case LOCKED:
+            case Closed:
                 holder.toOffSeatUI();
 
                 holder.ivLock.setVisibility(View.VISIBLE);
@@ -143,54 +139,41 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
         return seatList.size();
     }
 
-    private boolean isSelfUserOnSeat() {
-        ZegoLiveAudioRoomUser selfUser = ZegoLiveAudioRoomManager.getInstance().getMyUserInfo();
-        for (ZIMSpeakerSeat speakerSeat : seatList) {
-            if (selfUser.getUserID().equals(speakerSeat.getAttribution().getUser_id())
-                    && speakerSeat.getStatus() == ZegoLiveAudioRoomVoiceStatus.USED) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void updateUserInfo(int index, ZIMSpeakerSeat zimSpeakerSeat) {
-        seatList.set(index, zimSpeakerSeat);
-        notifyDataSetChanged();
+    public void updateUserInfo(ZegoSpeakerSeatModel zimSpeakerSeat) {
+        notifyItemChanged(zimSpeakerSeat.seatIndex);
     }
 
     public void updateSoundWaves(String userId, float soundLevel) {
         if (canShowSoundWaves(soundLevel)) {
-            for (ZIMSpeakerSeat speakerSeat : seatList) {
-                if (userId.equals(speakerSeat.getAttribution().getUser_id())) {
-                    speakerSeat.setSoundLevel(soundLevel);
+            for (ZegoSpeakerSeatModel speakerSeat : seatList) {
+                if (userId.equals(speakerSeat.userID)) {
+                    speakerSeat.soundLevel = soundLevel;
+                    notifyItemChanged(speakerSeat.seatIndex);
+                    break;
                 }
             }
-            notifyDataSetChanged();
         } else {
-            boolean needNotify = false;
-            for (ZIMSpeakerSeat speakerSeat : seatList) {
-                if (userId.equals(speakerSeat.getAttribution().getUser_id())
-                        && speakerSeat.getSoundLevel() != 0) {
-                    speakerSeat.setSoundLevel(0);
-                    needNotify = true;
+            for (ZegoSpeakerSeatModel speakerSeat : seatList) {
+                if (userId.equals(speakerSeat.userID) && speakerSeat.soundLevel != 0) {
+                    speakerSeat.soundLevel = 0;
+                    notifyItemChanged(speakerSeat.seatIndex);
+                    break;
                 }
-            }
-            if (needNotify) {
-                notifyDataSetChanged();
             }
         }
     }
 
-    public void setItemListener(IChatListItemListener itemListener) {
-        this.itemListener = itemListener;
+    public void setOnSeatClickListener(OnSeatClickListener itemListener) {
+        this.onSeatClickListener = itemListener;
     }
 
-    public interface IChatListItemListener {
-        void onClick(int index);
+    public interface OnSeatClickListener {
+
+        void onClick(ZegoSpeakerSeatModel seatModel);
     }
 
     static class SeatListHolder extends RecyclerView.ViewHolder {
+
         private ImageView ivAvatarTalking;
         private ImageView ivAvatar;
         private ImageView ivMicOff;

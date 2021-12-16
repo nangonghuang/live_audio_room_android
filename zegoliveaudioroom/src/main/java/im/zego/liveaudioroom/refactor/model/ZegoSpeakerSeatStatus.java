@@ -24,7 +24,7 @@ public enum ZegoSpeakerSeatStatus {
         return value;
     }
 
-    private ZegoSpeakerSeatStatus(int value) {
+    ZegoSpeakerSeatStatus(int value) {
         this.value = value;
     }
 }

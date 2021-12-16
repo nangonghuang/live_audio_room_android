@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface ZegoGiftServiceCallback {
 
-    void onReceiveGift(String giftID, List<String> toUserList);
+    void onReceiveGift(String giftID,String fromUserID, List<String> toUserList);
 }

@@ -6,6 +6,10 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import com.blankj.utilcode.util.ToastUtils;
 
+import im.zego.liveaudioroom.refactor.ZegoRoomManager;
+import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
+import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatStatus;
+import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import java.util.List;
 
 import im.zego.liveaudioroom.ZegoLiveAudioRoom;
@@ -17,13 +21,14 @@ import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
 import im.zego.liveaudioroomdemo.R;
 
 public class SettingsDialog extends BaseBottomDialog {
+
     public boolean isCheckedLockAllSeat = false;
 
-    private List<ZIMSpeakerSeat> seatList;
+    private List<ZegoSpeakerSeatModel> seatList;
     private SwitchCompat switchAllowMic;
     private SwitchCompat switchAllowMessage;
 
-    public SettingsDialog(Context context, List<ZIMSpeakerSeat> seatList) {
+    public SettingsDialog(Context context, List<ZegoSpeakerSeatModel> seatList) {
         super(context);
         this.seatList = seatList;
     }
@@ -49,21 +54,25 @@ public class SettingsDialog extends BaseBottomDialog {
         });
         switchAllowMessage.setOnCheckedChangeListener((buttonView, isChecked) -> {
             isCheckedLockAllSeat = isChecked;
-            for (ZIMSpeakerSeat i : seatList) {
-                if (isUserOwner(i.getAttribution().getUser_id())) {
+            for (ZegoSpeakerSeatModel i : seatList) {
+                if (isUserOwner(i.userID)) {
                     continue;
                 }
+                ZegoSpeakerSeatService seatService = ZegoRoomManager
+                    .getInstance().speakerSeatService;
                 if (isChecked) {
-                    if (i.getStatus() == ZegoLiveAudioRoomVoiceStatus.UNUSED) {
-                        ZegoLiveAudioRoom.getInstance().lockSeat(true, i.getAttribution().getIndex(), error -> {
-                            if (error != ZegoLiveAudioRoomErrorCode.SUCCESS) {
-                                ToastUtils.showShort(R.string.toast_lock_seat_fail, error.getValue());
+                    if (i.status == ZegoSpeakerSeatStatus.Untaken) {
+                        seatService.closeSeat(true, i.seatIndex, errorCode -> {
+                            if (errorCode != ZegoLiveAudioRoomErrorCode.SUCCESS.getValue()) {
+                                ToastUtils
+                                    .showShort(R.string.toast_lock_seat_fail, errorCode);
                             }
                         });
                     }
                 } else {
-                    if (i.getStatus() == ZegoLiveAudioRoomVoiceStatus.LOCKED) {
-                        ZegoLiveAudioRoom.getInstance().lockSeat(false, i.getAttribution().getIndex(), error -> {
+                    if (i.status == ZegoSpeakerSeatStatus.Closed) {
+                        seatService.closeSeat(false, i.seatIndex, errorCode -> {
+
                         });
                     }
                 }

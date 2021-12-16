@@ -4,7 +4,8 @@ import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
 import im.zego.liveaudioroom.refactor.callback.ZegoGiftServiceCallback;
 import im.zego.liveaudioroom.refactor.callback.ZegoRoomCallback;
-import im.zego.liveaudioroom.refactor.model.ZegoCoustomCommand;
+import im.zego.liveaudioroom.refactor.model.ZegoCustomCommand;
+import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMMessage;
 import im.zego.zim.enums.ZIMMessageType;
@@ -26,9 +27,11 @@ public class ZegoGiftService {
      * @param callback   operation result callback
      */
     public void sendGift(String giftID, List<String> toUserList, ZegoRoomCallback callback) {
-        ZegoCoustomCommand command = new ZegoCoustomCommand();
-        command.actionType = ZegoCoustomCommand.Gift;
+        ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+        ZegoCustomCommand command = new ZegoCustomCommand();
+        command.actionType = ZegoCustomCommand.Gift;
         command.target = toUserList;
+        command.userID = localUserInfo.getUserID();
         command.content.put("giftID", giftID);
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
         ZegoZIMManager.getInstance().zim.sendRoomMessage(command, roomID,
@@ -47,12 +50,12 @@ public class ZegoGiftService {
         String fromRoomID) {
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
-                ZegoCoustomCommand command = (ZegoCoustomCommand) zimMessage;
-                if (command.actionType == ZegoCoustomCommand.Gift) {
+                ZegoCustomCommand command = (ZegoCustomCommand) zimMessage;
+                if (command.actionType == ZegoCustomCommand.Gift) {
                     String giftID = command.content.get("giftID");
                     List<String> toUserList = command.target;
                     if (giftServiceCallback != null) {
-                        giftServiceCallback.onReceiveGift(giftID, toUserList);
+                        giftServiceCallback.onReceiveGift(giftID, command.userID, toUserList);
                     }
                 }
             }
