@@ -2,18 +2,20 @@ package im.zego.liveaudioroom.refactor;
 
 import android.app.Application;
 
-import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
-import im.zego.liveaudioroom.refactor.service.ZegoMessageService;
-import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import im.zego.liveaudioroom.refactor.callback.ZegoRoomCallback;
+import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
+import im.zego.liveaudioroom.refactor.service.ZegoMessageService;
 import im.zego.liveaudioroom.refactor.service.ZegoRoomService;
+import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroom.refactor.service.ZegoUserService;
 import im.zego.zegoexpress.ZegoExpressEngine;
+import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoScenario;
+import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zim.ZIM;
 import im.zego.zim.callback.ZIMEventHandler;
 import im.zego.zim.entity.ZIMError;
@@ -60,6 +62,15 @@ public class ZegoRoomManager {
         giftService = new ZegoGiftService();
 
         ZegoExpressEngine.createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, null);
+        ZegoExpressEngine.getEngine().setEventHandler(new IZegoEventHandler() {
+            @Override
+            public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality, ZegoStreamQualityLevel downstreamQuality) {
+                super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                if (speakerSeatService != null) {
+                    speakerSeatService.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                }
+            }
+        });
 
         ZegoZIMManager.getInstance().createZIM(appID, application);
         // distribute to specific services which listening what they want

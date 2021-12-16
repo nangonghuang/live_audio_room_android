@@ -12,8 +12,8 @@ public interface ZegoUserServiceListener {
     void userInfoUpdate(ZegoUserInfo userInfo);
 
     // receive user join room command
-    void roomUserJoin(List<ZegoUserInfo> memberList);
+    void onRoomUserJoin(List<ZegoUserInfo> memberList);
 
     // receive user leave room command
-    void roomUserLeave(List<ZegoUserInfo> memberList);
+    void onRoomUserLeave(List<ZegoUserInfo> memberList);
 }

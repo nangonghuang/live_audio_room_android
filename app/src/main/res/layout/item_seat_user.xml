@@ -39,7 +39,7 @@
         app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
     <ImageView
-        android:id="@+id/tv_send_role"
+        android:id="@+id/iv_owner_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="-8dp"
@@ -47,6 +47,16 @@
         app:layout_constraintEnd_toEndOf="@id/iv_avatar"
         app:layout_constraintStart_toStartOf="@id/iv_avatar"
         app:layout_constraintTop_toBottomOf="@id/iv_avatar" />
+
+    <ImageView
+        android:id="@+id/ic_network_status"
+        android:layout_width="7dp"
+        android:layout_height="7dp"
+        android:layout_marginStart="2dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_owner_avatar"
+        app:layout_constraintStart_toEndOf="@id/iv_owner_avatar"
+        app:layout_constraintTop_toTopOf="@id/iv_owner_avatar"
+        tools:src="@drawable/icon_network_good" />
 
     <TextView
         android:id="@+id/tv_user_name"
@@ -62,18 +72,6 @@
         app:layout_constraintStart_toStartOf="@id/iv_avatar"
         app:layout_constraintTop_toBottomOf="@id/iv_avatar"
         tools:text="Ross🌹Ross🌹" />
-
-    <!--    <androidx.constraintlayout.widget.Group-->
-    <!--        android:id="@+id/group_on_seat_ui"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:constraint_referenced_ids="iv_avatar_talking,iv_avatar,iv_mic_off,iv_owner_avatar,tv_user_name" />-->
-
-    <!--    <androidx.constraintlayout.widget.Group-->
-    <!--        android:id="@+id/group_out_of_seat_ui"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:constraint_referenced_ids="iv_lock,iv_seat,iv_join" />-->
 
     <ImageView
         android:id="@+id/iv_lock"

@@ -9,12 +9,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.LanguageUtils;
+import com.blankj.utilcode.util.ResourceUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus;
-import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
 import im.zego.liveaudioroom.entity.ZIMSpeakerSeat;
+import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
 import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
@@ -75,6 +79,11 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
 
                 if (UserInfoHelper.isUserOwner(user_id)) {
                     holder.ivOwnerAvatar.setVisibility(View.VISIBLE);
+                    if (LanguageUtils.getSystemLanguage().equals(Locale.CHINESE)) {
+                        holder.ivOwnerAvatar.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_owner_zh));
+                    } else {
+                        holder.ivOwnerAvatar.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_owner));
+                    }
                 } else {
                     holder.ivOwnerAvatar.setVisibility(View.INVISIBLE);
                 }
@@ -89,6 +98,18 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
                     holder.ivMicOff.setVisibility(View.VISIBLE);
                 } else {
                     holder.ivMicOff.setVisibility(View.INVISIBLE);
+                }
+
+                switch (speakerSeat.getNetWorkQuality()) {
+                    case Good:
+                        holder.ivNetworkStatus.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_network_good));
+                        break;
+                    case Medium:
+                        holder.ivNetworkStatus.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_network_medium));
+                        break;
+                    case Bad:
+                        holder.ivNetworkStatus.setImageDrawable(ResourceUtils.getDrawable(R.drawable.icon_network_bad));
+                        break;
                 }
                 break;
             case UNUSED:
@@ -174,6 +195,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
         private ImageView ivAvatar;
         private ImageView ivMicOff;
         private ImageView ivOwnerAvatar;
+        private ImageView ivNetworkStatus;
         private TextView tvUserName;
         private ImageView ivLock;
         private ImageView ivSeat;
@@ -184,7 +206,8 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
             ivAvatarTalking = itemView.findViewById(R.id.iv_avatar_talking);
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
             ivMicOff = itemView.findViewById(R.id.iv_mic_off);
-            ivOwnerAvatar = itemView.findViewById(R.id.tv_send_role);
+            ivOwnerAvatar = itemView.findViewById(R.id.iv_owner_avatar);
+            ivNetworkStatus = itemView.findViewById(R.id.ic_network_status);
             tvUserName = itemView.findViewById(R.id.tv_user_name);
             ivLock = itemView.findViewById(R.id.iv_lock);
             ivSeat = itemView.findViewById(R.id.iv_seat);
@@ -196,6 +219,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
             ivAvatar.setVisibility(View.VISIBLE);
             ivMicOff.setVisibility(View.VISIBLE);
             ivOwnerAvatar.setVisibility(View.VISIBLE);
+            ivNetworkStatus.setVisibility(View.VISIBLE);
             tvUserName.setVisibility(View.VISIBLE);
             ivLock.setVisibility(View.INVISIBLE);
             ivSeat.setVisibility(View.INVISIBLE);
@@ -207,6 +231,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
             ivAvatar.setVisibility(View.INVISIBLE);
             ivMicOff.setVisibility(View.INVISIBLE);
             ivOwnerAvatar.setVisibility(View.INVISIBLE);
+            ivNetworkStatus.setVisibility(View.INVISIBLE);
             tvUserName.setVisibility(View.INVISIBLE);
             ivLock.setVisibility(View.VISIBLE);
             ivSeat.setVisibility(View.VISIBLE);

@@ -4,24 +4,29 @@ import static im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode.SUCCESS;
 
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
 import im.zego.liveaudioroom.refactor.callback.ZegoRoomCallback;
 import im.zego.liveaudioroom.refactor.callback.ZegoSpeakerSeatServiceCallback;
+import im.zego.liveaudioroom.refactor.model.ZegoNetWorkQuality;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.zegoexpress.ZegoExpressEngine;
+import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.enums.ZIMErrorCode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
 
 /**
  * user interface to manager speaker seat.
@@ -30,7 +35,7 @@ public class ZegoSpeakerSeatService {
 
     private static final String TAG = "SpeakerSeatService";
 
-    public List<ZegoSpeakerSeatModel> speakerSeatList;
+    public List<ZegoSpeakerSeatModel> speakerSeatList = new ArrayList<>();
     private ZegoSpeakerSeatServiceCallback speakerSeatServiceCallback;
 
     public ZegoSpeakerSeatService() {
@@ -302,6 +307,26 @@ public class ZegoSpeakerSeatService {
             model.userID = "";
             model.status = ZegoSpeakerSeatStatus.Untaken;
             speakerSeatList.add(model);
+        }
+    }
+
+    public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality, ZegoStreamQualityLevel downstreamQuality) {
+        ZegoNetWorkQuality quality = null;
+        if (upstreamQuality == ZegoStreamQualityLevel.EXCELLENT || upstreamQuality == ZegoStreamQualityLevel.GOOD) {
+            quality = ZegoNetWorkQuality.Good;
+        } else if (upstreamQuality == ZegoStreamQualityLevel.MEDIUM) {
+            quality = ZegoNetWorkQuality.Medium;
+        } else {
+            quality = ZegoNetWorkQuality.Bad;
+        }
+
+        for (ZegoSpeakerSeatModel model : speakerSeatList) {
+            if (model.userID.equals(userID)) {
+                model.network = quality;
+                if (speakerSeatServiceCallback != null) {
+                    speakerSeatServiceCallback.onSpeakerSeatUpdate(model);
+                }
+            }
         }
     }
 }

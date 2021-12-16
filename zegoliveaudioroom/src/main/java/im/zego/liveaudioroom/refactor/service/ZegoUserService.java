@@ -13,14 +13,13 @@ import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomUserRole;
 import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
-import im.zego.zim.callback.ZIMEventHandler;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 
 /**
  * Created by rocket_wang on 2021/12/14.
  */
-public class ZegoUserService extends ZIMEventHandler {
+public class ZegoUserService {
     private static final String TAG = "ZegoUserService";
 
     public ZegoUserInfo localUserInfo;
@@ -57,23 +56,19 @@ public class ZegoUserService extends ZIMEventHandler {
         this.listener = listener;
     }
 
-    @Override
     public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
-        super.onRoomMemberJoined(zim, memberList, roomID);
         List<ZegoUserInfo> joinUsers = generateRoomUsers(memberList);
         userList.addAll(joinUsers);
         if (listener != null) {
-            listener.roomUserJoin(joinUsers);
+            listener.onRoomUserJoin(joinUsers);
         }
     }
 
-    @Override
     public void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
-        super.onRoomMemberLeft(zim, memberList, roomID);
         List<ZegoUserInfo> leaveUsers = generateRoomUsers(memberList);
         userList.removeAll(leaveUsers);
         if (listener != null) {
-            listener.roomUserLeave(leaveUsers);
+            listener.onRoomUserLeave(leaveUsers);
         }
     }
 

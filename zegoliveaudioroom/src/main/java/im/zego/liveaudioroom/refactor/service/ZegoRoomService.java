@@ -1,6 +1,12 @@
 package im.zego.liveaudioroom.refactor.service;
 
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Set;
+
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
 import im.zego.liveaudioroom.refactor.callback.ZegoOnlineRoomUsersCallback;
@@ -11,7 +17,6 @@ import im.zego.liveaudioroom.refactor.listener.ZegoRoomServiceListener;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomUserRole;
 import im.zego.zim.ZIM;
-import im.zego.zim.callback.ZIMEventHandler;
 import im.zego.zim.entity.ZIMRoomAdvancedConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.entity.ZIMRoomInfo;
@@ -19,14 +24,11 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
-import java.util.HashMap;
-import java.util.Set;
-import org.json.JSONObject;
 
 /**
  * Created by rocket_wang on 2021/12/14.
  */
-public class ZegoRoomService extends ZIMEventHandler {
+public class ZegoRoomService {
 
     private ZegoRoomServiceListener listener;
     // room info object
@@ -136,9 +138,7 @@ public class ZegoRoomService extends ZIMEventHandler {
         this.listener = listener;
     }
 
-    @Override
     public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
-        super.onRoomAttributesUpdated(zim, info, roomID);
         Set<String> keys = info.roomAttributes.keySet();
         for (String key : keys) {
             if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
@@ -147,26 +147,23 @@ public class ZegoRoomService extends ZIMEventHandler {
                         .fromJson(info.roomAttributes.get(key), ZegoRoomInfo.class);
                     this.roomInfo = roomInfo;
                     if (listener != null) {
-                        listener.receiveRoomInfoUpdate(roomInfo);
+                        listener.onReceiveRoomInfoUpdate(roomInfo);
                     }
                     //                    if (roomEventHandler != null) {
                     //                        roomEventHandler.onMuteAllMessage(nowIsMuted);
                     //                    }
                 } else {
                     if (listener != null) {
-                        listener.receiveRoomInfoUpdate(null);
+                        listener.onReceiveRoomInfoUpdate(null);
                     }
                 }
             }
         }
     }
 
-    @Override
-    public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state,
-        ZIMConnectionEvent event, JSONObject extendedData) {
-        super.onConnectionStateChanged(zim, state, event, extendedData);
+    public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event, JSONObject extendedData) {
         if (listener != null) {
-            listener.connectionStateChanged(state, event);
+            listener.onConnectionStateChanged(state, event);
         }
     }
 }
