@@ -35,7 +35,7 @@ public class ZegoSpeakerSeatService {
 
     private static final String TAG = "SpeakerSeatService";
 
-    public List<ZegoSpeakerSeatModel> speakerSeatList = new ArrayList<>();
+    private List<ZegoSpeakerSeatModel> speakerSeatList = new ArrayList<>();
     private ZegoSpeakerSeatServiceCallback speakerSeatServiceCallback;
 
     public ZegoSpeakerSeatService() {
@@ -310,9 +310,11 @@ public class ZegoSpeakerSeatService {
         }
     }
 
-    public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality, ZegoStreamQualityLevel downstreamQuality) {
+    public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
+        ZegoStreamQualityLevel downstreamQuality) {
         ZegoNetWorkQuality quality = null;
-        if (upstreamQuality == ZegoStreamQualityLevel.EXCELLENT || upstreamQuality == ZegoStreamQualityLevel.GOOD) {
+        if (upstreamQuality == ZegoStreamQualityLevel.EXCELLENT
+            || upstreamQuality == ZegoStreamQualityLevel.GOOD) {
             quality = ZegoNetWorkQuality.Good;
         } else if (upstreamQuality == ZegoStreamQualityLevel.MEDIUM) {
             quality = ZegoNetWorkQuality.Medium;
@@ -328,5 +330,25 @@ public class ZegoSpeakerSeatService {
                 }
             }
         }
+    }
+
+    public List<ZegoSpeakerSeatModel> getSpeakerSeatList() {
+        return speakerSeatList;
+    }
+
+    /**
+     * get userID list in speaker seat.
+     *
+     * @return userID list in speaker seat.
+     */
+    public List<String> getSeatedUserList() {
+        List<String> seatedUserList = new ArrayList<>();
+        for (ZegoSpeakerSeatModel speakerSeatModel : speakerSeatList) {
+            if (speakerSeatModel.status == ZegoSpeakerSeatStatus.Occupied
+                && !TextUtils.isEmpty(speakerSeatModel.userID)) {
+                seatedUserList.add(speakerSeatModel.userID);
+            }
+        }
+        return seatedUserList;
     }
 }
