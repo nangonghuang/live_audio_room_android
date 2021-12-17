@@ -113,6 +113,10 @@ public class ZegoRoomService {
         if (messageService != null) {
             messageService.reset();
         }
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        if (userService != null) {
+            userService.leaveRoom();
+        }
         ZegoZIMManager.getInstance().zim.leaveRoom(roomInfo.getRoomID(), errorInfo -> {
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
@@ -166,7 +170,8 @@ public class ZegoRoomService {
         }
     }
 
-    public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event, JSONObject extendedData) {
+    public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
+        JSONObject extendedData) {
         if (listener != null) {
             listener.onConnectionStateChanged(state, event);
         }
