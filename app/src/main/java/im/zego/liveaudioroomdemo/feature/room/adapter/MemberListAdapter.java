@@ -51,7 +51,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.Us
             holder.ivInvite.setVisibility(View.GONE);
             holder.tvUserInfo.setVisibility(View.VISIBLE);
             if (UserInfoHelper.isUserOwner(memberInfo.userID)) {
-                holder.tvUserInfo.setText(R.string.room_page_role_owner);
+                holder.tvUserInfo.setText(R.string.room_page_host);
             } else {
                 holder.tvUserInfo.setText(R.string.room_page_role_speaker);
             }

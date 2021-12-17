@@ -53,7 +53,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         if (!TextUtils.isEmpty(fromUserName)) {
             StringBuilder builder = new StringBuilder();
             if (isHostMessage) {
-                builder.append(context.getString(R.string.room_page_role_owner));
+                builder.append(context.getString(R.string.room_page_host));
             }
             builder.append(fromUserName);
             builder.append(": ");
@@ -66,10 +66,10 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             if (isHostMessage) {
                 AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(SizeUtils.sp2px(10));
                 string.setSpan(absoluteSizeSpan, 0,
-                    context.getString(R.string.room_page_role_owner).length(),
+                    context.getString(R.string.room_page_host).length(),
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                 string.setSpan(backgroundColorSpan, 0,
-                    context.getString(R.string.room_page_role_owner).length(),
+                    context.getString(R.string.room_page_host).length(),
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
             }
             ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(

@@ -1,28 +1,28 @@
 package im.zego.liveaudioroomdemo.feature.room;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import im.zego.liveaudioroom.ZegoLiveAudioRoom;
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomQueryMemberConfig;
@@ -42,8 +42,13 @@ import im.zego.liveaudioroom.refactor.service.ZegoMessageService;
 import im.zego.liveaudioroom.refactor.service.ZegoRoomService;
 import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroom.refactor.service.ZegoUserService;
+import im.zego.liveaudioroom.util.TokenServerAssistant;
+import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
+import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
+import im.zego.liveaudioroomdemo.feature.login.RoomLoginActivity;
+import im.zego.liveaudioroomdemo.feature.login.UserLoginActivity;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MessageListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.adapter.SeatListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.dialog.IMInputDialog;
@@ -56,6 +61,9 @@ import im.zego.liveaudioroomdemo.helper.PermissionHelper;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONException;
 
 public class LiveAudioRoomActivity extends BaseActivity {
 
@@ -473,12 +481,78 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
             @Override
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
+                Log.d(TAG, "onConnectionStateChanged() called with: state = [" + state + "], event = [" + event + "]");
                 if (state == ZIMConnectionState.DISCONNECTED) {
-                    ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
-                    finish();
+                    if (event == ZIMConnectionEvent.LOGIN_TIMEOUT) {
+                        showReconnectDialog();
+                    } else {
+                        ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
+                        ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
+                    }
                 }
             }
         });
+    }
+
+    private void showReconnectDialog() {
+        ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        AlertDialog.Builder builder = new Builder(LiveAudioRoomActivity.this);
+        builder.setMessage(R.string.room_tips_reconnect);
+        builder.setPositiveButton(R.string.dialog_confirm, (dialog, which) -> {
+            try {
+                roomService.leaveRoom(errorCode -> {
+
+                });
+                String loginToken = TokenServerAssistant
+                    .generateToken(KeyCenter.appID(), userService.localUserInfo.getUserID(),
+                        KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data;
+                userService.login(userService.localUserInfo, loginToken, errorCode -> {
+                    Log.d(TAG, "login() returned with: errorCode = [" + errorCode + "]");
+                    if (errorCode == 0) {
+                        String roomID = roomService.roomInfo.getRoomID();
+                        ZegoUserInfo selfUser = userService.localUserInfo;
+                        ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
+                        privileges.canLoginRoom = true;
+                        privileges.canPublishStream = true;
+                        String joinRoomToken = ZegoRTCServerAssistant
+                            .generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges,
+                                KeyCenter.appExpressSign(), 660).data;
+                        if (!UserInfoHelper.isSelfOwner()) {
+                            roomService.joinRoom(roomID, joinRoomToken, errorCode2 -> {
+                                Log.d(TAG, "joinRoom() returned with: errorCode = [" + errorCode2 + "]");
+                                if (errorCode2 == 0) {
+                                    updateUI();
+                                } else {
+                                    ToastUtils.showShort(R.string.toast_join_room_fail, errorCode2);
+                                    ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
+                                }
+                            });
+                        } else {
+                            AlertDialog.Builder builder2 = new Builder(LiveAudioRoomActivity.this);
+                            builder2.setTitle(R.string.network_connect_failed_title);
+                            builder2.setMessage(R.string.network_connect_failed);
+                            builder2.setPositiveButton(R.string.dialog_confirm, (dialog1, which1) -> {
+                                ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
+                            });
+                            if (!LiveAudioRoomActivity.this.isFinishing()) {
+                                builder2.create().show();
+                            }
+                        }
+                    }
+                    dialog.cancel();
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_cancel, ((dialog, which) -> {
+            dialog.cancel();
+            ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
+        }));
+        if (!LiveAudioRoomActivity.this.isFinishing()) {
+            builder.create().show();
+        }
     }
 
     private void onUserMuted(boolean isMuted) {

@@ -60,7 +60,6 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
 
             @Override
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-                Log.d(TAG, "onConnectionStateChanged() called with: state = [" + state + "], event = [" + event + "]");
                 if (state == ZIMConnectionState.DISCONNECTED && event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
                     ActivityUtils.startActivity(RoomLoginActivity.this, UserLoginActivity.class);
@@ -130,12 +129,11 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                     return;
                 }
 
-                ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
-                privileges.canLoginRoom = true;
-                privileges.canPublishStream = true;
-
                 if ((!TextUtils.isEmpty(roomID)) && (!TextUtils.isEmpty(roomName))) {
                     ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
+                    ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
+                    privileges.canLoginRoom = true;
+                    privileges.canPublishStream = true;
                     String token = ZegoRTCServerAssistant.generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges, KeyCenter.appExpressSign(), 660).data;
                     ZegoRoomManager.getInstance().roomService.createRoom(roomID, roomName, token, errorCode -> {
                         dialog.dismiss();

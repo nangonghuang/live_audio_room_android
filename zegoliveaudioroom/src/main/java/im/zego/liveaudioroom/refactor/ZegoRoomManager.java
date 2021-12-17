@@ -2,6 +2,7 @@ package im.zego.liveaudioroom.refactor;
 
 import android.app.Application;
 
+import im.zego.zegoexpress.entity.ZegoEngineProfile;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -62,34 +63,38 @@ public class ZegoRoomManager {
         messageService = new ZegoMessageService();
         giftService = new ZegoGiftService();
 
-        ZegoExpressEngine
-            .createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, new IZegoEventHandler() {
-                @Override
-                public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
-                    ZegoStreamQualityLevel downstreamQuality) {
-                    super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-                    if (speakerSeatService != null) {
-                        speakerSeatService.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-                    }
+        ZegoEngineProfile profile = new ZegoEngineProfile();
+        profile.appID = appID;
+        profile.appSign = appSign;
+        profile.scenario = ZegoScenario.COMMUNICATION;
+        profile.application = application;
+        ZegoExpressEngine.createEngine(profile, new IZegoEventHandler() {
+            @Override
+            public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
+                ZegoStreamQualityLevel downstreamQuality) {
+                super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                if (speakerSeatService != null) {
+                    speakerSeatService.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
                 }
+            }
 
-                @Override
-                public void onCapturedSoundLevelUpdate(float soundLevel) {
-                    super.onCapturedSoundLevelUpdate(soundLevel);
-                    if (speakerSeatService != null) {
-                        speakerSeatService.updateLocalUserSoundLevel(soundLevel);
-                    }
+            @Override
+            public void onCapturedSoundLevelUpdate(float soundLevel) {
+                super.onCapturedSoundLevelUpdate(soundLevel);
+                if (speakerSeatService != null) {
+                    speakerSeatService.updateLocalUserSoundLevel(soundLevel);
                 }
+            }
 
 
-                @Override
-                public void onRemoteSoundLevelUpdate(HashMap<String, Float> soundLevels) {
-                    super.onRemoteSoundLevelUpdate(soundLevels);
-                    if (speakerSeatService != null) {
-                        speakerSeatService.updateRemoteUsersSoundLevel(soundLevels);
-                    }
+            @Override
+            public void onRemoteSoundLevelUpdate(HashMap<String, Float> soundLevels) {
+                super.onRemoteSoundLevelUpdate(soundLevels);
+                if (speakerSeatService != null) {
+                    speakerSeatService.updateRemoteUsersSoundLevel(soundLevels);
                 }
-            });
+            }
+        });
 
         ZegoZIMManager.getInstance().createZIM(appID, application);
         // distribute to specific services which listening what they want
