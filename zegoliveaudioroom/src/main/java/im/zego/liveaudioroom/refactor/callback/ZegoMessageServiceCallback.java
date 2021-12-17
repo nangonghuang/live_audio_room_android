@@ -6,6 +6,4 @@ import im.zego.liveaudioroom.refactor.model.ZegoTextMessage;
 public interface ZegoMessageServiceCallback {
 
     void onReceiveTextMessage(ZegoTextMessage textMessage, String roomID);
-
-    void onReceiveCustomCommand(ZegoCustomCommand customCommand, String roomID);
 }

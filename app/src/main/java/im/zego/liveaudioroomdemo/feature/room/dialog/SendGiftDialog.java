@@ -10,7 +10,6 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
 import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroom.refactor.service.ZegoUserService;
@@ -18,8 +17,10 @@ import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.GiftListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
 import java.util.List;
-import java.util.Map;
 
+/**
+ * dialog display when click gift button in the bottom.
+ */
 public class SendGiftDialog extends BaseBottomDialog {
 
     private static final String TAG = "SendGiftDialog";

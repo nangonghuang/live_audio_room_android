@@ -61,21 +61,24 @@ public class ZegoRoomManager {
         messageService = new ZegoMessageService();
         giftService = new ZegoGiftService();
 
-        ZegoExpressEngine.createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, new IZegoEventHandler() {
-            @Override
-            public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality, ZegoStreamQualityLevel downstreamQuality) {
-                super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-                if (speakerSeatService != null) {
-                    speakerSeatService.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+        ZegoExpressEngine
+            .createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, new IZegoEventHandler() {
+                @Override
+                public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
+                    ZegoStreamQualityLevel downstreamQuality) {
+                    super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                    if (speakerSeatService != null) {
+                        speakerSeatService.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                    }
                 }
-            }
-        });
+            });
 
         ZegoZIMManager.getInstance().createZIM(appID, application);
         // distribute to specific services which listening what they want
         ZegoZIMManager.getInstance().zim.setEventHandler(new ZIMEventHandler() {
             @Override
-            public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event, JSONObject extendedData) {
+            public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
+                JSONObject extendedData) {
                 super.onConnectionStateChanged(zim, state, event, extendedData);
                 if (roomService != null) {
                     roomService.onConnectionStateChanged(zim, state, event, extendedData);
@@ -100,11 +103,14 @@ public class ZegoRoomManager {
             @Override
             public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
                 super.onReceiveRoomMessage(zim, messageList, fromRoomID);
+                if (userService != null) {
+                    userService.onReceiveRoomMessage(zim, messageList, fromRoomID);
+                }
                 if (giftService != null) {
-                    giftService.onReceiveRoomMessage(zim,messageList,fromRoomID);
+                    giftService.onReceiveRoomMessage(zim, messageList, fromRoomID);
                 }
                 if (messageService != null) {
-                    messageService.onReceiveRoomMessage(zim,messageList,fromRoomID);
+                    messageService.onReceiveRoomMessage(zim, messageList, fromRoomID);
                 }
             }
 
@@ -125,7 +131,8 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData, String roomID) {
+            public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
+                String roomID) {
                 super.onRoomStateChanged(zim, state, event, extendedData, roomID);
             }
 
@@ -141,7 +148,8 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onRoomAttributesBatchUpdated(ZIM zim, ArrayList<ZIMRoomAttributesUpdateInfo> infos, String roomID) {
+            public void onRoomAttributesBatchUpdated(ZIM zim, ArrayList<ZIMRoomAttributesUpdateInfo> infos,
+                String roomID) {
                 super.onRoomAttributesBatchUpdated(zim, infos, roomID);
             }
         });
@@ -153,6 +161,7 @@ public class ZegoRoomManager {
     }
 
     public void uploadLog(final ZegoRoomCallback callback) {
-        ZegoZIMManager.getInstance().zim.uploadLog(errorInfo -> callback.roomCallback(errorInfo.code.value()));
+        ZegoZIMManager.getInstance().zim
+            .uploadLog(errorInfo -> callback.roomCallback(errorInfo.code.value()));
     }
 }
