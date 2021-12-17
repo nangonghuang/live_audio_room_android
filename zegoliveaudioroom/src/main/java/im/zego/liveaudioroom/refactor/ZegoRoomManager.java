@@ -5,6 +5,7 @@ import android.app.Application;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import im.zego.liveaudioroom.refactor.callback.ZegoRoomCallback;
 import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
@@ -69,6 +70,23 @@ public class ZegoRoomManager {
                     super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
                     if (speakerSeatService != null) {
                         speakerSeatService.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                    }
+                }
+
+                @Override
+                public void onCapturedSoundLevelUpdate(float soundLevel) {
+                    super.onCapturedSoundLevelUpdate(soundLevel);
+                    if (speakerSeatService != null) {
+                        speakerSeatService.updateLocalUserSoundLevel(soundLevel);
+                    }
+                }
+
+
+                @Override
+                public void onRemoteSoundLevelUpdate(HashMap<String, Float> soundLevels) {
+                    super.onRemoteSoundLevelUpdate(soundLevels);
+                    if (speakerSeatService != null) {
+                        speakerSeatService.updateRemoteUsersSoundLevel(soundLevels);
                     }
                 }
             });

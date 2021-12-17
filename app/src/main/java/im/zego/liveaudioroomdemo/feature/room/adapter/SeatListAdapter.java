@@ -5,19 +5,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.blankj.utilcode.util.LanguageUtils;
 import com.blankj.utilcode.util.ResourceUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.liveaudioroom.refactor.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatListHolder> {
 
@@ -26,11 +30,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
 
     public OnSeatClickListener onSeatClickListener = null;
 
-    private List<ZegoSpeakerSeatModel> seatList;
-
-    public SeatListAdapter() {
-        this.seatList = new ArrayList<>();
-    }
+    private final List<ZegoSpeakerSeatModel> seatList = new ArrayList<>();
 
     @NonNull
     @Override
@@ -140,27 +140,8 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
     }
 
     public void updateUserInfo(ZegoSpeakerSeatModel zimSpeakerSeat) {
+        seatList.set(zimSpeakerSeat.seatIndex, zimSpeakerSeat);
         notifyItemChanged(zimSpeakerSeat.seatIndex);
-    }
-
-    public void updateSoundWaves(String userId, float soundLevel) {
-        if (canShowSoundWaves(soundLevel)) {
-            for (ZegoSpeakerSeatModel speakerSeat : seatList) {
-                if (userId.equals(speakerSeat.userID)) {
-                    speakerSeat.soundLevel = soundLevel;
-                    notifyItemChanged(speakerSeat.seatIndex);
-                    break;
-                }
-            }
-        } else {
-            for (ZegoSpeakerSeatModel speakerSeat : seatList) {
-                if (userId.equals(speakerSeat.userID) && speakerSeat.soundLevel != 0) {
-                    speakerSeat.soundLevel = 0;
-                    notifyItemChanged(speakerSeat.seatIndex);
-                    break;
-                }
-            }
-        }
     }
 
     public void setOnSeatClickListener(OnSeatClickListener itemListener) {

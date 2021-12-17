@@ -16,6 +16,10 @@ import im.zego.liveaudioroom.refactor.helper.ZegoRoomAttributesHelper;
 import im.zego.liveaudioroom.refactor.listener.ZegoRoomServiceListener;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomUserRole;
+import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
+import im.zego.zegoexpress.ZegoExpressEngine;
+import im.zego.zegoexpress.entity.ZegoRoomConfig;
+import im.zego.zegoexpress.entity.ZegoUser;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMRoomAdvancedConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
@@ -37,12 +41,13 @@ public class ZegoRoomService {
     // create a room
     public void createRoom(String roomID, String roomName, final String token,
         final ZegoRoomCallback callback) {
-        ZegoRoomManager.getInstance().userService.localUserInfo.setRole(ZegoRoomUserRole.Host);
+        ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+        localUserInfo.setRole(ZegoRoomUserRole.Host);
 
         roomInfo = new ZegoRoomInfo();
         roomInfo.setRoomID(roomID);
         roomInfo.setRoomName(roomName);
-        roomInfo.setHostID(ZegoRoomManager.getInstance().userService.localUserInfo.getUserID());
+        roomInfo.setHostID(localUserInfo.getUserID());
         roomInfo.setSeatNum(8);
         roomInfo.setTextMessageDisabled(false);
         roomInfo.setClosed(false);
@@ -58,12 +63,7 @@ public class ZegoRoomService {
 
         ZegoZIMManager.getInstance().zim.createRoom(zimRoomInfo, config, (roomInfo, errorInfo) -> {
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
-                //                speakerSeatManager.setupRTCModule(token, new SetupRTCModuleCallback() {
-                //                    @Override
-                //                    public void onConnectionState(ZegoLiveAudioRoomErrorCode error) {
-                //
-                //                    }
-                //                });
+                loginRTCRoom(roomID, token, localUserInfo);
             }
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
@@ -73,18 +73,13 @@ public class ZegoRoomService {
 
     // join a room
     public void joinRoom(String roomID, final String token, final ZegoRoomCallback callback) {
-        ZegoRoomManager.getInstance().userService.localUserInfo.setRole(ZegoRoomUserRole.Listener);
+        ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+        localUserInfo.setRole(ZegoRoomUserRole.Listener);
 
         ZegoZIMManager.getInstance().zim.joinRoom(roomID, (roomInfo, errorInfo) -> {
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
-                //                speakerSeatManager.setupRTCModule(token, new SetupRTCModuleCallback() {
-                //                    @Override
-                //                    public void onConnectionState(ZegoLiveAudioRoomErrorCode error) {
-                //
-                //                    }
-                //                });
-                ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager
-                    .getInstance().speakerSeatService;
+                loginRTCRoom(roomID, token, localUserInfo);
+                ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
                 if (speakerSeatService != null) {
                     speakerSeatService.initRoomSeat();
                 }
@@ -93,6 +88,14 @@ public class ZegoRoomService {
                 callback.roomCallback(errorInfo.code.value());
             }
         });
+    }
+
+    private void loginRTCRoom(String roomID, String token, ZegoUserInfo localUserInfo) {
+        ZegoUser user = new ZegoUser(localUserInfo.getUserID(), localUserInfo.getUserName());
+        ZegoRoomConfig roomConfig = new ZegoRoomConfig();
+        roomConfig.token = token;
+        ZegoExpressEngine.getEngine().loginRoom(roomID, user, roomConfig);
+        ZegoExpressEngine.getEngine().startSoundLevelMonitor(500);
     }
 
     // leave the room
@@ -149,9 +152,6 @@ public class ZegoRoomService {
                     if (listener != null) {
                         listener.onReceiveRoomInfoUpdate(roomInfo);
                     }
-                    //                    if (roomEventHandler != null) {
-                    //                        roomEventHandler.onMuteAllMessage(nowIsMuted);
-                    //                    }
                 } else {
                     if (listener != null) {
                         listener.onReceiveRoomInfoUpdate(null);

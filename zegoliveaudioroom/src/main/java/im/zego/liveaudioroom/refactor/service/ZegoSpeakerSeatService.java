@@ -351,4 +351,28 @@ public class ZegoSpeakerSeatService {
         }
         return seatedUserList;
     }
+
+    public void updateLocalUserSoundLevel(float soundLevel) {
+        ZegoUserInfo selfUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+        for (ZegoSpeakerSeatModel model : speakerSeatList) {
+            if (model.userID.equals(selfUserInfo.getUserID())) {
+                model.soundLevel = soundLevel;
+                if (speakerSeatServiceCallback != null) {
+                    speakerSeatServiceCallback.onSpeakerSeatUpdate(model);
+                }
+            }
+        }
+    }
+
+    public void updateRemoteUsersSoundLevel(HashMap<String, Float> soundLevels) {
+        for (ZegoSpeakerSeatModel model : speakerSeatList) {
+            Float soundLevel = soundLevels.get(model.userID);
+            if (soundLevel != null) {
+                model.soundLevel = soundLevel;
+                if (speakerSeatServiceCallback != null) {
+                    speakerSeatServiceCallback.onSpeakerSeatUpdate(model);
+                }
+            }
+        }
+    }
 }
