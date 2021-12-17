@@ -2,12 +2,10 @@ package im.zego.liveaudioroomdemo.feature.room;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -19,33 +17,21 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import im.zego.liveaudioroom.ZegoLiveAudioRoom;
-import im.zego.liveaudioroom.callback.EnterSeatCallback;
-import im.zego.liveaudioroom.callback.LiveAudioRoomEventHandler;
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomEvent;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomInvitationStatus;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomState;
-import im.zego.liveaudioroom.entity.ZIMSpeakerSeatUpdateInfo;
 import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomQueryMemberConfig;
 import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
 import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
-import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.callback.ZegoMessageServiceCallback;
+import im.zego.liveaudioroom.refactor.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.refactor.listener.ZegoRoomServiceListener;
 import im.zego.liveaudioroom.refactor.listener.ZegoUserServiceListener;
-import im.zego.liveaudioroom.refactor.model.ZegoCustomCommand;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatStatus;
@@ -53,14 +39,11 @@ import im.zego.liveaudioroom.refactor.model.ZegoTextMessage;
 import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
 import im.zego.liveaudioroom.refactor.service.ZegoMessageService;
+import im.zego.liveaudioroom.refactor.service.ZegoRoomService;
 import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroom.refactor.service.ZegoUserService;
-import im.zego.liveaudioroom.util.TokenServerAssistant;
-import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
-import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
-import im.zego.liveaudioroomdemo.feature.login.UserLoginActivity;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MessageListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.adapter.SeatListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.dialog.IMInputDialog;
@@ -71,6 +54,8 @@ import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
 import im.zego.liveaudioroomdemo.helper.DialogHelper;
 import im.zego.liveaudioroomdemo.helper.PermissionHelper;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
+import im.zego.zim.enums.ZIMConnectionEvent;
+import im.zego.zim.enums.ZIMConnectionState;
 
 public class LiveAudioRoomActivity extends BaseActivity {
 
@@ -123,10 +108,10 @@ public class LiveAudioRoomActivity extends BaseActivity {
         setContentView(R.layout.activity_chat_room);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
 
-        initSDCallback();
         initUI();
         setListener();
         updateUI();
+        initSDCallback();
     }
 
     private void initUI() {
@@ -175,8 +160,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
             PermissionHelper.requestRecordAudio(this, isAllGranted -> {
                 if (isAllGranted) {
                     boolean bool = ivMic.isSelected();
-                    ZegoLiveAudioRoom.getInstance().muteSeat(bool, error -> {
-                        if (error == ZegoLiveAudioRoomErrorCode.SUCCESS) {
+                    ZegoRoomManager.getInstance().speakerSeatService.muteMic(bool, error -> {
+                        if (error == ZegoRoomErrorCode.SUCCESS) {
                             ivMic.setSelected(!bool);
                         }
                     });
@@ -233,7 +218,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         PermissionHelper.requestRecordAudio(this, isAllGranted -> {
             ivMic.setSelected(isAllGranted);
             if (!isAllGranted) {
-                ZegoLiveAudioRoom.getInstance().muteSeat(true, error -> {
+                ZegoRoomManager.getInstance().speakerSeatService.muteMic(true, error -> {
                 });
             }
         });
@@ -243,9 +228,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
         seatListAdapter = new SeatListAdapter();
         rvSeatList.setAdapter(seatListAdapter);
         rvSeatList.setLayoutManager(new GridLayoutManager(this, 4));
-        seatListAdapter.setOnSeatClickListener(seatModel -> {
-            onSpeakerSeatClicked(seatModel);
-        });
+        seatListAdapter.setOnSeatClickListener(this::onSpeakerSeatClicked);
+        ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
+        seatListAdapter.setSeatList(seatService.getSpeakerSeatList());
 
         messageListAdapter = new MessageListAdapter(textMessageList);
         rvMessageList.setAdapter(messageListAdapter);
@@ -254,16 +239,16 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
         if (UserInfoHelper.isSelfOwner()) {
             uiToOwner();
-            ZegoLiveAudioRoom.getInstance().takeSpeakerSeat(0, (EnterSeatCallback) error -> {
+            ZegoRoomManager.getInstance().speakerSeatService.takeSeat(0, error -> {
                 requestRecordAudio();
             });
         } else {
             uiToAudience();
         }
 
-        ZegoLiveAudioRoomInfo roomInfo = ZegoLiveAudioRoomManager.getInstance().getRoomInfo();
-        tvRoomName.setText(roomInfo.getRoom_Name());
-        tvRoomNum.setText(roomInfo.getRoom_id());
+        ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
+        tvRoomName.setText(roomInfo.getRoomName());
+        tvRoomNum.setText(roomInfo.getRoomID());
     }
 
     private void onSpeakerSeatClicked(ZegoSpeakerSeatModel seatModel) {
@@ -413,14 +398,13 @@ public class LiveAudioRoomActivity extends BaseActivity {
         giftService.setGiftServiceCallback((giftID, fromUserID, toUserList) -> {
             showGiftTips(toUserList, fromUserID, giftID);
         });
+
         ZegoMessageService messageService = ZegoRoomManager.getInstance().messageService;
-        messageService.setMessageServiceCallback(new ZegoMessageServiceCallback() {
-            @Override
-            public void onReceiveTextMessage(ZegoTextMessage textMessage, String roomID) {
-                textMessageList.add(textMessage);
-                refreshMessageList();
-            }
+        messageService.setMessageServiceCallback((textMessage, roomID) -> {
+            textMessageList.add(textMessage);
+            refreshMessageList();
         });
+
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(new ZegoUserServiceListener() {
             @Override
@@ -460,142 +444,41 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 showInviteDialog();
             }
         });
+
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
-        seatService.setSpeakerSeatServiceCallback(speakerSeatModel -> {
-            seatListAdapter.notifyItemChanged(speakerSeatModel.seatIndex);
-            if (getMyUserID().equals(speakerSeatModel.userID)) {
-                if (speakerSeatModel.status == ZegoSpeakerSeatStatus.Occupied) {
+        seatService.setSpeakerSeatServiceCallback(model -> {
+            seatListAdapter.updateUserInfo(model);
+            if (getMyUserID().equals(model.userID)) {
+                if (model.status == ZegoSpeakerSeatStatus.Occupied) {
                     uiToSpeaker();
-                    ivMic.setSelected(!speakerSeatModel.isMicMuted);
-                } else if (speakerSeatModel.status == ZegoSpeakerSeatStatus.Untaken) {
+                    ivMic.setSelected(!model.isMicMuted);
+                } else if (model.status == ZegoSpeakerSeatStatus.Untaken) {
                     uiToAudience();
                 }
             }
             updateMemberListDialog(config);
         });
 
-        ZegoLiveAudioRoom.getInstance()
-            .setZegoLiveAudioRoomEventHandler(new LiveAudioRoomEventHandler() {
-                @Override
-                public void onRoomStateUpdated(ZegoLiveAudioRoomState state,
-                    ZegoLiveAudioRoomEvent event, String roomID) {
-                    if (state == ZegoLiveAudioRoomState.DISCONNECTED) {
-                        ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
-                        finish();
-                    }
+        ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
+        roomService.setListener(new ZegoRoomServiceListener() {
+            @Override
+            public void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo) {
+                if (roomInfo == null) {
+                    ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
+                    finish();
+                } else {
+                    onUserMuted(roomInfo.isTextMessageDisabled());
                 }
+            }
 
-                @Override
-                public void onRTCTokenWillExpire(String roomID, int remainTimeInSecond) {
-                    ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
-                    privileges.canLoginRoom = true;
-                    privileges.canPublishStream = true;
-                    ZegoLiveAudioRoom.getInstance().renewRTCToken(ZegoRTCServerAssistant
-                        .generateToken(KeyCenter.appID(), roomID, getMyUserID(), privileges,
-                            KeyCenter.appExpressSign(), 660).data);
+            @Override
+            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
+                if (state == ZIMConnectionState.DISCONNECTED) {
+                    ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
+                    finish();
                 }
-
-                @Override
-                public void onZIMTokenWillExpire(int time) {
-                    try {
-                        ZegoLiveAudioRoom.getInstance().renewZIMToken(TokenServerAssistant
-                            .generateToken(KeyCenter.appID(), getMyUserID(),
-                                KeyCenter.appZIMServerSecret(), 660).data);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onRoomInfoUpdated(ZegoLiveAudioRoomInfo roomInfo) {
-                    if (roomInfo == null) {
-                        ToastUtils
-                            .showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
-                        finish();
-                    } else {
-                        seatListAdapter.notifyDataSetChanged();
-                        tvRoomName.setText(roomInfo.getRoom_Name());
-                    }
-                }
-
-                @Override
-                public void onRoomMemberLeft(ArrayList<ZegoLiveAudioRoomUser> userList) {
-
-                }
-
-                @Override
-                public void onRoomMemberJoined(ArrayList<ZegoLiveAudioRoomUser> userList) {
-
-                }
-
-                @Override
-                public void onReceiveRoomMassage(String message, String fromUserID) {
-
-                }
-
-                @Override
-                public void onReceiveGiftMessage(int giftType, String fromUserID) {
-                    super.onReceiveGiftMessage(giftType, fromUserID);
-                }
-
-                @Override
-                public void onReceiveGiftBroadcastMessage(List<String> toUSerIDList, int giftType,
-                    String fromUserID) {
-                }
-
-                @Override
-                public void onReceiveInvitation(String fromUserID) {
-                    super.onReceiveInvitation(fromUserID);
-                }
-
-                @Override
-                public void onResponseInvitation(
-                    ZegoLiveAudioRoomInvitationStatus ZegoLiveAudioRoomInvitationStatus,
-                    String fromUserID) {
-                    super.onResponseInvitation(ZegoLiveAudioRoomInvitationStatus, fromUserID);
-                }
-
-                @Override
-                public void onMuteAllMessage(boolean isMuted) {
-                    Log.d(TAG, "onMuteAllMessage() called with: isMuted = [" + isMuted + "]");
-                    onUserMuted(isMuted);
-                }
-
-                @Override
-                public void onRoomSpeakerSeatUpdated(
-                    ArrayList<ZIMSpeakerSeatUpdateInfo> speakerSeatUpdateInfos) {
-                }
-
-                @Override
-                public void OnLocalUserSoundLevelUpdated(float soundLevel) {
-                    super.OnLocalUserSoundLevelUpdated(soundLevel);
-                    //                LogUtils.dTag(TAG, "OnLocalUserSoundLevelUpdated() called with: soundLevel = [" + soundLevel + "]");
-                    seatListAdapter.updateSoundWaves(getMyUserID(), soundLevel);
-                }
-
-                @Override
-                public void OnRemoteUserSoundLevelUpdated(HashMap<String, Float> soundLevel) {
-                    super.OnRemoteUserSoundLevelUpdated(soundLevel);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        soundLevel.entrySet().forEach(entry -> {
-                            //                        Log.d(TAG, "OnRemoteUserSoundLevelUpdated() called with: " +
-                            //                                "soundLevel = [" + "key=" + entry.getKey() + ", value=" + entry.getValue() + "]");
-                            seatListAdapter.updateSoundWaves(entry.getKey(), entry.getValue());
-                        });
-                    }
-                }
-
-
-                @Override
-                public void onConnectionStateChanged(ZegoLiveAudioRoomState state,
-                    ZegoLiveAudioRoomEvent event, JSONObject extendedData) {
-                    if (state == ZegoLiveAudioRoomState.DISCONNECTED) {
-                        ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
-                        ActivityUtils
-                            .startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
-                    }
-                }
-            });
+            }
+        });
     }
 
     private void onUserMuted(boolean isMuted) {
@@ -707,8 +590,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
         if (UserInfoHelper.isSelfOwner()) {
             showDialog();
         } else {
-            ZegoLiveAudioRoom.getInstance().leaveRoom(getRoomID(), error -> {
-            });
             super.onBackPressed();
         }
     }
@@ -719,9 +600,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         if (settingsDialog != null) {
             settingsDialog = null;
         }
-        ZegoLiveAudioRoom.getInstance().setZegoLiveAudioRoomEventHandler(null);
-        ZegoLiveAudioRoom.getInstance().leaveRoom(getRoomID(), error -> {
-
+        ZegoRoomManager.getInstance().roomService.leaveRoom(error -> {
         });
     }
 }

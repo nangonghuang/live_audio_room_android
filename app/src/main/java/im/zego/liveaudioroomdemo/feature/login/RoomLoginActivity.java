@@ -137,7 +137,7 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                 if ((!TextUtils.isEmpty(roomID)) && (!TextUtils.isEmpty(roomName))) {
                     ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
                     String token = ZegoRTCServerAssistant.generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges, KeyCenter.appExpressSign(), 660).data;
-                    ZegoRoomManager.getInstance().roomService.joinRoom(roomID, token, errorCode -> {
+                    ZegoRoomManager.getInstance().roomService.createRoom(roomID, roomName, token, errorCode -> {
                         dialog.dismiss();
                         if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                             LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
