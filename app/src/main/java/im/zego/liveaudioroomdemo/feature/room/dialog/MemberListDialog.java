@@ -90,7 +90,7 @@ public class MemberListDialog extends BaseBottomDialog {
                     ToastUtils.showShort(R.string.member_list_send_invitation_failed);
                 } else {
                     if (finalOnSeatMemberCounts < 8) {
-                        ZegoRoomManager.getInstance().messageService.sendInvitation(userID, errorCode -> {
+                        ZegoRoomManager.getInstance().userService.sendInvitation(userID, errorCode -> {
                             if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                 ToastUtils.showShort(R.string.room_page_invitation_has_sent);
                             } else {

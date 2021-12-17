@@ -77,8 +77,8 @@ public class ZegoRoomManager {
         // distribute to specific services which listening what they want
         ZegoZIMManager.getInstance().zim.setEventHandler(new ZIMEventHandler() {
             @Override
-            public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state,
-                ZIMConnectionEvent event, JSONObject extendedData) {
+            public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
+                JSONObject extendedData) {
                 super.onConnectionStateChanged(zim, state, event, extendedData);
                 if (roomService != null) {
                     roomService.onConnectionStateChanged(zim, state, event, extendedData);
@@ -96,8 +96,7 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList,
-                String fromUserID) {
+            public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
                 super.onReceivePeerMessage(zim, messageList, fromUserID);
             }
 
@@ -116,8 +115,7 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList,
-                String roomID) {
+            public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
                 super.onRoomMemberJoined(zim, memberList, roomID);
                 if (userService != null) {
                     userService.onRoomMemberJoined(zim, memberList, roomID);
@@ -125,8 +123,7 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList,
-                String roomID) {
+            public void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
                 super.onRoomMemberLeft(zim, memberList, roomID);
                 if (userService != null) {
                     userService.onRoomMemberLeft(zim, memberList, roomID);
@@ -134,14 +131,13 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event,
-                JSONObject extendedData, String roomID) {
+            public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
+                String roomID) {
                 super.onRoomStateChanged(zim, state, event, extendedData, roomID);
             }
 
             @Override
-            public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info,
-                String roomID) {
+            public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
                 super.onRoomAttributesUpdated(zim, info, roomID);
                 if (roomService != null) {
                     roomService.onRoomAttributesUpdated(zim, info, roomID);
@@ -152,8 +148,8 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onRoomAttributesBatchUpdated(ZIM zim,
-                ArrayList<ZIMRoomAttributesUpdateInfo> infos, String roomID) {
+            public void onRoomAttributesBatchUpdated(ZIM zim, ArrayList<ZIMRoomAttributesUpdateInfo> infos,
+                String roomID) {
                 super.onRoomAttributesBatchUpdated(zim, infos, roomID);
             }
         });

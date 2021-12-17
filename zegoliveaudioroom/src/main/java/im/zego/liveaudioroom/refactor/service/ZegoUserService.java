@@ -8,6 +8,8 @@ import im.zego.liveaudioroom.refactor.listener.ZegoUserServiceListener;
 import im.zego.liveaudioroom.refactor.model.ZegoCustomCommand;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.refactor.model.ZegoRoomUserRole;
+import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
+import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.refactor.model.ZegoTextMessage;
 import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
@@ -84,6 +86,21 @@ public class ZegoUserService {
         }
         if (listener != null) {
             listener.onRoomUserLeave(leaveUsers);
+        }
+        ZegoUserInfo userInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+        if (userInfo.getRole() == ZegoRoomUserRole.Host) {
+            ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
+            List<ZegoSpeakerSeatModel> seatList = seatService.getSpeakerSeatList();
+            for (ZegoUserInfo leaveUser : leaveUsers) {
+                String leaveUserID = leaveUser.getUserID();
+                for (ZegoSpeakerSeatModel model : seatList) {
+                    if (model.userID.equals(leaveUserID) && model.status == ZegoSpeakerSeatStatus.Occupied) {
+                        seatService.removeUserFromSeat(model.seatIndex, errorCode -> {
+
+                        });
+                    }
+                }
+            }
         }
     }
 
