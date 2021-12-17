@@ -6,18 +6,15 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import com.blankj.utilcode.util.ToastUtils;
 
+import java.util.List;
+
+import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
+import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
+import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
-import java.util.List;
-
-import im.zego.liveaudioroom.ZegoLiveAudioRoom;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus;
-import im.zego.liveaudioroom.entity.ZIMSpeakerSeat;
-import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
-import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
 import im.zego.liveaudioroomdemo.R;
 
 public class SettingsDialog extends BaseBottomDialog {
@@ -49,7 +46,8 @@ public class SettingsDialog extends BaseBottomDialog {
     protected void initListener() {
         super.initListener();
         switchAllowMic.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            ZegoLiveAudioRoom.getInstance().muteAllMessage(isChecked, error -> {
+            ZegoRoomManager.getInstance().roomService.disableTextMessage(isChecked, errorCode -> {
+
             });
         });
         switchAllowMessage.setOnCheckedChangeListener((buttonView, isChecked) -> {
