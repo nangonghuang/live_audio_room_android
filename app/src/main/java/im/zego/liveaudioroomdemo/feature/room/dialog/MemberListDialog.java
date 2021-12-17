@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
-import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import im.zego.liveaudioroom.ZegoLiveAudioRoom;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
-import im.zego.liveaudioroom.entity.ZIMSpeakerSeat;
+import im.zego.liveaudioroom.refactor.ZegoRoomManager;
+import im.zego.liveaudioroom.refactor.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MemberListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.model.MemberInfo;
@@ -91,11 +90,11 @@ public class MemberListDialog extends BaseBottomDialog {
                     ToastUtils.showShort(R.string.member_list_send_invitation_failed);
                 } else {
                     if (finalOnSeatMemberCounts < 8) {
-                        ZegoLiveAudioRoom.getInstance().sendInvitation(userID, errorCode -> {
-                            if (errorCode == ZegoLiveAudioRoomErrorCode.SUCCESS) {
+                        ZegoRoomManager.getInstance().messageService.sendInvitation(userID, errorCode -> {
+                            if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                 ToastUtils.showShort(R.string.room_page_invitation_has_sent);
                             } else {
-                                ToastUtils.showShort(R.string.member_list_send_invitation_error, errorCode.getValue());
+                                ToastUtils.showShort(R.string.member_list_send_invitation_error, errorCode);
                             }
                         });
                     } else {

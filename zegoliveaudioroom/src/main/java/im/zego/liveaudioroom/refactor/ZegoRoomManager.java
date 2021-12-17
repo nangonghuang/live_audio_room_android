@@ -1,6 +1,11 @@
 package im.zego.liveaudioroom.refactor;
 
 import android.app.Application;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 import im.zego.liveaudioroom.refactor.callback.ZegoRoomCallback;
 import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
 import im.zego.liveaudioroom.refactor.service.ZegoMessageService;
@@ -21,8 +26,6 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMRoomEvent;
 import im.zego.zim.enums.ZIMRoomState;
-import java.util.ArrayList;
-import org.json.JSONObject;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -58,8 +61,7 @@ public class ZegoRoomManager {
         messageService = new ZegoMessageService();
         giftService = new ZegoGiftService();
 
-        ZegoExpressEngine.createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, null);
-        ZegoExpressEngine.getEngine().setEventHandler(new IZegoEventHandler() {
+        ZegoExpressEngine.createEngine(appID, appSign, false, ZegoScenario.GENERAL, application, new IZegoEventHandler() {
             @Override
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality, ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
