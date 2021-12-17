@@ -108,10 +108,10 @@ public class LiveAudioRoomActivity extends BaseActivity {
         setContentView(R.layout.activity_chat_room);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
 
-        initSDCallback();
         initUI();
         setListener();
         updateUI();
+        initSDCallback();
     }
 
     private void initUI() {
@@ -229,6 +229,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
         rvSeatList.setAdapter(seatListAdapter);
         rvSeatList.setLayoutManager(new GridLayoutManager(this, 4));
         seatListAdapter.setOnSeatClickListener(this::onSpeakerSeatClicked);
+        ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
+        seatListAdapter.setSeatList(seatService.getSpeakerSeatList());
 
         messageListAdapter = new MessageListAdapter(textMessageList);
         rvMessageList.setAdapter(messageListAdapter);

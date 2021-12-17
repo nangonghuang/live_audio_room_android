@@ -64,6 +64,7 @@ public class ZegoRoomService {
         ZegoZIMManager.getInstance().zim.createRoom(zimRoomInfo, config, (roomInfo, errorInfo) -> {
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
                 loginRTCRoom(roomID, token, localUserInfo);
+                initRoomSeat();
             }
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
@@ -79,15 +80,19 @@ public class ZegoRoomService {
         ZegoZIMManager.getInstance().zim.joinRoom(roomID, (roomInfo, errorInfo) -> {
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
                 loginRTCRoom(roomID, token, localUserInfo);
-                ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
-                if (speakerSeatService != null) {
-                    speakerSeatService.initRoomSeat();
-                }
+                initRoomSeat();
             }
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
             }
         });
+    }
+
+    private void initRoomSeat() {
+        ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
+        if (speakerSeatService != null) {
+            speakerSeatService.initRoomSeat();
+        }
     }
 
     private void loginRTCRoom(String roomID, String token, ZegoUserInfo localUserInfo) {

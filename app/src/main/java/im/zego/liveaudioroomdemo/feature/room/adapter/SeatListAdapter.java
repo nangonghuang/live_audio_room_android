@@ -30,7 +30,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
 
     public OnSeatClickListener onSeatClickListener = null;
 
-    private final List<ZegoSpeakerSeatModel> seatList = new ArrayList<>();
+    private List<ZegoSpeakerSeatModel> seatList = new ArrayList<>();
 
     @NonNull
     @Override
@@ -139,9 +139,13 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
         return seatList.size();
     }
 
+    public void setSeatList(List<ZegoSpeakerSeatModel> seatList) {
+        this.seatList = seatList;
+    }
+
     public void updateUserInfo(ZegoSpeakerSeatModel zimSpeakerSeat) {
         seatList.set(zimSpeakerSeat.seatIndex, zimSpeakerSeat);
-        notifyItemChanged(zimSpeakerSeat.seatIndex);
+        notifyItemChanged(zimSpeakerSeat.seatIndex, new Object());
     }
 
     public void setOnSeatClickListener(OnSeatClickListener itemListener) {
