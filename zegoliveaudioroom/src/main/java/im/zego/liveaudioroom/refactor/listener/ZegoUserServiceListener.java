@@ -1,5 +1,6 @@
 package im.zego.liveaudioroom.refactor.listener;
 
+import im.zego.liveaudioroom.refactor.model.ZegoCustomCommand;
 import java.util.List;
 
 import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
@@ -16,4 +17,6 @@ public interface ZegoUserServiceListener {
 
     // receive user leave room command
     void onRoomUserLeave(List<ZegoUserInfo> memberList);
+
+    void onReceiveTakeSeatInvitation();
 }

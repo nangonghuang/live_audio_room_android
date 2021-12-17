@@ -377,7 +377,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             });
     }
 
-    private void showInviteDialog(ZegoCustomCommand customCommand) {
+    private void showInviteDialog() {
         DialogHelper.showAlertDialog(LiveAudioRoomActivity.this,
             StringUtils.getString(R.string.dialog_invition_title),
             StringUtils.getString(R.string.dialog_invition_descrip),
@@ -420,11 +420,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 textMessageList.add(textMessage);
                 refreshMessageList();
             }
-
-            @Override
-            public void onReceiveCustomCommand(ZegoCustomCommand customCommand, String roomID) {
-                showInviteDialog(customCommand);
-            }
         });
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(new ZegoUserServiceListener() {
@@ -458,6 +453,11 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 }
                 seatListAdapter.notifyDataSetChanged();
                 updateMemberListDialog(config);
+            }
+
+            @Override
+            public void onReceiveTakeSeatInvitation() {
+                showInviteDialog();
             }
         });
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;

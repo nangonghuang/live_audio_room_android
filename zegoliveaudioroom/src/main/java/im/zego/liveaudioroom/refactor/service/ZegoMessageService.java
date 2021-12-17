@@ -40,54 +40,19 @@ public class ZegoMessageService {
         textMessage.message = text;
         textMessage.userID = localUserInfo.getUserID();
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-        ZegoZIMManager.getInstance().zim.sendRoomMessage(textMessage, roomID,
-            (message, errorInfo) -> {
-                if (errorInfo.code == ZIMErrorCode.SUCCESS) {
-                    messageList.add(textMessage);
-                }
-                if (callback != null) {
-                    callback.roomCallback(errorInfo.code.value());
-                }
-            });
+        ZegoZIMManager.getInstance().zim.sendRoomMessage(textMessage, roomID, (message, errorInfo) -> {
+            if (errorInfo.code == ZIMErrorCode.SUCCESS) {
+                messageList.add(textMessage);
+            }
+            if (callback != null) {
+                callback.roomCallback(errorInfo.code.value());
+            }
+        });
     }
 
-    /**
-     * send invitation to room user.
-     *
-     * @param userID   userID
-     * @param callback operation result callback
-     */
-    public void sendInvitation(String userID, ZegoRoomCallback callback) {
-        ZegoUserInfo localUserInfo = ZegoRoomManager
-            .getInstance().userService.localUserInfo;
-        ZegoCustomCommand command = new ZegoCustomCommand();
-        command.actionType = ZegoCustomCommand.INVITATION;
-        command.target = Arrays.asList(userID);
-        command.userID = localUserInfo.getUserID();
-        String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-        ZegoZIMManager.getInstance().zim.sendRoomMessage(command, roomID,
-            (message, errorInfo) -> {
-                if (callback != null) {
-                    callback.roomCallback(errorInfo.code.value());
-                }
-            });
-    }
-
-    public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList,
-        String fromRoomID) {
+    public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
         for (ZIMMessage zimMessage : messageList) {
-            if (zimMessage.type == ZIMMessageType.CUSTOM) {
-                ZegoCustomCommand command = (ZegoCustomCommand) zimMessage;
-                if (command.actionType == ZegoCustomCommand.INVITATION) {
-                    ZegoUserInfo localUserInfo = ZegoRoomManager
-                        .getInstance().userService.localUserInfo;
-                    if (command.target.contains(localUserInfo.getUserID())) {
-                        if (messageServiceCallback != null) {
-                            messageServiceCallback.onReceiveCustomCommand(command, fromRoomID);
-                        }
-                    }
-                }
-            } else if (zimMessage.type == ZIMMessageType.TEXT) {
+            if (zimMessage.type == ZIMMessageType.TEXT) {
                 ZegoTextMessage textMessage = (ZegoTextMessage) zimMessage;
                 messageList.add(textMessage);
                 if (messageServiceCallback != null) {

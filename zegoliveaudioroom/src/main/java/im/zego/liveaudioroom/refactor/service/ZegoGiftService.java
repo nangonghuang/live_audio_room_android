@@ -34,20 +34,18 @@ public class ZegoGiftService {
         command.userID = localUserInfo.getUserID();
         command.content.put("giftID", giftID);
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-        ZegoZIMManager.getInstance().zim.sendRoomMessage(command, roomID,
-            (message, errorInfo) -> {
-                if (callback != null) {
-                    callback.roomCallback(errorInfo.code.value());
-                }
-            });
+        ZegoZIMManager.getInstance().zim.sendRoomMessage(command, roomID, (message, errorInfo) -> {
+            if (callback != null) {
+                callback.roomCallback(errorInfo.code.value());
+            }
+        });
     }
 
     public void setGiftServiceCallback(ZegoGiftServiceCallback callback) {
         this.giftServiceCallback = callback;
     }
 
-    public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList,
-        String fromRoomID) {
+    public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
                 ZegoCustomCommand command = (ZegoCustomCommand) zimMessage;

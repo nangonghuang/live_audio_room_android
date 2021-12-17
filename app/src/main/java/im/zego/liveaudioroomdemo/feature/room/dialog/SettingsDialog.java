@@ -1,13 +1,8 @@
 package im.zego.liveaudioroomdemo.feature.room.dialog;
 
 import android.content.Context;
-
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.blankj.utilcode.util.ToastUtils;
-
-import java.util.List;
-
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
 import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
@@ -16,6 +11,7 @@ import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroomdemo.R;
+import java.util.List;
 
 public class SettingsDialog extends BaseBottomDialog {
 
