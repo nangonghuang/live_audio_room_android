@@ -5,7 +5,7 @@ import android.app.Application;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
 
-import im.zego.liveaudioroom.ZegoLiveAudioRoom;
+import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 
 public class App extends Application {
     @Override
@@ -15,6 +15,6 @@ public class App extends Application {
         LogUtils.getConfig().setLogHeadSwitch(false);
         LogUtils.getConfig().setBorderSwitch(false);
         // init LiveAudioRoom SDK
-        ZegoLiveAudioRoom.getInstance().init(KeyCenter.appID(), KeyCenter.appExpressSign(), this);
+        ZegoRoomManager.getInstance().init(KeyCenter.appID(), KeyCenter.appExpressSign(), this);
     }
 }

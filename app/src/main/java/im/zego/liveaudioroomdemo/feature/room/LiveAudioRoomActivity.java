@@ -13,13 +13,23 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import im.zego.liveaudioroom.ZegoLiveAudioRoom;
 import im.zego.liveaudioroom.callback.EnterSeatCallback;
 import im.zego.liveaudioroom.callback.LiveAudioRoomEventHandler;
@@ -27,7 +37,6 @@ import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomEvent;
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomInvitationStatus;
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomState;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomVoiceStatus;
 import im.zego.liveaudioroom.entity.ZIMSpeakerSeatUpdateInfo;
 import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomQueryMemberConfig;
 import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
@@ -62,11 +71,6 @@ import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
 import im.zego.liveaudioroomdemo.helper.DialogHelper;
 import im.zego.liveaudioroomdemo.helper.PermissionHelper;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class LiveAudioRoomActivity extends BaseActivity {
 
