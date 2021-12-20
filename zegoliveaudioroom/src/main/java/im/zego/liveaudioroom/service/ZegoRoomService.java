@@ -1,7 +1,15 @@
 package im.zego.liveaudioroom.service;
 
 import android.util.Log;
+
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoOnlineRoomUsersCallback;
@@ -13,7 +21,9 @@ import im.zego.liveaudioroom.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.model.ZegoRoomUserRole;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zegoexpress.ZegoExpressEngine;
+import im.zego.zegoexpress.constants.ZegoUpdateType;
 import im.zego.zegoexpress.entity.ZegoRoomConfig;
+import im.zego.zegoexpress.entity.ZegoStream;
 import im.zego.zegoexpress.entity.ZegoUser;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMRoomAdvancedConfig;
@@ -23,9 +33,6 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
-import java.util.HashMap;
-import java.util.Set;
-import org.json.JSONObject;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -200,6 +207,16 @@ public class ZegoRoomService {
         JSONObject extendedData) {
         if (listener != null) {
             listener.onConnectionStateChanged(state, event);
+        }
+    }
+
+    public void onRoomStreamUpdate(String roomID, ZegoUpdateType updateType, List<ZegoStream> streamList) {
+        for (ZegoStream zegoStream : streamList) {
+            if (updateType == ZegoUpdateType.ADD) {
+                ZegoExpressEngine.getEngine().startPlayingStream(zegoStream.streamID, null);
+            } else {
+                ZegoExpressEngine.getEngine().stopPlayingStream(zegoStream.streamID);
+            }
         }
     }
 }

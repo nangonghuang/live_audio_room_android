@@ -4,6 +4,8 @@ package im.zego.liveaudioroom.service;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 
 import org.apache.commons.lang.math.NumberUtils;
@@ -16,8 +18,9 @@ import java.util.Map.Entry;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
-import im.zego.liveaudioroom.listener.ZegoSpeakerSeatServiceListener;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.helper.ZegoRoomAttributesHelper;
+import im.zego.liveaudioroom.listener.ZegoSpeakerSeatServiceListener;
 import im.zego.liveaudioroom.model.ZegoNetWorkQuality;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
@@ -25,7 +28,6 @@ import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zim.ZIM;
-import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
@@ -129,11 +131,22 @@ public class ZegoSpeakerSeatService {
             return;
         }
         if (isSeatAvailable(seatIndex)) {
-            changeSeatStatus(seatIndex, selfUserInfo.getUserID(), false,
-                ZegoSpeakerSeatStatus.Occupied, callback);
+            changeSeatStatus(seatIndex, selfUserInfo.getUserID(), false, ZegoSpeakerSeatStatus.Occupied, errorCode -> {
+                if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                    ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
+                }
+                callback.roomCallback(errorCode);
+            });
         } else {
             callback.roomCallback(ZegoRoomErrorCode.SEAT_EXISTED);
         }
+    }
+
+    @NonNull
+    private String getSelfStreamID() {
+        String selfUserID = ZegoRoomManager.getInstance().userService.localUserInfo.getUserID();
+        String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
+        return String.format("%s_%s_%s", roomID, selfUserID, "main");
     }
 
     /**
@@ -147,8 +160,12 @@ public class ZegoSpeakerSeatService {
             callback.roomCallback(ZegoRoomErrorCode.NOT_IN_SEAT);
         } else {
             ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(mySeatIndex);
-            changeSeatStatus(mySeatIndex, "", speakerSeatModel.isMicMuted,
-                ZegoSpeakerSeatStatus.Untaken, callback);
+            changeSeatStatus(mySeatIndex, "", speakerSeatModel.isMicMuted, ZegoSpeakerSeatStatus.Untaken, errorCode -> {
+                if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                    ZegoExpressEngine.getEngine().stopPublishingStream();
+                }
+                callback.roomCallback(errorCode);
+            });
         }
     }
 
@@ -178,10 +195,6 @@ public class ZegoSpeakerSeatService {
             speakerSeatModel2.status = ZegoSpeakerSeatStatus.Occupied;
             final String modelString2 = new Gson().toJson(speakerSeatModel2);
 
-            ZIMRoomAttributesSetConfig setConfig = new ZIMRoomAttributesSetConfig();
-            setConfig.isForce = false;
-            setConfig.isDeleteAfterOwnerLeft = true;
-
             HashMap<String, String> seatAttributes = new HashMap<>();
             seatAttributes.put(String.valueOf(mySeatIndex), modelString1);
             seatAttributes.put(String.valueOf(toSeatIndex), modelString2);
@@ -189,7 +202,7 @@ public class ZegoSpeakerSeatService {
             String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
             Log.d(TAG, "switchSeat() called with: seatAttributes = [" + seatAttributes + "]");
 
-            ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig,
+            ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, ZegoRoomAttributesHelper.getAttributesSetConfig(),
                 errorInfo -> {
                     int errorCode;
                     if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
@@ -219,10 +232,6 @@ public class ZegoSpeakerSeatService {
         speakerSeatModel.status = status;
         String modelString = new Gson().toJson(speakerSeatModel);
 
-        ZIMRoomAttributesSetConfig setConfig = new ZIMRoomAttributesSetConfig();
-        setConfig.isForce = false;
-        setConfig.isDeleteAfterOwnerLeft = true;
-
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(String.valueOf(seatIndex), modelString);
 
@@ -230,7 +239,7 @@ public class ZegoSpeakerSeatService {
 
         Log.d(TAG, "changeSeatStatus() called with: seatAttributes = [" + seatAttributes + "]");
 
-        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig,
+        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, ZegoRoomAttributesHelper.getAttributesSetConfig(),
             errorInfo -> {
                 int errorCode;
                 if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
@@ -251,23 +260,6 @@ public class ZegoSpeakerSeatService {
             model.seatIndex = updateModel.seatIndex;
             model.isMicMuted = updateModel.isMicMuted;
             model.status = updateModel.status;
-
-            String selfUserID = ZegoRoomManager.getInstance().userService.localUserInfo.getUserID();
-            String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-            String mainSteamID = String.format("%s_%s_%s", roomID, model.userID, "main");
-            if (!model.isMicMuted && model.status == ZegoSpeakerSeatStatus.Occupied) {
-                if (model.userID.equals(selfUserID)) {
-                    ZegoExpressEngine.getEngine().startPublishingStream(mainSteamID);
-                } else {
-                    ZegoExpressEngine.getEngine().startPlayingStream(mainSteamID, null);
-                }
-            } else {
-                if (model.userID.equals(selfUserID)) {
-                    ZegoExpressEngine.getEngine().stopPublishingStream();
-                } else {
-                    ZegoExpressEngine.getEngine().stopPlayingStream(mainSteamID);
-                }
-            }
 
             if (speakerSeatServiceListener != null) {
                 speakerSeatServiceListener.onSpeakerSeatUpdate(model);

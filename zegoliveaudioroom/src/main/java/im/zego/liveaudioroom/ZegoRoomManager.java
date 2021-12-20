@@ -17,7 +17,9 @@ import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoScenario;
 import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
+import im.zego.zegoexpress.constants.ZegoUpdateType;
 import im.zego.zegoexpress.entity.ZegoEngineProfile;
+import im.zego.zegoexpress.entity.ZegoStream;
 import im.zego.zim.ZIM;
 import im.zego.zim.callback.ZIMEventHandler;
 import im.zego.zim.entity.ZIMError;
@@ -92,6 +94,14 @@ public class ZegoRoomManager {
                 super.onRemoteSoundLevelUpdate(soundLevels);
                 if (speakerSeatService != null) {
                     speakerSeatService.updateRemoteUsersSoundLevel(soundLevels);
+                }
+            }
+
+            @Override
+            public void onRoomStreamUpdate(String roomID, ZegoUpdateType updateType, ArrayList<ZegoStream> streamList, JSONObject extendedData) {
+                super.onRoomStreamUpdate(roomID, updateType, streamList, extendedData);
+                if (roomService != null) {
+                    roomService.onRoomStreamUpdate(roomID, updateType, streamList);
                 }
             }
         });
