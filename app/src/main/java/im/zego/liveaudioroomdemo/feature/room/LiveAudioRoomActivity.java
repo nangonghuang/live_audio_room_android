@@ -1,8 +1,6 @@
 package im.zego.liveaudioroomdemo.feature.room;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -14,18 +12,24 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import im.zego.liveaudioroom.ZegoLiveAudioRoom;
+
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
-import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomQueryMemberConfig;
 import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
 import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
@@ -47,7 +51,6 @@ import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
 import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
-import im.zego.liveaudioroomdemo.feature.login.RoomLoginActivity;
 import im.zego.liveaudioroomdemo.feature.login.UserLoginActivity;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MessageListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.adapter.SeatListAdapter;
@@ -61,9 +64,6 @@ import im.zego.liveaudioroomdemo.helper.PermissionHelper;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
-import java.util.ArrayList;
-import java.util.List;
-import org.json.JSONException;
 
 public class LiveAudioRoomActivity extends BaseActivity {
 
@@ -95,7 +95,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private MemberListDialog memberListDialog;
 
     private List<ZegoTextMessage> textMessageList = new ArrayList<>();
-    private ZegoLiveAudioRoomQueryMemberConfig config = new ZegoLiveAudioRoomQueryMemberConfig();
     private boolean isImMuted = false;
     private Runnable hideGiftTips = () -> {
         tvGiftToast.setText("");
@@ -110,9 +109,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        config.setNextFlag("");
-        config.setCount(100);
-
         setContentView(R.layout.activity_chat_room);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
 
@@ -177,18 +173,22 @@ public class LiveAudioRoomActivity extends BaseActivity {
             });
         });
         ivMember.setOnClickListener(v -> {
-            ZegoLiveAudioRoomQueryMemberConfig config = new ZegoLiveAudioRoomQueryMemberConfig();
-            config.setNextFlag("");
-            config.setCount(100);
             ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
-            ZegoLiveAudioRoom.getInstance()
-                .queryRoomMember(getRoomID(), config, (userList, nextFlag, errorCode) -> {
-                    memberListDialog = new MemberListDialog(LiveAudioRoomActivity.this,
+            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+
+            if (memberListDialog == null) {
+                memberListDialog = new MemberListDialog(LiveAudioRoomActivity.this,
                         settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
                         seatService.getSpeakerSeatList(),
-                        userList);
-                    memberListDialog.show();
-                });
+                        userService.getUserList());
+            } else {
+                memberListDialog.updateInfo(
+                        settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
+                        seatService.getSpeakerSeatList(),
+                        userService.getUserList()
+                );
+            }
+            memberListDialog.show();
         });
         ivGift.setOnClickListener(v -> {
             giftDialog = new SendGiftDialog(this);
@@ -208,17 +208,15 @@ public class LiveAudioRoomActivity extends BaseActivity {
         ivMore.setOnClickListener(v -> speakerLeaveSeat());
     }
 
-    private void updateMemberListDialog(ZegoLiveAudioRoomQueryMemberConfig config) {
+    private void updateMemberListDialog() {
         if (memberListDialog != null) {
             ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
-            ZegoLiveAudioRoom.getInstance()
-                .queryRoomMember(getRoomID(), config, (userList, nextFlag, errorCode) -> {
-                    memberListDialog.updateInfo(
-                        settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
-                        seatService.getSpeakerSeatList(),
-                        userList
-                    );
-                });
+            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+            memberListDialog.updateInfo(
+                    settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
+                    seatService.getSpeakerSeatList(),
+                    userService.getUserList()
+            );
         }
     }
 
@@ -430,7 +428,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     refreshMessageList();
                 }
                 seatListAdapter.notifyDataSetChanged();
-                updateMemberListDialog(config);
+                updateMemberListDialog();
             }
 
             @Override
@@ -444,7 +442,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
                 }
                 seatListAdapter.notifyDataSetChanged();
-                updateMemberListDialog(config);
+                updateMemberListDialog();
             }
 
             @Override
@@ -457,14 +455,14 @@ public class LiveAudioRoomActivity extends BaseActivity {
         seatService.setSpeakerSeatServiceCallback(model -> {
             seatListAdapter.updateUserInfo(model);
             if (getMyUserID().equals(model.userID)) {
-                if (model.status == ZegoSpeakerSeatStatus.Occupied) {
+                if (model.status == ZegoSpeakerSeatStatus.Occupied && !UserInfoHelper.isSelfOwner()) {
                     uiToSpeaker();
                     ivMic.setSelected(!model.isMicMuted);
                 } else if (model.status == ZegoSpeakerSeatStatus.Untaken) {
                     uiToAudience();
                 }
             }
-            updateMemberListDialog(config);
+            updateMemberListDialog();
         });
 
         ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;

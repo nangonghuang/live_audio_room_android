@@ -12,10 +12,10 @@ import com.blankj.utilcode.util.ToastUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import im.zego.liveaudioroom.entity.ZegoLiveAudioRoomUser;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
+import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MemberListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.model.MemberInfo;
@@ -23,20 +23,20 @@ import im.zego.liveaudioroomdemo.helper.DialogHelper;
 
 public class MemberListDialog extends BaseBottomDialog {
     private List<ZegoSpeakerSeatModel> usersInSeat;
-    private List<ZegoLiveAudioRoomUser> userIDs;
+    private List<ZegoUserInfo> userIDs;
 
     private RecyclerView recyclerView;
     private TextView tvTitle;
     private boolean canNotTakeSeat;
 
-    public MemberListDialog(Context context, boolean canNotTakeSeat, List<ZegoSpeakerSeatModel> usersInSeat, List<ZegoLiveAudioRoomUser> userList) {
+    public MemberListDialog(Context context, boolean canNotTakeSeat, List<ZegoSpeakerSeatModel> usersInSeat, List<ZegoUserInfo> userList) {
         super(context);
         this.canNotTakeSeat = canNotTakeSeat;
         this.usersInSeat = usersInSeat;
         this.userIDs = userList;
     }
 
-    public void updateInfo(boolean canNotTakeSeat, List<ZegoSpeakerSeatModel> usersInSeat, List<ZegoLiveAudioRoomUser> userList) {
+    public void updateInfo(boolean canNotTakeSeat, List<ZegoSpeakerSeatModel> usersInSeat, List<ZegoUserInfo> userList) {
         this.canNotTakeSeat = canNotTakeSeat;
         this.usersInSeat = usersInSeat;
         this.userIDs = userList;
@@ -60,7 +60,7 @@ public class MemberListDialog extends BaseBottomDialog {
         super.initData();
         int onSeatMemberCounts = 0;
         ArrayList<MemberInfo> arrayList = new ArrayList<>();
-        for (ZegoLiveAudioRoomUser user : userIDs) {
+        for (ZegoUserInfo user : userIDs) {
             MemberInfo info = new MemberInfo();
             for (ZegoSpeakerSeatModel seat : usersInSeat) {
                 String user_id = seat.userID;

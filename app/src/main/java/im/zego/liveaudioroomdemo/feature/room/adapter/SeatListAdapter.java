@@ -145,7 +145,8 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
 
     public void updateUserInfo(ZegoSpeakerSeatModel zimSpeakerSeat) {
         seatList.set(zimSpeakerSeat.seatIndex, zimSpeakerSeat);
-        notifyItemChanged(zimSpeakerSeat.seatIndex, new Object());
+        notifyDataSetChanged();
+//        notifyItemChanged(zimSpeakerSeat.seatIndex, new Object());
     }
 
     public void setOnSeatClickListener(OnSeatClickListener itemListener) {
