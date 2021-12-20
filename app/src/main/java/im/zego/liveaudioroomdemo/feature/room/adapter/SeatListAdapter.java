@@ -66,7 +66,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
                 String userID = speakerSeatModel.userID;
                 String userName = userService.getUserName(userID);
                 holder.tvUserName.setText(userName);
-                holder.ivAvatar.setImageDrawable(UserInfoHelper.getUserAvatar(position));
+                holder.ivAvatar.setImageDrawable(UserInfoHelper.getAvatarByUserName(userName));
 
                 if (UserInfoHelper.isUserOwner(userID)) {
                     holder.ivOwnerAvatar.setVisibility(View.VISIBLE);
