@@ -3,20 +3,24 @@ package im.zego.liveaudioroomdemo.feature.room.dialog;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.service.ZegoGiftService;
-import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
-import im.zego.liveaudioroom.refactor.service.ZegoUserService;
+
+import java.util.List;
+
+import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.service.ZegoGiftService;
+import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
+import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.GiftListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
-import java.util.List;
 
 /**
  * dialog display when click gift button in the bottom.
@@ -58,7 +62,7 @@ public class SendGiftDialog extends BaseBottomDialog {
                 List<String> giftTargetUsers = giftTargetPopWindow.getGiftTargetUsers();
                 ZegoGiftService giftService = ZegoRoomManager.getInstance().giftService;
                 giftService.sendGift(selectedGift.getId(), giftTargetUsers, errorCode -> {
-                    if (errorCode == ZegoLiveAudioRoomErrorCode.SUCCESS.getValue()) {
+                    if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                         if (sendGiftListener != null) {
                             sendGiftListener.onSendGift(giftTargetUsers, selectedGift.getId());
                         }

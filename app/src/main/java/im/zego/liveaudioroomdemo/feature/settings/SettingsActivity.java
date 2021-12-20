@@ -10,8 +10,8 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.zegoexpress.ZegoExpressEngine;

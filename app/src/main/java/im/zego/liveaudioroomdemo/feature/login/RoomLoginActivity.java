@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,11 +17,11 @@ import com.blankj.utilcode.util.ToastUtils;
 
 import org.json.JSONException;
 
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.constants.ZegoRoomErrorCode;
-import im.zego.liveaudioroom.refactor.listener.ZegoRoomServiceListener;
-import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
-import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
+import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.listener.ZegoRoomServiceListener;
+import im.zego.liveaudioroom.model.ZegoRoomInfo;
+import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroom.util.TokenServerAssistant;
 import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
 import im.zego.liveaudioroomdemo.KeyCenter;
