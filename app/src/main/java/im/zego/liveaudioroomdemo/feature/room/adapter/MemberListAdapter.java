@@ -36,7 +36,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.Us
     public void onBindViewHolder(@NonNull UserListHolder holder, int position) {
         final MemberInfo memberInfo = userListInRoom.get(position);
 
-        holder.ivUserAvatar.setImageDrawable(UserInfoHelper.getUserAvatar(position));
+        holder.ivUserAvatar.setImageDrawable(UserInfoHelper.getAvatarByUserName(memberInfo.userName));
         holder.tvUserName.setText(memberInfo.userName);
         if (memberInfo.showInvitation) {
             holder.tvUserInfo.setVisibility(View.GONE);
