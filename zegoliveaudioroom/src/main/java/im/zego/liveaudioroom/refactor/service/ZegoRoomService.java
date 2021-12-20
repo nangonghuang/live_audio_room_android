@@ -1,6 +1,12 @@
 package im.zego.liveaudioroom.refactor.service;
 
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Set;
+
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
 import im.zego.liveaudioroom.refactor.callback.ZegoOnlineRoomUsersCallback;
@@ -22,9 +28,6 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
-import java.util.HashMap;
-import java.util.Set;
-import org.json.JSONObject;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -121,6 +124,9 @@ public class ZegoRoomService {
                 callback.roomCallback(errorInfo.code.value());
             }
         });
+        ZegoExpressEngine.getEngine().stopSoundLevelMonitor();
+        ZegoExpressEngine.getEngine().stopPublishingStream();
+        ZegoExpressEngine.getEngine().logoutRoom(roomInfo.getRoomID());
     }
 
     // query the number of chat rooms available online
