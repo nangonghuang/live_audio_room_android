@@ -1,6 +1,13 @@
 package im.zego.liveaudioroom.service;
 
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -12,15 +19,11 @@ import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
+import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMMessage;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -150,8 +153,9 @@ public class ZegoUserService {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         ZegoCustomCommand command = new ZegoCustomCommand();
         command.actionType = ZegoCustomCommand.INVITATION;
-        command.target = Arrays.asList(userID);
+        command.target = Collections.singletonList(userID);
         command.userID = localUserInfo.getUserID();
+        command.toJson();
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
         ZegoZIMManager.getInstance().zim.sendRoomMessage(command, roomID, (message, errorInfo) -> {
             if (callback != null) {
@@ -163,7 +167,11 @@ public class ZegoUserService {
     public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
-                ZegoCustomCommand command = (ZegoCustomCommand) zimMessage;
+                ZIMCustomMessage zimCustomMessage = (ZIMCustomMessage) zimMessage;
+                ZegoCustomCommand command = new ZegoCustomCommand();
+                command.type = zimCustomMessage.type;
+                command.userID = zimCustomMessage.userID;
+                command.fromJson(zimCustomMessage.message);
                 if (command.actionType == ZegoCustomCommand.INVITATION) {
                     ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
                     if (command.target.contains(localUserInfo.getUserID())) {
