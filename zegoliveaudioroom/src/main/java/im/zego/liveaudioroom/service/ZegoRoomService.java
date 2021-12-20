@@ -114,6 +114,9 @@ public class ZegoRoomService {
     public void leaveRoom(final ZegoRoomCallback callback) {
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         if (seatService != null) {
+            seatService.leaveSeat(errorCode -> {
+
+            });
             seatService.reset();
         }
         ZegoMessageService messageService = ZegoRoomManager.getInstance().messageService;

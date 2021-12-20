@@ -65,7 +65,7 @@ public class ZegoUserService {
         leaveRoom();
     }
 
-    void leaveRoom(){
+    void leaveRoom() {
         userList.clear();
         userMap.clear();
     }
@@ -95,17 +95,13 @@ public class ZegoUserService {
             listener.onRoomUserLeave(leaveUsers);
         }
         ZegoUserInfo userInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
-        if (userInfo.getRole() == ZegoRoomUserRole.Host) {
-            ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
-            List<ZegoSpeakerSeatModel> seatList = seatService.getSpeakerSeatList();
-            for (ZegoUserInfo leaveUser : leaveUsers) {
-                String leaveUserID = leaveUser.getUserID();
-                for (ZegoSpeakerSeatModel model : seatList) {
-                    if (model.userID.equals(leaveUserID) && model.status == ZegoSpeakerSeatStatus.Occupied) {
-                        seatService.removeUserFromSeat(model.seatIndex, errorCode -> {
-
-                        });
-                    }
+        ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
+        List<ZegoSpeakerSeatModel> seatList = seatService.getSpeakerSeatList();
+        for (ZegoUserInfo leaveUser : leaveUsers) {
+            String leaveUserID = leaveUser.getUserID();
+            for (ZegoSpeakerSeatModel model : seatList) {
+                if (model.userID.equals(leaveUserID) && model.status == ZegoSpeakerSeatStatus.Occupied) {
+                    seatService.updateSpeakerSeatWhenLeave(model);
                 }
             }
         }
