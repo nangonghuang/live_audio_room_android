@@ -1,18 +1,10 @@
 package im.zego.liveaudioroomdemo.feature.room.dialog;
 
 import android.content.Context;
-
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.blankj.utilcode.util.ToastUtils;
-
-import java.util.List;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
-import im.zego.liveaudioroom.model.ZegoRoomInfo;
-import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
-import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroomdemo.R;
 
@@ -20,13 +12,11 @@ public class SettingsDialog extends BaseBottomDialog {
 
     public boolean isCheckedLockAllSeat = false;
 
-    private List<ZegoSpeakerSeatModel> seatList;
-    private SwitchCompat switchAllowMic;
-    private SwitchCompat switchAllowMessage;
+    private SwitchCompat switchDisableMessage;
+    private SwitchCompat switchCloseSeat;
 
-    public SettingsDialog(Context context, List<ZegoSpeakerSeatModel> seatList) {
+    public SettingsDialog(Context context) {
         super(context);
-        this.seatList = seatList;
     }
 
     @Override
@@ -37,49 +27,30 @@ public class SettingsDialog extends BaseBottomDialog {
     @Override
     protected void initView() {
         super.initView();
-        switchAllowMic = findViewById(R.id.switch_allow_mic);
-        switchAllowMessage = findViewById(R.id.switch_allow_message);
+        switchDisableMessage = findViewById(R.id.switch_disable_message);
+        switchCloseSeat = findViewById(R.id.switch_close_seat);
     }
 
     @Override
     protected void initListener() {
         super.initListener();
-        switchAllowMic.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        switchDisableMessage.setOnCheckedChangeListener((buttonView, isChecked) -> {
             ZegoRoomManager.getInstance().roomService.disableTextMessage(isChecked, errorCode -> {
 
             });
         });
-        switchAllowMessage.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        switchCloseSeat.setOnCheckedChangeListener((buttonView, isChecked) -> {
             isCheckedLockAllSeat = isChecked;
-            for (ZegoSpeakerSeatModel i : seatList) {
-                if (isUserOwner(i.userID)) {
-                    continue;
-                }
-                ZegoSpeakerSeatService seatService = ZegoRoomManager
-                    .getInstance().speakerSeatService;
-                if (isChecked) {
-                    if (i.status == ZegoSpeakerSeatStatus.Untaken) {
-                        seatService.closeSeat(true, i.seatIndex, errorCode -> {
-                            if (errorCode != ZegoRoomErrorCode.SUCCESS) {
-                                ToastUtils
-                                    .showShort(R.string.toast_lock_seat_fail, errorCode);
-                            }
-                        });
-                    }
-                } else {
-                    if (i.status == ZegoSpeakerSeatStatus.Closed) {
-                        seatService.closeSeat(false, i.seatIndex, errorCode -> {
-
-                        });
+            ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
+            seatService.closeAllSeat(isChecked, errorCode -> {
+                if (errorCode != ZegoRoomErrorCode.SUCCESS) {
+                    if (isChecked) {
+                        ToastUtils.showShort(R.string.toast_lock_seat_fail, errorCode);
+                    } else {
+                        ToastUtils.showShort(R.string.toast_unlock_seat_fail, errorCode);
                     }
                 }
-            }
+            });
         });
-    }
-
-    private boolean isUserOwner(String userId) {
-        ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
-        String ownerID = roomInfo.getHostID();
-        return ownerID.equals(userId);
     }
 }

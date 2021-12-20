@@ -26,6 +26,7 @@ import java.util.List;
 public class GiftTargetPopWindow extends PopupWindow {
 
     private static final String TAG = "GiftTargetPopWindow";
+    private final GiftTargetAdapter targetAdapter;
     private GiftTargetListener giftTargetListener;
     List<String> target = new ArrayList<>();
 
@@ -35,7 +36,8 @@ public class GiftTargetPopWindow extends PopupWindow {
             .inflate(context, R.layout.popwindow_gift_target, null);
         RecyclerView recyclerView = viewGroup.findViewById(R.id.rv_gift_target_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new GiftTargetAdapter(userList));
+        targetAdapter = new GiftTargetAdapter(userList);
+        recyclerView.setAdapter(targetAdapter);
         RecyclerDivider divider = new RecyclerDivider(context);
         divider.setPadding(SizeUtils.dp2px(16f), SizeUtils.dp2px(16f));
         divider.setHeight(SizeUtils.dp2px(1f));
@@ -106,6 +108,13 @@ public class GiftTargetPopWindow extends PopupWindow {
         this.giftTargetListener = giftTargetListener;
     }
 
+    public void updateList(List<String> targetUserList) {
+        if (targetAdapter != null) {
+            targetAdapter.updateList(targetUserList);
+            targetAdapter.notifyDataSetChanged();
+        }
+    }
+
     private static class GiftTargetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private List<String> userList;
@@ -144,6 +153,11 @@ public class GiftTargetPopWindow extends PopupWindow {
         @Override
         public int getItemCount() {
             return userList.size() + 1;
+        }
+
+        public void updateList(List<String> targetUserList) {
+            userList.clear();
+            userList.addAll(targetUserList);
         }
     }
 

@@ -12,23 +12,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
-
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.listener.ZegoRoomServiceListener;
@@ -43,9 +35,6 @@ import im.zego.liveaudioroom.service.ZegoMessageService;
 import im.zego.liveaudioroom.service.ZegoRoomService;
 import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroom.service.ZegoUserService;
-import im.zego.liveaudioroom.util.TokenServerAssistant;
-import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
-import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.liveaudioroomdemo.feature.login.UserLoginActivity;
@@ -61,6 +50,8 @@ import im.zego.liveaudioroomdemo.helper.PermissionHelper;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LiveAudioRoomActivity extends BaseActivity {
 
@@ -142,17 +133,24 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 imInputDialog = new IMInputDialog(this);
                 imInputDialog.setOnSendListener(imText -> {
                     ZegoMessageService service = ZegoRoomManager.getInstance().messageService;
-                    service.sendTextMessage(imText, errorCode -> {
-                        if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                            final ZegoTextMessage text = new ZegoTextMessage();
-                            text.message = imText;
-                            text.userID = getMyUserID();
-                            textMessageList.add(text);
-                            refreshMessageList();
-                        } else {
-                            ToastUtils.showShort(R.string.toast_send_message_error, errorCode);
-                        }
-                    });
+                    boolean textMessageDisabled = ZegoRoomManager.getInstance().roomService.roomInfo
+                        .isTextMessageDisabled();
+                    if (textMessageDisabled) {
+                        ToastUtils.showShort(R.string.toast_send_message_error, ZegoRoomErrorCode.NO_PERMISSION);
+                    } else {
+                        service.sendTextMessage(imText, errorCode -> {
+                            if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                                final ZegoTextMessage text = new ZegoTextMessage();
+                                text.message = imText;
+                                text.userID = getMyUserID();
+                                textMessageList.add(text);
+                                refreshMessageList();
+                            } else {
+                                ToastUtils.showShort(R.string.toast_send_message_error, errorCode);
+                            }
+                        });
+                    }
+
                 });
                 imInputDialog.show();
             }
@@ -175,14 +173,14 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
             if (memberListDialog == null) {
                 memberListDialog = new MemberListDialog(LiveAudioRoomActivity.this,
-                        settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
-                        seatService.getSpeakerSeatList(),
-                        userService.getUserList());
+                    settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
+                    seatService.getSpeakerSeatList(),
+                    userService.getUserList());
             } else {
                 memberListDialog.updateInfo(
-                        settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
-                        seatService.getSpeakerSeatList(),
-                        userService.getUserList()
+                    settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
+                    seatService.getSpeakerSeatList(),
+                    userService.getUserList()
                 );
             }
             memberListDialog.show();
@@ -198,7 +196,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             if (settingsDialog == null) {
                 ZegoSpeakerSeatService seatService = ZegoRoomManager
                     .getInstance().speakerSeatService;
-                settingsDialog = new SettingsDialog(this, seatService.getSpeakerSeatList());
+                settingsDialog = new SettingsDialog(this);
             }
             settingsDialog.show();
         });
@@ -210,9 +208,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
             ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             memberListDialog.updateInfo(
-                    settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
-                    seatService.getSpeakerSeatList(),
-                    userService.getUserList()
+                settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
+                seatService.getSpeakerSeatList(),
+                userService.getUserList()
             );
         }
     }
@@ -449,6 +447,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         seatService.setListener(model -> {
+            Log.d(TAG, "seatService.setListener: model" + model);
             seatListAdapter.updateUserInfo(model);
             if (getMyUserID().equals(model.userID)) {
                 if (model.status == ZegoSpeakerSeatStatus.Occupied && !UserInfoHelper.isSelfOwner()) {
@@ -459,15 +458,19 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 }
             }
             updateMemberListDialog();
+            if (giftDialog != null && giftDialog.isShowing()) {
+                giftDialog.updateList();
+            }
         });
 
         ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
         roomService.setListener(new ZegoRoomServiceListener() {
             @Override
             public void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo) {
+                Log.d(TAG, "onReceiveRoomInfoUpdate() called with: roomInfo = [" + roomInfo + "]");
                 if (roomInfo == null) {
-                    ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
-                    finish();
+//                    ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
+//                    finish();
                 } else {
                     onUserMuted(roomInfo.isTextMessageDisabled());
                 }
@@ -480,7 +483,11 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     if (event == ZIMConnectionEvent.LOGIN_TIMEOUT) {
                         showReconnectDialog();
                     } else {
-                        ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
+                        if (event == ZIMConnectionEvent.SUCCESS) {
+                            ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
+                        } else {
+                            ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
+                        }
                         ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
                     }
                 }

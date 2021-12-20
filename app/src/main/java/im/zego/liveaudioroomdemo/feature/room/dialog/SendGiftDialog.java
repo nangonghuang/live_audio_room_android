@@ -76,14 +76,8 @@ public class SendGiftDialog extends BaseBottomDialog {
 
         });
         tvChooseMember.setOnClickListener(view -> {
-            ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager
-                .getInstance().speakerSeatService;
-            List<String> seatedUserList = speakerSeatService.getSeatedUserList();
-
-            String myUserID = ZegoRoomManager.getInstance().userService.localUserInfo.getUserID();
-            seatedUserList.remove(myUserID);
-            giftTargetPopWindow = new GiftTargetPopWindow(getContext(), seatedUserList,
-                tvChooseMember.getWidth());
+            List<String> targetUserList = getTargetUserList();
+            giftTargetPopWindow = new GiftTargetPopWindow(getContext(), targetUserList, tvChooseMember.getWidth());
             giftTargetPopWindow.setGiftTargetListener((index, targetList) -> {
                 if (index == 0) {
                     if (targetList.size() > 0) {
@@ -102,8 +96,26 @@ public class SendGiftDialog extends BaseBottomDialog {
         });
     }
 
+    @NonNull
+    private List<String> getTargetUserList() {
+        ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
+        List<String> seatedUserList = speakerSeatService.getSeatedUserList();
+
+        String myUserID = ZegoRoomManager.getInstance().userService.localUserInfo.getUserID();
+        seatedUserList.remove(myUserID);
+        return seatedUserList;
+    }
+
     public void setSendGiftListener(SendGiftListener sendGiftListener) {
         this.sendGiftListener = sendGiftListener;
+    }
+
+    public void updateList() {
+        List<String> targetUserList = getTargetUserList();
+        if (giftTargetPopWindow != null && giftTargetPopWindow.isShowing()) {
+            giftTargetPopWindow.updateList(targetUserList);
+        }
+        tvSendGift.setEnabled(targetUserList.size() > 0);
     }
 
     public interface SendGiftListener {
