@@ -298,11 +298,13 @@ public class ZegoSpeakerSeatService {
             model.userID = "";
             model.status = ZegoSpeakerSeatStatus.Untaken;
         }
+        speakerSeatList.clear();
         speakerSeatServiceCallback = null;
     }
 
     void initRoomSeat() {
         int seatNum = ZegoRoomManager.getInstance().roomService.roomInfo.getSeatNum();
+        speakerSeatList.clear();
         for (int i = 0; i < seatNum; i++) {
             ZegoSpeakerSeatModel model = new ZegoSpeakerSeatModel();
             model.userID = "";
