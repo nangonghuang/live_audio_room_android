@@ -1,13 +1,6 @@
 package im.zego.liveaudioroom.refactor.service;
 
-import android.util.Log;
 import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Set;
-
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
 import im.zego.liveaudioroom.refactor.callback.ZegoOnlineRoomUsersCallback;
@@ -29,6 +22,9 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
+import java.util.HashMap;
+import java.util.Set;
+import org.json.JSONObject;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -154,24 +150,17 @@ public class ZegoRoomService {
     }
 
     /**
-     * {seat_0={"mute":false,"index":0,"status":"1","id":"Xiaomi533"}, roomInfo={"hostID":"Xiaomi533","close":false,"disable":false,"id":"Gggg","name":"Fgg","num":8}}
      *
      * @param zim
      * @param info
      * @param roomID
      */
     public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
-        Log.d(TAG,
-            "onRoomAttributesUpdated() called with: info.action = [" + info.action + "], info = [" + info.roomAttributes
-                + "], roomID = [" + roomID
-                + "]");
         if (info.action == ZIMRoomAttributesUpdateAction.SET) {
             Set<String> keys = info.roomAttributes.keySet();
             for (String key : keys) {
                 if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
-                    ZegoRoomInfo roomInfo = new Gson()
-                        .fromJson(info.roomAttributes.get(key), ZegoRoomInfo.class);
-                    Log.d(TAG, "onRoomAttributesUpdated: roomInfo:" + roomInfo);
+                    ZegoRoomInfo roomInfo = new Gson().fromJson(info.roomAttributes.get(key), ZegoRoomInfo.class);
                     boolean firstInit = (this.roomInfo.getSeatNum() == 0);
                     this.roomInfo = roomInfo;
                     if (firstInit) {
