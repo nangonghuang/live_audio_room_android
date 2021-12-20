@@ -1,12 +1,7 @@
 package im.zego.liveaudioroom.service;
 
+import android.util.Log;
 import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Set;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoOnlineRoomUsersCallback;
@@ -28,6 +23,9 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
+import java.util.HashMap;
+import java.util.Set;
+import org.json.JSONObject;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -119,14 +117,25 @@ public class ZegoRoomService {
         if (userService != null) {
             userService.leaveRoom();
         }
+        reset();
+
+        ZegoExpressEngine.getEngine().stopSoundLevelMonitor();
+        ZegoExpressEngine.getEngine().stopPublishingStream();
+
+        ZegoExpressEngine.getEngine().logoutRoom(roomInfo.getRoomID());
+
         ZegoZIMManager.getInstance().zim.leaveRoom(roomInfo.getRoomID(), errorInfo -> {
+            Log.d(TAG, "leaveRoom() called with: errorInfo = [" + errorInfo.code + "]" + errorInfo.message);
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
             }
         });
-        ZegoExpressEngine.getEngine().stopSoundLevelMonitor();
-        ZegoExpressEngine.getEngine().stopPublishingStream();
-        ZegoExpressEngine.getEngine().logoutRoom(roomInfo.getRoomID());
+    }
+
+    void reset() {
+        roomInfo.setRoomName("");
+        roomInfo.setSeatNum(0);
+        roomInfo.setHostID("");
     }
 
     // query the number of chat rooms available online
@@ -156,12 +165,15 @@ public class ZegoRoomService {
     }
 
     /**
-     *
      * @param zim
      * @param info
      * @param roomID
      */
     public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
+        Log.d(TAG,
+            "onRoomAttributesUpdated() called with: info.action = [" + info.action + "], info.roomAttributes = ["
+                + info.roomAttributes + "], roomID = [" + roomID
+                + "]");
         if (info.action == ZIMRoomAttributesUpdateAction.SET) {
             Set<String> keys = info.roomAttributes.keySet();
             for (String key : keys) {
