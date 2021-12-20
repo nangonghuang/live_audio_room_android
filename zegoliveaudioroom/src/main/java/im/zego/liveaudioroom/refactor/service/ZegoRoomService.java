@@ -1,5 +1,6 @@
 package im.zego.liveaudioroom.refactor.service;
 
+import android.util.Log;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -36,7 +37,9 @@ public class ZegoRoomService {
 
     private ZegoRoomServiceListener listener;
     // room info object
-    public ZegoRoomInfo roomInfo;
+    public ZegoRoomInfo roomInfo = new ZegoRoomInfo();
+
+    private static final String TAG = "ZegoRoomService";
 
     // create a room
     public void createRoom(String roomID, String roomName, final String token,
@@ -44,7 +47,6 @@ public class ZegoRoomService {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         localUserInfo.setRole(ZegoRoomUserRole.Host);
 
-        roomInfo = new ZegoRoomInfo();
         roomInfo.setRoomID(roomID);
         roomInfo.setRoomName(roomName);
         roomInfo.setHostID(localUserInfo.getUserID());
@@ -80,7 +82,8 @@ public class ZegoRoomService {
         ZegoZIMManager.getInstance().zim.joinRoom(roomID, (roomInfo, errorInfo) -> {
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
                 loginRTCRoom(roomID, token, localUserInfo);
-                initRoomSeat();
+                this.roomInfo.setRoomID(roomInfo.baseInfo.roomID);
+                this.roomInfo.setRoomName(roomInfo.baseInfo.roomName);
             }
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
@@ -150,22 +153,38 @@ public class ZegoRoomService {
         this.listener = listener;
     }
 
+    /**
+     * {seat_0={"mute":false,"index":0,"status":"1","id":"Xiaomi533"}, roomInfo={"hostID":"Xiaomi533","close":false,"disable":false,"id":"Gggg","name":"Fgg","num":8}}
+     *
+     * @param zim
+     * @param info
+     * @param roomID
+     */
     public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
-        Set<String> keys = info.roomAttributes.keySet();
-        for (String key : keys) {
-            if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
-                if (info.action == ZIMRoomAttributesUpdateAction.SET) {
+        Log.d(TAG,
+            "onRoomAttributesUpdated() called with: info.action = [" + info.action + "], info = [" + info.roomAttributes
+                + "], roomID = [" + roomID
+                + "]");
+        if (info.action == ZIMRoomAttributesUpdateAction.SET) {
+            Set<String> keys = info.roomAttributes.keySet();
+            for (String key : keys) {
+                if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
                     ZegoRoomInfo roomInfo = new Gson()
                         .fromJson(info.roomAttributes.get(key), ZegoRoomInfo.class);
+                    Log.d(TAG, "onRoomAttributesUpdated: roomInfo:" + roomInfo);
+                    boolean firstInit = (this.roomInfo.getSeatNum() == 0);
                     this.roomInfo = roomInfo;
+                    if (firstInit) {
+                        initRoomSeat();
+                    }
                     if (listener != null) {
                         listener.onReceiveRoomInfoUpdate(roomInfo);
                     }
-                } else {
-                    if (listener != null) {
-                        listener.onReceiveRoomInfoUpdate(null);
-                    }
                 }
+            }
+        } else {
+            if (listener != null) {
+                listener.onReceiveRoomInfoUpdate(null);
             }
         }
     }

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -243,13 +244,15 @@ public class ZegoSpeakerSeatService {
     }
 
     private void onSpeakerSeatStatusChanged(ZegoSpeakerSeatModel updateModel) {
-        ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(updateModel.seatIndex);
-        speakerSeatModel.userID = updateModel.userID;
-        speakerSeatModel.seatIndex = updateModel.seatIndex;
-        speakerSeatModel.isMicMuted = updateModel.isMicMuted;
-        speakerSeatModel.status = updateModel.status;
-        if (speakerSeatServiceCallback != null) {
-            speakerSeatServiceCallback.onSpeakerSeatUpdate(speakerSeatModel);
+        if (speakerSeatList.size() > updateModel.seatIndex) {
+            ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(updateModel.seatIndex);
+            speakerSeatModel.userID = updateModel.userID;
+            speakerSeatModel.seatIndex = updateModel.seatIndex;
+            speakerSeatModel.isMicMuted = updateModel.isMicMuted;
+            speakerSeatModel.status = updateModel.status;
+            if (speakerSeatServiceCallback != null) {
+                speakerSeatServiceCallback.onSpeakerSeatUpdate(speakerSeatModel);
+            }
         }
     }
 
@@ -278,15 +281,16 @@ public class ZegoSpeakerSeatService {
         return (speakerSeatModel.status == ZegoSpeakerSeatStatus.Untaken);
     }
 
-    public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info,
-        String roomID) {
+    public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
         Gson gson = new Gson();
         HashMap<String, String> roomAttributes = info.roomAttributes;
-        for (Entry<String, String> entry : roomAttributes.entrySet()) {
-            if (entry.getKey().startsWith("seat_")) {
-                String jsonValue = entry.getValue();
-                ZegoSpeakerSeatModel model = gson.fromJson(jsonValue, ZegoSpeakerSeatModel.class);
-                onSpeakerSeatStatusChanged(model);
+        if (info.action == ZIMRoomAttributesUpdateAction.SET) {
+            for (Entry<String, String> entry : roomAttributes.entrySet()) {
+                if (entry.getKey().startsWith("seat_")) {
+                    String jsonValue = entry.getValue();
+                    ZegoSpeakerSeatModel model = gson.fromJson(jsonValue, ZegoSpeakerSeatModel.class);
+                    onSpeakerSeatStatusChanged(model);
+                }
             }
         }
     }
