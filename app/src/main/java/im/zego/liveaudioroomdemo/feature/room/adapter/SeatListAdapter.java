@@ -5,23 +5,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.blankj.utilcode.util.LanguageUtils;
 import com.blankj.utilcode.util.ResourceUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatListHolder> {
 

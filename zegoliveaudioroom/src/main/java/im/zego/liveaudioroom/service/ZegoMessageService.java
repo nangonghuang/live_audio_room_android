@@ -1,8 +1,5 @@
 package im.zego.liveaudioroom.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -11,8 +8,11 @@ import im.zego.liveaudioroom.model.ZegoTextMessage;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMMessage;
+import im.zego.zim.entity.ZIMTextMessage;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * manage room text message.
@@ -52,7 +52,14 @@ public class ZegoMessageService {
     public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.TEXT) {
-                ZegoTextMessage textMessage = (ZegoTextMessage) zimMessage;
+                ZIMTextMessage zimTextMessage = (ZIMTextMessage) zimMessage;
+                ZegoTextMessage textMessage = new ZegoTextMessage();
+                textMessage.message = zimTextMessage.message;
+                textMessage.userID = zimTextMessage.userID;
+                textMessage.messageID = zimTextMessage.messageID;
+                textMessage.type = zimTextMessage.type;
+                textMessage.priority = zimTextMessage.priority;
+                textMessage.timestamp = zimTextMessage.timestamp;
                 messageList.add(textMessage);
                 if (messageServiceListener != null) {
                     messageServiceListener.onReceiveTextMessage(textMessage, fromRoomID);

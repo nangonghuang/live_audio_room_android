@@ -315,17 +315,13 @@ public class ZegoSpeakerSeatService {
     }
 
     void reset() {
-        for (ZegoSpeakerSeatModel model : speakerSeatList) {
-            model.userID = "";
-            model.status = ZegoSpeakerSeatStatus.Untaken;
-        }
         speakerSeatList.clear();
         speakerSeatServiceListener = null;
     }
 
     void initRoomSeat() {
-        int seatNum = ZegoRoomManager.getInstance().roomService.roomInfo.getSeatNum();
         speakerSeatList.clear();
+        int seatNum = ZegoRoomManager.getInstance().roomService.roomInfo.getSeatNum();
         for (int i = 0; i < seatNum; i++) {
             ZegoSpeakerSeatModel model = new ZegoSpeakerSeatModel();
             model.userID = "";
@@ -338,6 +334,8 @@ public class ZegoSpeakerSeatService {
 
     public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
         ZegoStreamQualityLevel downstreamQuality) {
+        Log.d(TAG, "onNetworkQuality() called with: userID = [" + userID + "], upstreamQuality = [" + upstreamQuality
+            + "], downstreamQuality = [" + downstreamQuality + "]");
         ZegoNetWorkQuality quality;
         if (upstreamQuality == ZegoStreamQualityLevel.EXCELLENT
             || upstreamQuality == ZegoStreamQualityLevel.GOOD) {

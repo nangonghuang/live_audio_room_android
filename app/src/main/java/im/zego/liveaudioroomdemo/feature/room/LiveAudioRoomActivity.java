@@ -489,63 +489,17 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     private void showReconnectDialog() {
-        ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        AlertDialog.Builder builder = new Builder(LiveAudioRoomActivity.this);
-        builder.setMessage(R.string.room_tips_reconnect);
-        builder.setPositiveButton(R.string.dialog_confirm, (dialog, which) -> {
-            try {
-                roomService.leaveRoom(errorCode -> {
-
-                });
-                String loginToken = TokenServerAssistant
-                    .generateToken(KeyCenter.appID(), userService.localUserInfo.getUserID(),
-                        KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data;
-                userService.login(userService.localUserInfo, loginToken, errorCode -> {
-                    Log.d(TAG, "login() returned with: errorCode = [" + errorCode + "]");
-                    if (errorCode == 0) {
-                        String roomID = roomService.roomInfo.getRoomID();
-                        ZegoUserInfo selfUser = userService.localUserInfo;
-                        ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
-                        privileges.canLoginRoom = true;
-                        privileges.canPublishStream = true;
-                        String joinRoomToken = ZegoRTCServerAssistant
-                            .generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges,
-                                KeyCenter.appExpressSign(), 660).data;
-                        if (!UserInfoHelper.isSelfOwner()) {
-                            roomService.joinRoom(roomID, joinRoomToken, errorCode2 -> {
-                                Log.d(TAG, "joinRoom() returned with: errorCode = [" + errorCode2 + "]");
-                                if (errorCode2 == 0) {
-                                    updateUI();
-                                } else {
-                                    ToastUtils.showShort(R.string.toast_join_room_fail, errorCode2);
-                                    ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
-                                }
-                            });
-                        } else {
-                            AlertDialog.Builder builder2 = new Builder(LiveAudioRoomActivity.this);
-                            builder2.setTitle(R.string.network_connect_failed_title);
-                            builder2.setMessage(R.string.network_connect_failed);
-                            builder2.setPositiveButton(R.string.dialog_confirm, (dialog1, which1) -> {
-                                ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
-                            });
-                            if (!LiveAudioRoomActivity.this.isFinishing()) {
-                                builder2.create().show();
-                            }
-                        }
-                    }
-                    dialog.cancel();
-                });
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        });
-        builder.setNegativeButton(R.string.dialog_cancel, ((dialog, which) -> {
-            dialog.cancel();
+        AlertDialog.Builder builder2 = new Builder(LiveAudioRoomActivity.this);
+        builder2.setTitle(R.string.network_connect_failed_title);
+        builder2.setMessage(R.string.network_connect_failed);
+        builder2.setCancelable(false);
+        builder2.setPositiveButton(R.string.dialog_confirm, (dialog1, which1) -> {
             ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
-        }));
+        });
         if (!LiveAudioRoomActivity.this.isFinishing()) {
-            builder.create().show();
+            AlertDialog alertDialog = builder2.create();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
         }
     }
 
