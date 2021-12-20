@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
-import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
-import im.zego.liveaudioroom.refactor.service.ZegoUserService;
+import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
+import im.zego.liveaudioroom.model.ZegoUserInfo;
+import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
 

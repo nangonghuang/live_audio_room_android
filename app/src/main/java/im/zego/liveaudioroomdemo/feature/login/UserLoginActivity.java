@@ -14,9 +14,9 @@ import org.json.JSONException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.constants.ZegoRoomErrorCode;
-import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
+import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroom.util.TokenServerAssistant;
 import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;

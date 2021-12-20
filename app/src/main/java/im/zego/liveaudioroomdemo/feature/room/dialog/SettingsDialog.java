@@ -1,17 +1,20 @@
 package im.zego.liveaudioroomdemo.feature.room.dialog;
 
 import android.content.Context;
+
 import androidx.appcompat.widget.SwitchCompat;
+
 import com.blankj.utilcode.util.ToastUtils;
-import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
-import im.zego.liveaudioroom.internal.ZegoLiveAudioRoomManager;
-import im.zego.liveaudioroom.internal.entity.ZegoLiveAudioRoomInfo;
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatModel;
-import im.zego.liveaudioroom.refactor.model.ZegoSpeakerSeatStatus;
-import im.zego.liveaudioroom.refactor.service.ZegoSpeakerSeatService;
-import im.zego.liveaudioroomdemo.R;
+
 import java.util.List;
+
+import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.model.ZegoRoomInfo;
+import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
+import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
+import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
+import im.zego.liveaudioroomdemo.R;
 
 public class SettingsDialog extends BaseBottomDialog {
 
@@ -57,7 +60,7 @@ public class SettingsDialog extends BaseBottomDialog {
                 if (isChecked) {
                     if (i.status == ZegoSpeakerSeatStatus.Untaken) {
                         seatService.closeSeat(true, i.seatIndex, errorCode -> {
-                            if (errorCode != ZegoLiveAudioRoomErrorCode.SUCCESS.getValue()) {
+                            if (errorCode != ZegoRoomErrorCode.SUCCESS) {
                                 ToastUtils
                                     .showShort(R.string.toast_lock_seat_fail, errorCode);
                             }
@@ -75,8 +78,8 @@ public class SettingsDialog extends BaseBottomDialog {
     }
 
     private boolean isUserOwner(String userId) {
-        ZegoLiveAudioRoomInfo roomInfo = ZegoLiveAudioRoomManager.getInstance().getRoomInfo();
-        String ownerID = roomInfo.getAuthor();
+        ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
+        String ownerID = roomInfo.getHostID();
         return ownerID.equals(userId);
     }
 }

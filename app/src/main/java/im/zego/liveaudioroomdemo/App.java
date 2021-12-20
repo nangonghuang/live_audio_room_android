@@ -5,7 +5,7 @@ import android.app.Application;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
 
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
+import im.zego.liveaudioroom.ZegoRoomManager;
 
 public class App extends Application {
     @Override

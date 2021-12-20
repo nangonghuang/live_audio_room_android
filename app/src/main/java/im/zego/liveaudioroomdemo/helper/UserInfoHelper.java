@@ -7,10 +7,10 @@ import com.blankj.utilcode.util.ResourceUtils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import im.zego.liveaudioroom.refactor.ZegoRoomManager;
-import im.zego.liveaudioroom.refactor.model.ZegoRoomInfo;
-import im.zego.liveaudioroom.refactor.model.ZegoRoomUserRole;
-import im.zego.liveaudioroom.refactor.model.ZegoUserInfo;
+import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.model.ZegoRoomInfo;
+import im.zego.liveaudioroom.model.ZegoRoomUserRole;
+import im.zego.liveaudioroom.model.ZegoUserInfo;
 
 public final class UserInfoHelper {
 
