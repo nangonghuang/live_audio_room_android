@@ -4,7 +4,16 @@ import static im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode.SUCCESS;
 
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.google.gson.Gson;
+
+import org.apache.commons.lang.math.NumberUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
@@ -21,11 +30,6 @@ import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import org.apache.commons.lang.math.NumberUtils;
 
 /**
  * user interface to manager speaker seat.
@@ -243,13 +247,31 @@ public class ZegoSpeakerSeatService {
 
     private void onSpeakerSeatStatusChanged(ZegoSpeakerSeatModel updateModel) {
         if (speakerSeatList.size() > updateModel.seatIndex) {
-            ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(updateModel.seatIndex);
-            speakerSeatModel.userID = updateModel.userID;
-            speakerSeatModel.seatIndex = updateModel.seatIndex;
-            speakerSeatModel.isMicMuted = updateModel.isMicMuted;
-            speakerSeatModel.status = updateModel.status;
+            ZegoSpeakerSeatModel model = speakerSeatList.get(updateModel.seatIndex);
+            model.userID = updateModel.userID;
+            model.seatIndex = updateModel.seatIndex;
+            model.isMicMuted = updateModel.isMicMuted;
+            model.status = updateModel.status;
+
+            String selfUserID = ZegoRoomManager.getInstance().userService.localUserInfo.getUserID();
+            String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
+            String mainSteamID = String.format("%s_%s_%s", roomID, model.userID, "main");
+            if (!model.isMicMuted && model.status == ZegoSpeakerSeatStatus.Occupied) {
+                if (model.userID.equals(selfUserID)) {
+                    ZegoExpressEngine.getEngine().startPublishingStream(mainSteamID);
+                } else {
+                    ZegoExpressEngine.getEngine().startPlayingStream(mainSteamID, null);
+                }
+            } else {
+                if (model.userID.equals(selfUserID)) {
+                    ZegoExpressEngine.getEngine().stopPublishingStream();
+                } else {
+                    ZegoExpressEngine.getEngine().stopPlayingStream(mainSteamID);
+                }
+            }
+
             if (speakerSeatServiceCallback != null) {
-                speakerSeatServiceCallback.onSpeakerSeatUpdate(speakerSeatModel);
+                speakerSeatServiceCallback.onSpeakerSeatUpdate(model);
             }
         }
     }
