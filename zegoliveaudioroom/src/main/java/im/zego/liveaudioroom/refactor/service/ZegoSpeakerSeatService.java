@@ -4,15 +4,7 @@ import static im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode.SUCCESS;
 
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.google.gson.Gson;
-
-import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
 import im.zego.liveaudioroom.emus.ZegoLiveAudioRoomErrorCode;
 import im.zego.liveaudioroom.refactor.ZegoRoomManager;
 import im.zego.liveaudioroom.refactor.ZegoZIMManager;
@@ -28,6 +20,12 @@ import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.enums.ZIMErrorCode;
+import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import org.apache.commons.lang.math.NumberUtils;
 
 /**
  * user interface to manager speaker seat.
@@ -182,8 +180,8 @@ public class ZegoSpeakerSeatService {
             setConfig.isDeleteAfterOwnerLeft = true;
 
             HashMap<String, String> seatAttributes = new HashMap<>();
-            seatAttributes.put("seat_" + mySeatIndex, modelString1);
-            seatAttributes.put("seat_" + toSeatIndex, modelString2);
+            seatAttributes.put(String.valueOf(mySeatIndex), modelString1);
+            seatAttributes.put(String.valueOf(toSeatIndex), modelString2);
 
             String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
             Log.d(TAG, "switchSeat() called with: seatAttributes = [" + seatAttributes + "]");
@@ -223,7 +221,7 @@ public class ZegoSpeakerSeatService {
         setConfig.isDeleteAfterOwnerLeft = true;
 
         HashMap<String, String> seatAttributes = new HashMap<>();
-        seatAttributes.put("seat_" + seatIndex, modelString);
+        seatAttributes.put(String.valueOf(seatIndex), modelString);
 
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
 
@@ -286,7 +284,7 @@ public class ZegoSpeakerSeatService {
         HashMap<String, String> roomAttributes = info.roomAttributes;
         if (info.action == ZIMRoomAttributesUpdateAction.SET) {
             for (Entry<String, String> entry : roomAttributes.entrySet()) {
-                if (entry.getKey().startsWith("seat_")) {
+                if (NumberUtils.isNumber(entry.getKey())) {
                     String jsonValue = entry.getValue();
                     ZegoSpeakerSeatModel model = gson.fromJson(jsonValue, ZegoSpeakerSeatModel.class);
                     onSpeakerSeatStatusChanged(model);
