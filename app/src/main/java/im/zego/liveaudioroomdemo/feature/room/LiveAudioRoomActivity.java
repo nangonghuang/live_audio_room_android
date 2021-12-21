@@ -452,7 +452,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             if (getMyUserID().equals(model.userID)) {
                 if (model.status == ZegoSpeakerSeatStatus.Occupied && !UserInfoHelper.isSelfOwner()) {
                     uiToSpeaker();
-                    ivMic.setSelected(!model.isMicMuted);
+                    ivMic.setSelected(model.mic);
                 } else if (model.status == ZegoSpeakerSeatStatus.Untaken) {
                     uiToAudience();
                 }

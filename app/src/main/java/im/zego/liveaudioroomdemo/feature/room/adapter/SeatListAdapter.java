@@ -83,7 +83,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
                     holder.ivAvatarTalking.setVisibility(View.INVISIBLE);
                 }
 
-                if (speakerSeatModel.isMicMuted) {
+                if (!speakerSeatModel.mic) {
                     holder.ivMicOff.setVisibility(View.VISIBLE);
                 } else {
                     holder.ivMicOff.setVisibility(View.INVISIBLE);

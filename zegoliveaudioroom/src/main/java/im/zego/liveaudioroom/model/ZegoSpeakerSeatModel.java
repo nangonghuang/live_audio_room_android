@@ -13,8 +13,8 @@ public class ZegoSpeakerSeatModel {
     @SerializedName("index")
     public int seatIndex;
 
-    @SerializedName("mute")
-    public boolean isMicMuted;
+    @SerializedName("mic")
+    public boolean mic;
 
     public ZegoSpeakerSeatStatus status;
 
