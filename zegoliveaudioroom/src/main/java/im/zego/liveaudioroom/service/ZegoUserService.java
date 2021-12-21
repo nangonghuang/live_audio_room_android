@@ -101,7 +101,9 @@ public class ZegoUserService {
             String leaveUserID = leaveUser.getUserID();
             for (ZegoSpeakerSeatModel model : seatList) {
                 if (model.userID.equals(leaveUserID) && model.status == ZegoSpeakerSeatStatus.Occupied) {
-                    seatService.updateSpeakerSeatWhenLeave(model);
+                    seatService.removeUserFromSeat(model.seatIndex, errorCode -> {
+                        Log.d(TAG, "removeUserFromSeat() called with: errorCode = [" + errorCode);
+                    });
                 }
             }
         }

@@ -133,7 +133,7 @@ public class ZegoSpeakerSeatService {
     @NonNull
     private ZIMRoomAttributesSetConfig getZimRoomAttributesSetConfig() {
         ZIMRoomAttributesSetConfig setConfig = new ZIMRoomAttributesSetConfig();
-        setConfig.isForce = false;
+        setConfig.isForce = true;
         setConfig.isDeleteAfterOwnerLeft = false;
         return setConfig;
     }
@@ -263,7 +263,6 @@ public class ZegoSpeakerSeatService {
                     errorCode = ZegoRoomErrorCode.SUCCESS;
                     speakerSeatList.set(mySeatIndex, speakerSeatModel1);
                     speakerSeatList.set(toSeatIndex, speakerSeatModel2);
-                    ZegoExpressEngine.getEngine().muteMicrophone(speakerSeatModel2.isMicMuted);
                     onSpeakerSeatStatusChanged(speakerSeatModel1);
                     onSpeakerSeatStatusChanged(speakerSeatModel2);
                 } else {
@@ -282,12 +281,21 @@ public class ZegoSpeakerSeatService {
         speakerSeatModel.seatIndex = seatIndex;
         speakerSeatModel.isMicMuted = muteMic;
         speakerSeatModel.status = status;
+        ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
+        boolean closed = roomService.roomInfo.isClosed();
+        ZegoSpeakerSeatStatus currentStatus = speakerSeatList.get(seatIndex).status;
+        if (currentStatus == ZegoSpeakerSeatStatus.Occupied && status == ZegoSpeakerSeatStatus.Untaken) {
+            // is leave seat action ,make it closed
+            if (closed) {
+                speakerSeatModel.status = ZegoSpeakerSeatStatus.Closed;
+            }
+        }
         String modelString = new Gson().toJson(speakerSeatModel);
 
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(String.valueOf(seatIndex), modelString);
 
-        String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
+        String roomID = roomService.roomInfo.getRoomID();
         ZIMRoomAttributesSetConfig setConfig = getZimRoomAttributesSetConfig();
 
         Log.d(TAG, "changeSeatStatus() called with: seatAttributes = [" + seatAttributes + "]");
@@ -298,7 +306,6 @@ public class ZegoSpeakerSeatService {
                 errorCode = ZegoRoomErrorCode.SUCCESS;
                 speakerSeatList.set(seatIndex, speakerSeatModel);
                 onSpeakerSeatStatusChanged(speakerSeatModel);
-                ZegoExpressEngine.getEngine().muteMicrophone(speakerSeatModel.isMicMuted);
             } else {
                 errorCode = ZegoRoomErrorCode.SET_SEAT_INFO_FAILED;
             }
@@ -314,6 +321,11 @@ public class ZegoSpeakerSeatService {
             model.seatIndex = updateModel.seatIndex;
             model.isMicMuted = updateModel.isMicMuted;
             model.status = updateModel.status;
+
+            ZegoUserInfo selfUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+            if (selfUserInfo.getUserID().equals(updateModel.userID)) {
+                ZegoExpressEngine.getEngine().muteMicrophone(updateModel.isMicMuted);
+            }
 
             if (speakerSeatServiceListener != null) {
                 speakerSeatServiceListener.onSpeakerSeatUpdate(model);
@@ -441,20 +453,6 @@ public class ZegoSpeakerSeatService {
                     speakerSeatServiceListener.onSpeakerSeatUpdate(model);
                 }
             }
-        }
-    }
-
-    /**
-     * since member is already left,make seat untaken will failed
-     *
-     * @param model
-     */
-    void updateSpeakerSeatWhenLeave(ZegoSpeakerSeatModel model) {
-        ZegoSpeakerSeatModel seatModel = speakerSeatList.get(model.seatIndex);
-        seatModel.userID = "";
-        seatModel.status = ZegoSpeakerSeatStatus.Untaken;
-        if (speakerSeatServiceListener != null) {
-            speakerSeatServiceListener.onSpeakerSeatUpdate(model);
         }
     }
 }

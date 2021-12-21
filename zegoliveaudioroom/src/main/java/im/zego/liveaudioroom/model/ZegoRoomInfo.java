@@ -21,7 +21,7 @@ public class ZegoRoomInfo {
     // whether to mute message
     @SerializedName("disable")
     private boolean isTextMessageDisabled;
-    // whether to lock seat
+    // whether to lock seat when leave seat
     @SerializedName("close")
     private boolean isClosed;
 
