@@ -1,5 +1,6 @@
 package im.zego.liveaudioroomdemo.feature.room.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +84,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
                     holder.ivAvatarTalking.setVisibility(View.INVISIBLE);
                 }
 
+                Log.d(TAG, "onBindViewHolder: " + speakerSeatModel.mic);
                 if (!speakerSeatModel.mic) {
                     holder.ivMicOff.setVisibility(View.VISIBLE);
                 } else {

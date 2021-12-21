@@ -20,4 +20,5 @@ public class ZegoSpeakerSeatModel {
 
     public transient float soundLevel;
     public transient ZegoNetWorkQuality network = ZegoNetWorkQuality.Good;
+
 }
