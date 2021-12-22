@@ -62,12 +62,13 @@ public class ZegoUserService {
     public void logout() {
         Log.d(TAG, "logout() called");
         ZegoZIMManager.getInstance().zim.logout();
-        leaveRoom();
+        reset();
     }
 
-    void leaveRoom() {
+    void reset() {
         userList.clear();
         userMap.clear();
+        listener = null;
     }
 
     public void setListener(ZegoUserServiceListener listener) {

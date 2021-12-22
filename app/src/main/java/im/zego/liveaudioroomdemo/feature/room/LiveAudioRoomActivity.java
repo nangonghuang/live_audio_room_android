@@ -198,8 +198,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
         });
         ivSettings.setOnClickListener(v -> {
             if (settingsDialog == null) {
-                ZegoSpeakerSeatService seatService = ZegoRoomManager
-                    .getInstance().speakerSeatService;
                 settingsDialog = new SettingsDialog(this);
             }
             settingsDialog.show();
@@ -291,8 +289,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
                     StringUtils.getString(R.string.room_page_leave_seat), dialog -> {
                         DialogHelper.showAlertDialog(LiveAudioRoomActivity.this, null,
-                            StringUtils
-                                .getString(R.string.dialog_warning_leave_seat_message, userId),
+                            StringUtils.getString(R.string.dialog_warning_leave_seat_message, userId),
                             StringUtils.getString(R.string.dialog_confirm),
                             StringUtils.getString(R.string.dialog_cancel),
                             (alertDialog, which) -> {
@@ -488,9 +485,12 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     if (event == ZIMConnectionEvent.LOGIN_TIMEOUT) {
                         showReconnectDialog();
                     } else {
-                        // disconnect because of room end
                         if (event == ZIMConnectionEvent.SUCCESS) {
+                            // disconnect because of room end
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
+                        } else if (event == ZIMConnectionEvent.KICKED_OUT) {
+                            //disconnect because of multiple login,been kicked out
+                            ToastUtils.showShort(R.string.toast_kickout_error);
                         } else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
                         }

@@ -34,8 +34,7 @@
   <string name="toast_logout_fail">退出登录失败，错误码：%d</string>
 
   <string name="room_page_host">房主</string>
-  <string name="room_tips_reconnect">网络连接已断开，是否重连？</string>
-  <string name="toast_disconnect_tips">房间连接已断开，请重新加入房间!</string>
+  <string name="toast_disconnect_tips">房间连接已断开，请重新加入房间</string>
   <string name="room_page_mic_cant_open">麦克风无法开启</string>
 
   <string name="room_page_grant_mic_permission">你还未授权我们使用麦克风</string>
@@ -69,7 +68,6 @@
   <string name="mic_request">请允许我们使用你的麦克风，以便你能正常进行语音聊天。</string>
   <string name="toast_unlock_seat_fail">解锁麦位失败，错误码：%d</string>
   <string name="toast_lock_seat_fail">锁定麦位失败，错误码：%d</string>
-  <string name="room_page_leave_speaker_seat">下麦</string>
   <string name="dialog_warning_leave_seat_message">是否踢 %s下麦？</string>
   <string name="dialog_confirm">确认</string>
   <string name="dialog_cancel">取消</string>
@@ -93,7 +91,7 @@
   <string name="toast_room_end_fail_tip">解散房间失败，错误码：%d</string>
   <string name="member_list_send_invitation_failed">Failed to send the invitation.</string>
   <string name="member_list_send_invitation_error">Failed to send the invitation. Error code: %s</string>
-  <string name="network_connect_failed">Network connection failed.  Please leave the room and retry.</string>
-  <string name="network_connect_failed_title">Network Error</string>
+  <string name="network_connect_failed">网络连接失败，请尝试退出房间重新加入</string>
+  <string name="network_connect_failed_title">网络错误</string>
   <string name="network_reconnect">网络发生了错误，正在重连中...</string>
 </resources>

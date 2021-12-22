@@ -34,7 +34,6 @@
     <string name="toast_logout_fail">Failed to log out. Error code: %s.</string>
 
     <string name="room_page_host">Host</string>
-    <string name="room_tips_reconnect">You are disconnected from the room. Do you want to reconnect?</string>
     <string name="toast_disconnect_tips">You are disconnected from the room. Please join again.</string>
     <string name="room_page_mic_cant_open">The Mic is off.</string>
 
@@ -69,7 +68,6 @@
     <string name="mic_request">We need to use your mic to help you join the voice interaction.</string>
     <string name="toast_unlock_seat_fail">Failed to open the seat. Error code: %d.</string>
     <string name="toast_lock_seat_fail">Failed to close the seat. Error code: %d.</string>
-    <string name="room_page_leave_speaker_seat">Leave seat</string>
     <string name="dialog_warning_leave_seat_message">Remove %s from the speaker seat?</string>
     <string name="dialog_confirm">OK</string>
     <string name="dialog_cancel">Cancel</string>
@@ -93,7 +91,7 @@
     <string name="toast_room_end_fail_tip">Failed to end the room. Error code: %d.</string>
     <string name="member_list_send_invitation_failed">Failed to send the invitation.</string>
     <string name="member_list_send_invitation_error">Failed to send the invitation. Error code: %s</string>
-    <string name="network_connect_failed">Network connection failed.  Please leave the room and retry.</string>
+    <string name="network_connect_failed">Network connection failed.Please leave the room and retry.</string>
     <string name="network_connect_failed_title">Network Error</string>
   <string name="network_reconnect">A network exception has occurred. Rejoining…</string>
 </resources>
