@@ -12,6 +12,7 @@ import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.listener.ZegoSpeakerSeatServiceListener;
 import im.zego.liveaudioroom.model.ZegoNetWorkQuality;
 import im.zego.liveaudioroom.model.ZegoRoomInfo;
+import im.zego.liveaudioroom.model.ZegoRoomUserRole;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
@@ -335,14 +336,31 @@ public class ZegoSpeakerSeatService {
         Log.d(TAG, "onSpeakerSeatStatusChanged() called with: updateModel = [" + updateModel + "]");
         if (speakerSeatList.size() > updateModel.seatIndex) {
             ZegoSpeakerSeatModel model = speakerSeatList.get(updateModel.seatIndex);
+            boolean statusChanged = model.status != updateModel.status;
+            String oldUserID = model.userID;
             model.userID = updateModel.userID;
             model.seatIndex = updateModel.seatIndex;
             model.mic = updateModel.mic;
             model.status = updateModel.status;
 
-            ZegoUserInfo selfUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+            ZegoUserInfo selfUserInfo = userService.localUserInfo;
             if (selfUserInfo.getUserID().equals(updateModel.userID)) {
                 ZegoExpressEngine.getEngine().muteMicrophone(!updateModel.mic);
+            }
+
+            if (statusChanged) {
+                if (model.status == ZegoSpeakerSeatStatus.Occupied) {
+                    ZegoUserInfo userInfo = userService.getUserInfo(updateModel.userID);
+                    if (userInfo != null && !selfUserInfo.getUserID().equals(userInfo.getUserID())) {
+                        userInfo.setRole(ZegoRoomUserRole.Speaker);
+                    }
+                } else {
+                    ZegoUserInfo userInfo = userService.getUserInfo(oldUserID);
+                    if (userInfo != null && !selfUserInfo.getUserID().equals(userInfo.getUserID())) {
+                        userInfo.setRole(ZegoRoomUserRole.Listener);
+                    }
+                }
             }
 
             if (speakerSeatServiceListener != null) {

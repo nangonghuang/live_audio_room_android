@@ -1,13 +1,6 @@
 package im.zego.liveaudioroom.service;
 
 import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -24,6 +17,11 @@ import im.zego.zim.entity.ZIMMessage;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -32,12 +30,12 @@ public class ZegoUserService {
 
     private static final String TAG = "ZegoUserService";
 
-    public ZegoUserInfo localUserInfo;
-    private ZegoUserServiceListener listener;
     // local login user info
-    // room member list
+    public ZegoUserInfo localUserInfo;
+    // room member list,contains self
     private final List<ZegoUserInfo> userList = new ArrayList<>();
     private final Map<String, ZegoUserInfo> userMap = new HashMap<>();
+    private ZegoUserServiceListener listener;
 
     // user login
     public void login(ZegoUserInfo userInfo, String token, final ZegoRoomCallback callback) {
@@ -62,12 +60,13 @@ public class ZegoUserService {
     public void logout() {
         Log.d(TAG, "logout() called");
         ZegoZIMManager.getInstance().zim.logout();
-        leaveRoom();
+        reset();
     }
 
-    void leaveRoom() {
+    void reset() {
         userList.clear();
         userMap.clear();
+        listener = null;
     }
 
     public void setListener(ZegoUserServiceListener listener) {
@@ -94,7 +93,6 @@ public class ZegoUserService {
         if (listener != null) {
             listener.onRoomUserLeave(leaveUsers);
         }
-        ZegoUserInfo userInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         List<ZegoSpeakerSeatModel> seatList = seatService.getSpeakerSeatList();
         for (ZegoUserInfo leaveUser : leaveUsers) {
@@ -133,12 +131,16 @@ public class ZegoUserService {
     }
 
     public String getUserName(String userID) {
-        ZegoUserInfo zegoUserInfo = userMap.get(userID);
+        ZegoUserInfo zegoUserInfo = getUserInfo(userID);
         if (zegoUserInfo != null) {
             return zegoUserInfo.getUserName();
         } else {
             return "";
         }
+    }
+
+    ZegoUserInfo getUserInfo(String userID) {
+        return userMap.get(userID);
     }
 
     /**

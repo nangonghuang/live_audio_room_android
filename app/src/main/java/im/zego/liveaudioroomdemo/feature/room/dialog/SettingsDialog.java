@@ -9,9 +9,6 @@ import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroomdemo.R;
 
 public class SettingsDialog extends BaseBottomDialog {
-
-    public boolean isCheckedLockAllSeat = false;
-
     private SwitchCompat switchDisableMessage;
     private SwitchCompat switchCloseSeat;
 
@@ -40,7 +37,6 @@ public class SettingsDialog extends BaseBottomDialog {
             });
         });
         switchCloseSeat.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            isCheckedLockAllSeat = isChecked;
             ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
             seatService.closeAllSeat(isChecked, errorCode -> {
                 if (errorCode != ZegoRoomErrorCode.SUCCESS) {

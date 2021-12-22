@@ -125,7 +125,11 @@ public class ZegoRoomService {
         }
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         if (userService != null) {
-            userService.leaveRoom();
+            userService.reset();
+        }
+        ZegoGiftService giftService = ZegoRoomManager.getInstance().giftService;
+        if (giftService != null) {
+            giftService.reset();
         }
         reset();
 
@@ -146,6 +150,7 @@ public class ZegoRoomService {
         roomInfo.setRoomName("");
         roomInfo.setSeatNum(0);
         roomInfo.setHostID("");
+        listener = null;
     }
 
     // query the number of chat rooms available online

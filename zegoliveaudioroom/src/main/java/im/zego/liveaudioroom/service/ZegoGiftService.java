@@ -66,4 +66,8 @@ public class ZegoGiftService {
             }
         }
     }
+
+    public void reset() {
+        giftServiceListener = null;
+    }
 }

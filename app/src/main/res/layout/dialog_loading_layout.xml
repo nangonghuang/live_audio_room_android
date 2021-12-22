@@ -13,7 +13,8 @@
     android:ellipsize="end"
     android:gravity="center"
     android:maxLines="2"
+    android:maxWidth="240dp"
     android:textColor="@android:color/white"
-    android:textSize="12dp" />
+    android:textSize="12sp" />
 
 </LinearLayout>

@@ -1,112 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <ImageView
+    android:id="@+id/iv_avatar_talking"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:src="@drawable/icon_sound_waves"
+    android:visibility="invisible"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_avatar_talking"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/icon_sound_waves"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+  <ImageView
+    android:id="@+id/iv_avatar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/icon_avatar_1"
+    app:layout_constraintBottom_toBottomOf="@id/iv_avatar_talking"
+    app:layout_constraintEnd_toEndOf="@id/iv_avatar_talking"
+    app:layout_constraintStart_toStartOf="@id/iv_avatar_talking"
+    app:layout_constraintTop_toTopOf="@id/iv_avatar_talking" />
 
-    <ImageView
-        android:id="@+id/iv_avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/icon_avatar_1"
-        app:layout_constraintBottom_toBottomOf="@id/iv_avatar_talking"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar_talking"
-        app:layout_constraintStart_toStartOf="@id/iv_avatar_talking"
-        app:layout_constraintTop_toTopOf="@id/iv_avatar_talking" />
+  <ImageView
+    android:id="@+id/iv_mic_off"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:background="@drawable/half_black_fill_circle_bg"
+    android:src="@drawable/icon_mic_off_white"
+    android:visibility="invisible"
+    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+    app:layout_constraintEnd_toEndOf="@id/iv_avatar"
+    app:layout_constraintStart_toStartOf="@id/iv_avatar"
+    app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
-    <ImageView
-        android:id="@+id/iv_mic_off"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/half_black_fill_circle_bg"
-        android:src="@drawable/icon_mic_off_white"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar"
-        app:layout_constraintStart_toStartOf="@id/iv_avatar"
-        app:layout_constraintTop_toTopOf="@id/iv_avatar" />
+  <ImageView
+    android:id="@+id/iv_owner_avatar"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="44dp"
+    android:src="@drawable/icon_owner"
+    app:layout_constraintEnd_toEndOf="@id/iv_avatar"
+    app:layout_constraintStart_toStartOf="@id/iv_avatar"
+    app:layout_constraintTop_toBottomOf="@id/iv_avatar"
+    app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
-    <ImageView
-        android:id="@+id/iv_owner_avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-8dp"
-        android:src="@drawable/icon_owner"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar"
-        app:layout_constraintStart_toStartOf="@id/iv_avatar"
-        app:layout_constraintTop_toBottomOf="@id/iv_avatar" />
+  <ImageView
+    android:id="@+id/ic_network_status"
+    android:layout_width="7dp"
+    android:layout_height="7dp"
+    android:layout_marginStart="2dp"
+    app:layout_constraintBottom_toBottomOf="@id/iv_owner_avatar"
+    app:layout_constraintStart_toEndOf="@id/iv_owner_avatar"
+    app:layout_constraintTop_toTopOf="@id/iv_owner_avatar"
+    tools:src="@drawable/icon_network_good" />
 
-    <ImageView
-        android:id="@+id/ic_network_status"
-        android:layout_width="7dp"
-        android:layout_height="7dp"
-        android:layout_marginStart="2dp"
-        app:layout_constraintBottom_toBottomOf="@id/iv_owner_avatar"
-        app:layout_constraintStart_toEndOf="@id/iv_owner_avatar"
-        app:layout_constraintTop_toTopOf="@id/iv_owner_avatar"
-        tools:src="@drawable/icon_network_good" />
+  <ImageView
+    android:id="@+id/iv_lock"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:background="@drawable/grey_fill_circle_bg"
+    android:src="@drawable/icon_lock"
+    android:visibility="invisible"
+    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+    app:layout_constraintEnd_toEndOf="@id/iv_avatar"
+    app:layout_constraintStart_toStartOf="@id/iv_avatar"
+    app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
-    <TextView
-        android:id="@+id/tv_user_name"
-        android:layout_width="54dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:singleLine="true"
-        android:textColor="#ff000000"
-        android:textSize="10sp"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar"
-        app:layout_constraintStart_toStartOf="@id/iv_avatar"
-        app:layout_constraintTop_toBottomOf="@id/iv_avatar"
-        tools:text="Ross🌹Ross🌹" />
+  <ImageView
+    android:id="@+id/iv_seat"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:background="@drawable/grey_fill_circle_bg"
+    android:src="@drawable/icon_seat"
+    android:visibility="invisible"
+    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+    app:layout_constraintEnd_toEndOf="@id/iv_avatar"
+    app:layout_constraintStart_toStartOf="@id/iv_avatar"
+    app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
-    <ImageView
-        android:id="@+id/iv_lock"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/grey_fill_circle_bg"
-        android:src="@drawable/icon_lock"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar"
-        app:layout_constraintStart_toStartOf="@id/iv_avatar"
-        app:layout_constraintTop_toTopOf="@id/iv_avatar" />
+  <ImageView
+    android:id="@+id/iv_join"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:background="@drawable/grey_fill_circle_bg"
+    android:src="@drawable/icon_join"
+    android:visibility="invisible"
+    app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+    app:layout_constraintEnd_toEndOf="@id/iv_avatar"
+    app:layout_constraintStart_toStartOf="@id/iv_avatar"
+    app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
-    <ImageView
-        android:id="@+id/iv_seat"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/grey_fill_circle_bg"
-        android:src="@drawable/icon_seat"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar"
-        app:layout_constraintStart_toStartOf="@id/iv_avatar"
-        app:layout_constraintTop_toTopOf="@id/iv_avatar" />
-
-    <ImageView
-        android:id="@+id/iv_join"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/grey_fill_circle_bg"
-        android:src="@drawable/icon_join"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar"
-        app:layout_constraintStart_toStartOf="@id/iv_avatar"
-        app:layout_constraintTop_toTopOf="@id/iv_avatar" />
+  <TextView
+    android:id="@+id/tv_user_name"
+    android:layout_width="54dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:ellipsize="end"
+    android:gravity="center"
+    android:singleLine="true"
+    android:textColor="#ff000000"
+    android:textSize="10sp"
+    app:layout_constraintEnd_toEndOf="@id/iv_avatar"
+    app:layout_constraintStart_toStartOf="@id/iv_avatar"
+    app:layout_constraintTop_toBottomOf="@id/iv_avatar"
+    tools:text="Ross🌹Ross🌹" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
