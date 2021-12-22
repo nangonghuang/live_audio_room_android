@@ -172,22 +172,14 @@ public class LiveAudioRoomActivity extends BaseActivity {
             });
         });
         ivMember.setOnClickListener(v -> {
-            ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-
+            List<ZegoUserInfo> userList = userService.getUserList();
             if (memberListDialog == null) {
-                memberListDialog = new MemberListDialog(LiveAudioRoomActivity.this,
-                    settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
-                    seatService.getSpeakerSeatList(),
-                    userService.getUserList());
-            } else {
-                memberListDialog.updateInfo(
-                    settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
-                    seatService.getSpeakerSeatList(),
-                    userService.getUserList()
-                );
+                memberListDialog = new MemberListDialog(this,userList);
             }
-            memberListDialog.show();
+            if (!memberListDialog.isShowing()) {
+                memberListDialog.show();
+            }
         });
         ivGift.setOnClickListener(v -> {
             giftDialog = new SendGiftDialog(this);
@@ -207,13 +199,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
     private void updateMemberListDialog() {
         if (memberListDialog != null) {
-            ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            memberListDialog.updateInfo(
-                settingsDialog != null && settingsDialog.isCheckedLockAllSeat,
-                seatService.getSpeakerSeatList(),
-                userService.getUserList()
-            );
+            Log.d(TAG, "updateMemberListDialog() called :" + userService.getUserList());
+            memberListDialog.updateUserList(userService.getUserList());
         }
     }
 
@@ -237,8 +225,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
         messageListAdapter = new MessageListAdapter(textMessageList);
         rvMessageList.setAdapter(messageListAdapter);
-        rvMessageList
-            .setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rvMessageList.setLayoutManager(new LinearLayoutManager(this));
 
         if (UserInfoHelper.isSelfOwner()) {
             uiToOwner();
@@ -287,7 +274,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     return;
                 }
                 DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
-                    StringUtils.getString(R.string.room_page_leave_seat), dialog -> {
+                    StringUtils.getString(R.string.room_page_leave_speaker_seat), dialog -> {
                         DialogHelper.showAlertDialog(LiveAudioRoomActivity.this, null,
                             StringUtils.getString(R.string.dialog_warning_leave_seat_message, userId),
                             StringUtils.getString(R.string.dialog_confirm),
@@ -342,10 +329,10 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
     private void speakerLeaveSeat() {
         DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
-            StringUtils.getString(R.string.room_page_leave_seat), dialog -> {
+            StringUtils.getString(R.string.room_page_leave_speaker_seat), dialog -> {
                 DialogHelper.showAlertDialog(
                     LiveAudioRoomActivity.this,
-                    StringUtils.getString(R.string.room_page_leave_seat),
+                    StringUtils.getString(R.string.room_page_leave_speaker_seat),
                     StringUtils.getString(R.string.dialog_sure_to_leave_seat),
                     StringUtils.getString(R.string.dialog_confirm),
                     StringUtils.getString(R.string.dialog_cancel),
@@ -383,7 +370,11 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 }
                 if (seatIndex != -1) {
                     speakerSeatService.takeSeat(seatIndex, errorCode -> {
-                        requestRecordAudio();
+                        if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                            requestRecordAudio();
+                        } else {
+                            ToastUtils.showShort(R.string.toast_take_speaker_seat_fail, errorCode);
+                        }
                     });
                 }
                 dialog.cancel();

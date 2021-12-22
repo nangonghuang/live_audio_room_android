@@ -21,4 +21,13 @@ public class ZegoSpeakerSeatModel {
     public transient float soundLevel;
     public transient ZegoNetWorkQuality network = ZegoNetWorkQuality.Good;
 
+    @Override
+    public String toString() {
+        return "ZegoSpeakerSeatModel{" +
+            "userID='" + userID + '\'' +
+            ", seatIndex=" + seatIndex +
+            ", mic=" + mic +
+            ", status=" + status +
+            '}';
+    }
 }

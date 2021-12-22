@@ -45,7 +45,7 @@
   <string name="room_page_role_speaker">连麦成员</string>
   <string name="room_page_role_owner">房主</string>
   <string name="room_page_settings">设置</string>
-  <string name="room_page_leave_seat">下麦</string>
+  <string name="room_page_leave_speaker_seat">下麦</string>
   <string name="room_page_set_take_seat">禁止房间用户上麦</string>
   <string name="room_page_set_silence">禁止房间用户发送消息</string>
   <string name="room_page_has_left_the_room">%s 离开房间</string>

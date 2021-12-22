@@ -5,24 +5,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
+import im.zego.liveaudioroom.model.ZegoRoomUserRole;
+import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroomdemo.R;
-import im.zego.liveaudioroomdemo.feature.room.model.MemberInfo;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.UserListHolder> {
 
     private IItemOnClickListener itemOnClickListener = null;
 
-    private List<MemberInfo> userListInRoom;
+    private List<ZegoUserInfo> userListInRoom;
 
-    public MemberListAdapter(List<MemberInfo> userListInRoom) {
-        this.userListInRoom = userListInRoom;
+    public MemberListAdapter(List<ZegoUserInfo> userListInRoom) {
+        this.userListInRoom = new ArrayList<>();
+        this.userListInRoom.addAll(userListInRoom);
     }
 
     @NonNull
@@ -34,11 +34,11 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.Us
 
     @Override
     public void onBindViewHolder(@NonNull UserListHolder holder, int position) {
-        final MemberInfo memberInfo = userListInRoom.get(position);
+        final ZegoUserInfo userInfo = userListInRoom.get(position);
 
-        holder.ivUserAvatar.setImageDrawable(UserInfoHelper.getAvatarByUserName(memberInfo.userName));
-        holder.tvUserName.setText(memberInfo.userName);
-        if (memberInfo.showInvitation) {
+        holder.ivUserAvatar.setImageDrawable(UserInfoHelper.getAvatarByUserName(userInfo.getUserName()));
+        holder.tvUserName.setText(userInfo.getUserName());
+        if (userInfo.getRole() == ZegoRoomUserRole.Listener) {
             holder.tvUserInfo.setVisibility(View.GONE);
             // Audience
             if (UserInfoHelper.isSelfOwner()) {
@@ -50,7 +50,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.Us
             // On Seat: Speaker or Owner
             holder.ivInvite.setVisibility(View.GONE);
             holder.tvUserInfo.setVisibility(View.VISIBLE);
-            if (UserInfoHelper.isUserOwner(memberInfo.userID)) {
+            if (UserInfoHelper.isUserOwner(userInfo.getUserID())) {
                 holder.tvUserInfo.setText(R.string.room_page_host);
             } else {
                 holder.tvUserInfo.setText(R.string.room_page_role_speaker);
@@ -59,9 +59,15 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.Us
 
         holder.ivInvite.setOnClickListener(v -> {
             if (itemOnClickListener != null) {
-                itemOnClickListener.onClick(memberInfo.userID);
+                itemOnClickListener.onClick(userInfo);
             }
         });
+    }
+
+    public void updateUserList(List<ZegoUserInfo> userList) {
+        userListInRoom.clear();
+        userListInRoom.addAll(userList);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -74,10 +80,12 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.Us
     }
 
     public interface IItemOnClickListener {
-        void onClick(String userID);
+
+        void onClick(ZegoUserInfo userInfo);
     }
 
     static class UserListHolder extends RecyclerView.ViewHolder {
+
         public ImageView ivUserAvatar;
         public TextView tvUserName;
         public TextView tvUserInfo;

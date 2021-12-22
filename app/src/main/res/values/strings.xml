@@ -45,7 +45,7 @@
     <string name="room_page_role_speaker">Speaker</string>
     <string name="room_page_role_owner">Owner</string>
     <string name="room_page_settings">Settings</string>
-    <string name="room_page_leave_seat">Leave the seat</string>
+    <string name="room_page_leave_speaker_seat">Leave seat</string>
     <string name="room_page_set_take_seat">Close all untaken speaker seats</string>
     <string name="room_page_set_silence">Disable text chat for all</string>
     <string name="room_page_has_left_the_room">%s left the room</string>
