@@ -175,7 +175,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             List<ZegoUserInfo> userList = userService.getUserList();
             if (memberListDialog == null) {
-                memberListDialog = new MemberListDialog(this,userList);
+                memberListDialog = new MemberListDialog(this, userList);
             }
             if (!memberListDialog.isShowing()) {
                 memberListDialog.show();
@@ -357,15 +357,14 @@ public class LiveAudioRoomActivity extends BaseActivity {
             StringUtils.getString(R.string.dialog_accept),
             StringUtils.getString(R.string.dialog_refuse),
             (dialog, which) -> {
-                ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager
-                    .getInstance().speakerSeatService;
-                List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService
-                    .getSpeakerSeatList();
+                ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
+                List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService.getSpeakerSeatList();
                 int seatIndex = -1;
                 for (int i = 0; i < speakerSeatList.size(); i++) {
                     ZegoSpeakerSeatModel model = speakerSeatList.get(i);
                     if (model.status == ZegoSpeakerSeatStatus.Untaken) {
                         seatIndex = model.seatIndex;
+                        break;
                     }
                 }
                 if (seatIndex != -1) {

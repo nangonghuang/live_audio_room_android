@@ -438,14 +438,14 @@ public class ZegoSpeakerSeatService {
             quality = ZegoNetWorkQuality.Bad;
         }
 
-        //        for (ZegoSpeakerSeatModel model : speakerSeatList) {
-        //            if (model.userID.equals(userID)) {
-        //                model.network = quality;
-        //                if (speakerSeatServiceListener != null) {
-        //                    speakerSeatServiceListener.onSpeakerSeatUpdate(model);
-        //                }
-        //            }
-        //        }
+        for (ZegoSpeakerSeatModel model : speakerSeatList) {
+            if (model.userID.equals(userID)) {
+                model.network = quality;
+                if (speakerSeatServiceListener != null) {
+                    speakerSeatServiceListener.onSpeakerSeatUpdate(model);
+                }
+            }
+        }
     }
 
     public List<ZegoSpeakerSeatModel> getSpeakerSeatList() {
@@ -472,10 +472,10 @@ public class ZegoSpeakerSeatService {
         ZegoUserInfo selfUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         for (ZegoSpeakerSeatModel model : speakerSeatList) {
             if (model.userID.equals(selfUserInfo.getUserID())) {
-                //                model.soundLevel = soundLevel;
-                //                if (speakerSeatServiceListener != null) {
-                //                    speakerSeatServiceListener.onSpeakerSeatUpdate(model);
-                //                }
+                model.soundLevel = soundLevel;
+                if (speakerSeatServiceListener != null) {
+                    speakerSeatServiceListener.onSpeakerSeatUpdate(model);
+                }
             }
         }
     }
@@ -483,12 +483,12 @@ public class ZegoSpeakerSeatService {
     public void updateRemoteUsersSoundLevel(HashMap<String, Float> soundLevels) {
         for (ZegoSpeakerSeatModel model : speakerSeatList) {
             Float soundLevel = soundLevels.get(model.userID);
-            //            if (soundLevel != null) {
-            //                model.soundLevel = soundLevel;
-            //                if (speakerSeatServiceListener != null) {
-            //                    speakerSeatServiceListener.onSpeakerSeatUpdate(model);
-            //                }
-            //            }
+            if (soundLevel != null) {
+                model.soundLevel = soundLevel;
+                if (speakerSeatServiceListener != null) {
+                    speakerSeatServiceListener.onSpeakerSeatUpdate(model);
+                }
+            }
         }
     }
 }
