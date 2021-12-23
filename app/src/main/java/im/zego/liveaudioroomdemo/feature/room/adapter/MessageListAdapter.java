@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.SizeUtils;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.model.ZegoTextMessage;
-import im.zego.liveaudioroom.model.ZegoUserInfo;
+import im.zego.liveaudioroom.service.ZegoRoomService;
 import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.helper.RoundBackgroundColorSpan;
@@ -45,8 +45,8 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
         ZegoTextMessage message = messageList.get(position);
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        ZegoUserInfo localUserInfo = userService.localUserInfo;
-        boolean isHostMessage = localUserInfo.getUserID().equals(message.userID);
+        ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
+        boolean isHostMessage = roomService.roomInfo.getHostID().equals(message.userID);
         String fromUserName = userService.getUserName(message.userID);
         String content = message.message;
         Context context = holder.itemView.getContext();

@@ -15,6 +15,7 @@ import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
+import im.zego.zim.enums.ZIMErrorCode;
 import org.json.JSONException;
 
 import im.zego.liveaudioroom.ZegoRoomManager;
@@ -97,7 +98,7 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                 ZegoRoomManager.getInstance().roomService.joinRoom(roomID, token, errorCode -> {
                     if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                         LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
-                    } else if (errorCode == ZegoRoomErrorCode.ROOM_NOT_FOUND) {
+                    } else if (errorCode == ZIMErrorCode.ROOM_NOT_EXIST.value()) {
                         ToastUtils.showShort(StringUtils.getString(R.string.toast_room_not_exist_fail));
                     } else {
                         ToastUtils.showShort(StringUtils.getString(R.string.toast_join_room_fail, errorCode));

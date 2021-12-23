@@ -1,12 +1,6 @@
 package im.zego.liveaudioroom;
 
 import android.app.Application;
-
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
 import im.zego.liveaudioroom.service.ZegoGiftService;
 import im.zego.liveaudioroom.service.ZegoMessageService;
@@ -30,6 +24,9 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMRoomEvent;
 import im.zego.zim.enums.ZIMRoomState;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.json.JSONObject;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -98,7 +95,8 @@ public class ZegoRoomManager {
             }
 
             @Override
-            public void onRoomStreamUpdate(String roomID, ZegoUpdateType updateType, ArrayList<ZegoStream> streamList, JSONObject extendedData) {
+            public void onRoomStreamUpdate(String roomID, ZegoUpdateType updateType, ArrayList<ZegoStream> streamList,
+                JSONObject extendedData) {
                 super.onRoomStreamUpdate(roomID, updateType, streamList, extendedData);
                 if (roomService != null) {
                     roomService.onRoomStreamUpdate(roomID, updateType, streamList);
@@ -131,14 +129,14 @@ public class ZegoRoomManager {
             @Override
             public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
                 super.onReceivePeerMessage(zim, messageList, fromUserID);
+                if (userService != null) {
+                    userService.onReceivePeerMessage(zim, messageList, fromUserID);
+                }
             }
 
             @Override
             public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
                 super.onReceiveRoomMessage(zim, messageList, fromRoomID);
-                if (userService != null) {
-                    userService.onReceiveRoomMessage(zim, messageList, fromRoomID);
-                }
                 if (giftService != null) {
                     giftService.onReceiveRoomMessage(zim, messageList, fromRoomID);
                 }
