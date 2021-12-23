@@ -157,14 +157,14 @@ public class ZegoUserService {
         command.userID = localUserInfo.getUserID();
         command.toJson();
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-        ZegoZIMManager.getInstance().zim.sendRoomMessage(command, roomID, (message, errorInfo) -> {
+        ZegoZIMManager.getInstance().zim.sendPeerMessage(command, roomID, (message, errorInfo) -> {
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
             }
         });
     }
 
-    public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
+    public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
                 ZIMCustomMessage zimCustomMessage = (ZIMCustomMessage) zimMessage;

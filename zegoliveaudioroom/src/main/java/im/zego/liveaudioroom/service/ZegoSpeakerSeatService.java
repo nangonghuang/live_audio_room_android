@@ -5,10 +5,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
+import im.zego.liveaudioroom.helper.CustomTypeAdapterFactory;
 import im.zego.liveaudioroom.listener.ZegoSpeakerSeatServiceListener;
 import im.zego.liveaudioroom.model.ZegoNetWorkQuality;
 import im.zego.liveaudioroom.model.ZegoRoomInfo;
@@ -39,9 +41,13 @@ public class ZegoSpeakerSeatService {
 
     private List<ZegoSpeakerSeatModel> speakerSeatList;
     private ZegoSpeakerSeatServiceListener speakerSeatServiceListener;
+    private final Gson gson;
 
     public ZegoSpeakerSeatService() {
         speakerSeatList = new ArrayList<>();
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapterFactory(new CustomTypeAdapterFactory());
+        gson = builder.create();
     }
 
     public void setListener(ZegoSpeakerSeatServiceListener listener) {
@@ -64,7 +70,7 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * close all unused seat.
+     * close all unused seat,make them closed.And when user leave seat, the seat will become closed
      *
      * @param isClose  close or not
      * @param callback operation result callback
@@ -72,7 +78,7 @@ public class ZegoSpeakerSeatService {
     public void closeAllSeat(boolean isClose, ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         HashMap<String, String> seatAttributes = new HashMap<>();
-        Gson gson = new Gson();
+
         for (int i = 0; i < speakerSeatList.size(); i++) {
             ZegoSpeakerSeatModel model = speakerSeatList.get(i);
             if (localUserInfo.getUserID().equals(model.userID)) {
@@ -144,7 +150,7 @@ public class ZegoSpeakerSeatService {
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
         roomInfo.setClosed(close);
         HashMap<String, String> roomAttributes = new HashMap<>();
-        roomAttributes.put("roomInfo", new Gson().toJson(roomInfo));
+        roomAttributes.put("roomInfo", gson.toJson(roomInfo));
         String roomID = roomInfo.getRoomID();
         ZegoZIMManager.getInstance().zim.setRoomAttributes(roomAttributes, roomID, setConfig, callback);
     }
@@ -158,7 +164,7 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * close specific speaker seat,make it Closed or Untaken.
+     * close specific speaker seat,make it Closed .
      *
      * @param isClose   close or not
      * @param seatIndex seat index
@@ -192,7 +198,7 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * take a specific speaker seat.
+     * take a specific speaker seat.make it occupied
      *
      * @param seatIndex seatIndex to take
      * @param callback  operation result callback
@@ -223,7 +229,7 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * leave speaker seat.
+     * leave speaker seat.make it unTaken
      *
      * @param callback operation result callback
      */
@@ -258,7 +264,7 @@ public class ZegoSpeakerSeatService {
             speakerSeatModel1.seatIndex = mySeatIndex;
             speakerSeatModel1.mic = false;
             speakerSeatModel1.status = ZegoSpeakerSeatStatus.Untaken;
-            final String modelString1 = new Gson().toJson(speakerSeatModel1);
+            final String modelString1 = gson.toJson(speakerSeatModel1);
 
             ZegoSpeakerSeatModel currentSeat = speakerSeatList.get(mySeatIndex);
             ZegoSpeakerSeatModel speakerSeatModel2 = new ZegoSpeakerSeatModel();
@@ -266,7 +272,7 @@ public class ZegoSpeakerSeatService {
             speakerSeatModel2.seatIndex = toSeatIndex;
             speakerSeatModel2.mic = currentSeat.mic;
             speakerSeatModel2.status = ZegoSpeakerSeatStatus.Occupied;
-            final String modelString2 = new Gson().toJson(speakerSeatModel2);
+            final String modelString2 = gson.toJson(speakerSeatModel2);
 
             HashMap<String, String> seatAttributes = new HashMap<>();
             seatAttributes.put(String.valueOf(mySeatIndex), modelString1);
@@ -309,7 +315,7 @@ public class ZegoSpeakerSeatService {
                 speakerSeatModel.status = ZegoSpeakerSeatStatus.Closed;
             }
         }
-        String modelString = new Gson().toJson(speakerSeatModel);
+        String modelString = gson.toJson(speakerSeatModel);
 
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(String.valueOf(seatIndex), modelString);
@@ -395,13 +401,15 @@ public class ZegoSpeakerSeatService {
     }
 
     public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
-        Gson gson = new Gson();
         HashMap<String, String> roomAttributes = info.roomAttributes;
         if (info.action == ZIMRoomAttributesUpdateAction.SET) {
             for (Entry<String, String> entry : roomAttributes.entrySet()) {
                 if (NumberUtils.isNumber(entry.getKey())) {
                     String jsonValue = entry.getValue();
                     ZegoSpeakerSeatModel model = gson.fromJson(jsonValue, ZegoSpeakerSeatModel.class);
+                    Log.d(TAG,
+                        "onRoomAttributesUpdated() called with: zim = [" + zim + "], info = [" + info + "], roomID = ["
+                            + roomID + "]");
                     onSpeakerSeatStatusChanged(model);
                 }
             }
@@ -452,6 +460,10 @@ public class ZegoSpeakerSeatService {
         return speakerSeatList;
     }
 
+    public ZegoSpeakerSeatModel getSpeakerSeatModel(int index) {
+        return speakerSeatList.get(index);
+    }
+
     /**
      * get userID list in speaker seat.
      *
@@ -471,7 +483,7 @@ public class ZegoSpeakerSeatService {
     public void updateLocalUserSoundLevel(float soundLevel) {
         ZegoUserInfo selfUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         for (ZegoSpeakerSeatModel model : speakerSeatList) {
-            if (model.userID.equals(selfUserInfo.getUserID())) {
+            if (selfUserInfo.getUserID().equals(model.userID)) {
                 model.soundLevel = soundLevel;
                 if (speakerSeatServiceListener != null) {
                     speakerSeatServiceListener.onSpeakerSeatUpdate(model);
