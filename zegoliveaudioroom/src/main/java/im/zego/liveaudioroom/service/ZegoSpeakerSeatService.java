@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import org.apache.commons.lang.math.NumberUtils;
 
 /**
@@ -210,12 +211,7 @@ public class ZegoSpeakerSeatService {
             return;
         }
         if (isSeatAvailable(seatIndex)) {
-            changeSeatStatus(seatIndex, selfUserInfo.getUserID(), true, ZegoSpeakerSeatStatus.Occupied, errorCode -> {
-                if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                    ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
-                }
-                callback.roomCallback(errorCode);
-            });
+            changeSeatStatus(seatIndex, selfUserInfo.getUserID(), true, ZegoSpeakerSeatStatus.Occupied, callback);
         } else {
             callback.roomCallback(ZegoRoomErrorCode.SEAT_EXISTED);
         }
@@ -239,12 +235,7 @@ public class ZegoSpeakerSeatService {
             callback.roomCallback(ZegoRoomErrorCode.NOT_IN_SEAT);
         } else {
             ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(mySeatIndex);
-            changeSeatStatus(mySeatIndex, "", speakerSeatModel.mic, ZegoSpeakerSeatStatus.Untaken, errorCode -> {
-                if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                    ZegoExpressEngine.getEngine().stopPublishingStream();
-                }
-                callback.roomCallback(errorCode);
-            });
+            changeSeatStatus(mySeatIndex, "", speakerSeatModel.mic, ZegoSpeakerSeatStatus.Untaken, callback);
         }
     }
 
@@ -351,8 +342,17 @@ public class ZegoSpeakerSeatService {
 
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             ZegoUserInfo selfUserInfo = userService.localUserInfo;
-            if (selfUserInfo.getUserID().equals(updateModel.userID)) {
-                ZegoExpressEngine.getEngine().muteMicrophone(!updateModel.mic);
+
+            // this may involves two person,old and new one,so search the list
+            // to find if self is on seat
+            int mySeatIndex = findMySeatIndex();
+            if (mySeatIndex != -1) {
+                ZegoSpeakerSeatModel seatModel = speakerSeatList.get(mySeatIndex);
+                ZegoExpressEngine.getEngine().muteMicrophone(!seatModel.mic);
+                ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
+            } else {
+                ZegoExpressEngine.getEngine().muteMicrophone(true);
+                ZegoExpressEngine.getEngine().stopPublishingStream();
             }
 
             if (statusChanged) {
@@ -458,10 +458,6 @@ public class ZegoSpeakerSeatService {
 
     public List<ZegoSpeakerSeatModel> getSpeakerSeatList() {
         return speakerSeatList;
-    }
-
-    public ZegoSpeakerSeatModel getSpeakerSeatModel(int index) {
-        return speakerSeatList.get(index);
     }
 
     /**

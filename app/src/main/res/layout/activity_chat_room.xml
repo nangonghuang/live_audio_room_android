@@ -82,7 +82,7 @@
       android:id="@+id/tv_gift_toast"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:paddingStart="10dp"
+      android:padding="10dp"
       android:background="@drawable/purpele_round_rect"
       android:ellipsize="end"
       android:gravity="center_vertical"

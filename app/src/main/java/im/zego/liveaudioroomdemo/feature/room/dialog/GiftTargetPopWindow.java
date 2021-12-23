@@ -163,6 +163,6 @@ public class GiftTargetPopWindow extends PopupWindow {
 
     public interface GiftTargetListener {
 
-        void onGiftTargetSelected(int index, List<String> targetList);
+        void onGiftTargetSelected(int index, List<String> selectedUserList);
     }
 }

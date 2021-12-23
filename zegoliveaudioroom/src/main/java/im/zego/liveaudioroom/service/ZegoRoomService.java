@@ -51,19 +51,20 @@ public class ZegoRoomService {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         localUserInfo.setRole(ZegoRoomUserRole.Host);
 
-        roomInfo.setRoomID(roomID);
-        roomInfo.setRoomName(roomName);
-        roomInfo.setHostID(localUserInfo.getUserID());
-        roomInfo.setSeatNum(8);
-        roomInfo.setTextMessageDisabled(false);
-        roomInfo.setClosed(false);
+        ZegoRoomInfo createRoomInfo = new ZegoRoomInfo();
+        createRoomInfo.setRoomID(roomID);
+        createRoomInfo.setRoomName(roomName);
+        createRoomInfo.setHostID(localUserInfo.getUserID());
+        createRoomInfo.setSeatNum(8);
+        createRoomInfo.setTextMessageDisabled(false);
+        createRoomInfo.setClosed(false);
 
         ZIMRoomInfo zimRoomInfo = new ZIMRoomInfo();
         zimRoomInfo.roomID = roomID;
         zimRoomInfo.roomName = roomName;
 
         HashMap<String, String> roomAttributes = new HashMap<>();
-        roomAttributes.put(ZegoRoomConstants.KEY_ROOM_INFO, new Gson().toJson(roomInfo));
+        roomAttributes.put(ZegoRoomConstants.KEY_ROOM_INFO, new Gson().toJson(createRoomInfo));
         ZIMRoomAdvancedConfig config = new ZIMRoomAdvancedConfig();
         config.roomAttributes = roomAttributes;
 
@@ -195,6 +196,7 @@ public class ZegoRoomService {
                 if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
                     ZegoRoomInfo roomInfo = new Gson().fromJson(info.roomAttributes.get(key), ZegoRoomInfo.class);
                     boolean firstInit = (this.roomInfo.getSeatNum() == 0);
+                    Log.d(TAG, "onRoomAttributesUpdated: firstInit " + firstInit);
                     this.roomInfo = roomInfo;
                     if (firstInit) {
                         initRoomSeat();

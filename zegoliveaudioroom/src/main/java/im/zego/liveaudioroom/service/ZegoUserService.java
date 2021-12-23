@@ -58,7 +58,6 @@ public class ZegoUserService {
 
     // user logout
     public void logout() {
-        Log.d(TAG, "logout() called");
         ZegoZIMManager.getInstance().zim.logout();
         reset();
     }
