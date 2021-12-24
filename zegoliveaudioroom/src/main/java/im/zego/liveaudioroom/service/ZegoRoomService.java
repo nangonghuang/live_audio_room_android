@@ -188,8 +188,7 @@ public class ZegoRoomService {
     public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
         Log.d(TAG,
             "onRoomAttributesUpdated() called with: info.action = [" + info.action + "], info.roomAttributes = ["
-                + info.roomAttributes + "], roomID = [" + roomID
-                + "]");
+                + info.roomAttributes + "], roomID = [" + roomID + "]");
         if (info.action == ZIMRoomAttributesUpdateAction.SET) {
             Set<String> keys = info.roomAttributes.keySet();
             for (String key : keys) {

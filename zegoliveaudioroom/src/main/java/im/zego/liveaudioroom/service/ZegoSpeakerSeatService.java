@@ -277,8 +277,6 @@ public class ZegoSpeakerSeatService {
                 int errorCode;
                 if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
                     errorCode = ZegoRoomErrorCode.SUCCESS;
-                    speakerSeatList.set(mySeatIndex, speakerSeatModel1);
-                    speakerSeatList.set(toSeatIndex, speakerSeatModel2);
                     onSpeakerSeatStatusChanged(speakerSeatModel1);
                     onSpeakerSeatStatusChanged(speakerSeatModel2);
                 } else {
@@ -320,7 +318,6 @@ public class ZegoSpeakerSeatService {
             int errorCode;
             if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
                 errorCode = ZegoRoomErrorCode.SUCCESS;
-                speakerSeatList.set(seatIndex, speakerSeatModel);
                 onSpeakerSeatStatusChanged(speakerSeatModel);
             } else {
                 errorCode = ZegoRoomErrorCode.SET_SEAT_INFO_FAILED;
@@ -330,9 +327,10 @@ public class ZegoSpeakerSeatService {
     }
 
     private void onSpeakerSeatStatusChanged(ZegoSpeakerSeatModel updateModel) {
-        Log.d(TAG, "onSpeakerSeatStatusChanged() called with: updateModel = [" + updateModel + "]");
         if (speakerSeatList.size() > updateModel.seatIndex) {
             ZegoSpeakerSeatModel model = speakerSeatList.get(updateModel.seatIndex);
+            Log.d(TAG,
+                "onSpeakerSeatStatusChanged() called with: updateModel = [" + updateModel + "],oldModel:" + model);
             boolean statusChanged = model.status != updateModel.status;
             String oldUserID = model.userID;
             model.userID = updateModel.userID;
@@ -341,7 +339,7 @@ public class ZegoSpeakerSeatService {
             model.status = updateModel.status;
 
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            ZegoUserInfo selfUserInfo = userService.localUserInfo;
+            String hostID = ZegoRoomManager.getInstance().roomService.roomInfo.getHostID();
 
             // this may involves two person,old and new one,so search the list
             // to find if self is on seat
@@ -358,12 +356,12 @@ public class ZegoSpeakerSeatService {
             if (statusChanged) {
                 if (model.status == ZegoSpeakerSeatStatus.Occupied) {
                     ZegoUserInfo userInfo = userService.getUserInfo(updateModel.userID);
-                    if (userInfo != null && !selfUserInfo.getUserID().equals(userInfo.getUserID())) {
+                    if (userInfo != null && userInfo.getRole() != ZegoRoomUserRole.Host) {
                         userInfo.setRole(ZegoRoomUserRole.Speaker);
                     }
                 } else {
                     ZegoUserInfo userInfo = userService.getUserInfo(oldUserID);
-                    if (userInfo != null && !selfUserInfo.getUserID().equals(userInfo.getUserID())) {
+                    if (userInfo != null && userInfo.getRole() != ZegoRoomUserRole.Host) {
                         userInfo.setRole(ZegoRoomUserRole.Listener);
                     }
                 }
@@ -407,9 +405,6 @@ public class ZegoSpeakerSeatService {
                 if (NumberUtils.isNumber(entry.getKey())) {
                     String jsonValue = entry.getValue();
                     ZegoSpeakerSeatModel model = gson.fromJson(jsonValue, ZegoSpeakerSeatModel.class);
-                    Log.d(TAG,
-                        "onRoomAttributesUpdated() called with: zim = [" + zim + "], info = [" + info + "], roomID = ["
-                            + roomID + "]");
                     onSpeakerSeatStatusChanged(model);
                 }
             }

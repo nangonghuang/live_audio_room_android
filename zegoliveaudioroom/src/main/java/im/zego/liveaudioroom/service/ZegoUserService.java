@@ -14,6 +14,7 @@ import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMMessage;
+import im.zego.zim.entity.ZIMQueryMemberConfig;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
@@ -72,6 +73,13 @@ public class ZegoUserService {
         this.listener = listener;
     }
 
+    /**
+     * contains self
+     *
+     * @param zim
+     * @param memberList
+     * @param roomID
+     */
     public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
         List<ZegoUserInfo> joinUsers = generateRoomUsers(memberList);
         userList.addAll(joinUsers);

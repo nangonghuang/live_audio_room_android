@@ -428,13 +428,29 @@ public class LiveAudioRoomActivity extends BaseActivity {
             }
 
             @Override
-            public void onRoomUserJoin(List<ZegoUserInfo> memberList) {
-                for (ZegoUserInfo user : memberList) {
+            public void onRoomUserJoin(List<ZegoUserInfo> userInfos) {
+                boolean containsSelf = false;
+                ZegoUserInfo localUserInfo = userService.localUserInfo;
+                for (ZegoUserInfo userInfo : userInfos) {
+                    if (Objects.equals(userInfo.getUserID(), localUserInfo.getUserID())) {
+                        containsSelf = true;
+                        break;
+                    }
+                }
+                if (containsSelf) {
                     ZegoTextMessage textMessage = new ZegoTextMessage();
                     textMessage.message = StringUtils
-                        .getString(R.string.room_page_joined_the_room, user.getUserName());
+                        .getString(R.string.room_page_joined_the_room, localUserInfo.getUserName());
                     textMessageList.add(textMessage);
                     refreshMessageList();
+                } else {
+                    for (ZegoUserInfo user : userInfos) {
+                        ZegoTextMessage textMessage = new ZegoTextMessage();
+                        textMessage.message = StringUtils
+                            .getString(R.string.room_page_joined_the_room, user.getUserName());
+                        textMessageList.add(textMessage);
+                        refreshMessageList();
+                    }
                 }
                 seatListAdapter.notifyDataSetChanged();
                 updateMemberListDialog();
@@ -463,15 +479,16 @@ public class LiveAudioRoomActivity extends BaseActivity {
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         seatService.setListener(model -> {
             seatListAdapter.updateUserInfo(model);
-            List<String> seatedUserList = seatService.getSeatedUserList();
             if (UserInfoHelper.isSelfOwner()) {
                 uiToOwner();
             } else {
-                if (seatedUserList.contains(getMyUserID())) {
-                    uiToSpeaker();
-                    ivMic.setSelected(model.mic);
-                } else {
-                    uiToAudience();
+                if (Objects.equals(model.userID, getMyUserID())) {
+                    if (model.status == ZegoSpeakerSeatStatus.Occupied) {
+                        uiToSpeaker();
+                        ivMic.setSelected(model.mic);
+                    } else {
+                        uiToAudience();
+                    }
                 }
             }
             updateMemberListDialog();
