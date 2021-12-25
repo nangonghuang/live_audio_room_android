@@ -137,6 +137,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
     }
 
     public void setSeatList(List<ZegoSpeakerSeatModel> seatList) {
+        Log.d(TAG, "setSeatList() called with: seatList = [" + seatList + "]");
         this.seatList = seatList;
     }
 

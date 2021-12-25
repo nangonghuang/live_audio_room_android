@@ -1,6 +1,7 @@
 package im.zego.liveaudioroom.service;
 
 import android.util.Log;
+import com.google.gson.Gson;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -14,15 +15,17 @@ import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMMessage;
-import im.zego.zim.entity.ZIMQueryMemberConfig;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by rocket_wang on 2021/12/14.
@@ -82,11 +85,19 @@ public class ZegoUserService {
      */
     public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
         List<ZegoUserInfo> joinUsers = generateRoomUsers(memberList);
-        userList.addAll(joinUsers);
-        for (ZegoUserInfo joinUser : joinUsers) {
-            userMap.put(joinUser.getUserID(), joinUser);
+        Iterator<ZegoUserInfo> iterator = joinUsers.iterator();
+        while (iterator.hasNext()) {
+            ZegoUserInfo next = iterator.next();
+            Log.d(TAG, "onRoomMemberJoined() called with: joinUser = [" + next);
+            if (!userMap.containsKey(next.getUserID())) {
+                userList.add(next); // avoid duplicate
+                userMap.put(next.getUserID(), next);
+            } else {
+                // if duplicate,don't notify outside
+                iterator.remove();
+            }
         }
-        if (listener != null) {
+        if (joinUsers.size() > 0 && listener != null) {
             listener.onRoomUserJoin(joinUsers);
         }
     }
@@ -96,6 +107,7 @@ public class ZegoUserService {
         userList.removeAll(leaveUsers);
         for (ZegoUserInfo leaveUser : leaveUsers) {
             userMap.remove(leaveUser.getUserID());
+            Log.d(TAG, "onRoomMemberLeft() called with: leaveUser = [" + leaveUser);
         }
         if (listener != null) {
             listener.onRoomUserLeave(leaveUsers);
@@ -146,7 +158,7 @@ public class ZegoUserService {
         }
     }
 
-    ZegoUserInfo getUserInfo(String userID) {
+    public ZegoUserInfo getUserInfo(String userID) {
         return userMap.get(userID);
     }
 
@@ -162,9 +174,11 @@ public class ZegoUserService {
         command.actionType = ZegoCustomCommand.INVITATION;
         command.target = Collections.singletonList(userID);
         command.userID = localUserInfo.getUserID();
-        command.toJson();
-        String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-        ZegoZIMManager.getInstance().zim.sendPeerMessage(command, roomID, (message, errorInfo) -> {
+        String string = new Gson().toJson(command);
+        Log.d(TAG, "sendInvitation: " + string);
+        command.message = string.getBytes(StandardCharsets.UTF_8);
+        ZegoZIMManager.getInstance().zim.sendPeerMessage(command, userID, (message, errorInfo) -> {
+            Log.d(TAG, "sendInvitation: " + errorInfo.code);
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
             }
@@ -172,13 +186,14 @@ public class ZegoUserService {
     }
 
     public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
+        Log.d(TAG, "onReceivePeerMessage() called with: zim = [" + zim + "], messageList = [" + messageList
+            + "], fromUserID = [" + fromUserID + "]");
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
                 ZIMCustomMessage zimCustomMessage = (ZIMCustomMessage) zimMessage;
-                ZegoCustomCommand command = new ZegoCustomCommand();
-                command.type = zimCustomMessage.type;
-                command.userID = zimCustomMessage.userID;
-                command.fromJson(zimCustomMessage.message);
+                ZegoCustomCommand command = new Gson()
+                    .fromJson(new String(zimCustomMessage.message), ZegoCustomCommand.class);
+                Log.d(TAG, "onReceivePeerMessage: command" + command.actionType);
                 if (command.actionType == ZegoCustomCommand.INVITATION) {
                     ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
                     if (command.target.contains(localUserInfo.getUserID())) {

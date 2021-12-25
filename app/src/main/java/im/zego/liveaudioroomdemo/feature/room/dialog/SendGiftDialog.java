@@ -68,8 +68,6 @@ public class SendGiftDialog extends BaseBottomDialog {
                     }
                 });
             }
-            dismiss();
-
         });
         tvChooseMember.setOnClickListener(view -> {
             List<String> targetUserList = getTargetUserList();

@@ -27,6 +27,7 @@ import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.listener.ZegoRoomServiceListener;
 import im.zego.liveaudioroom.listener.ZegoUserServiceListener;
 import im.zego.liveaudioroom.model.ZegoRoomInfo;
+import im.zego.liveaudioroom.model.ZegoRoomUserRole;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.model.ZegoTextMessage;
@@ -38,7 +39,6 @@ import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
-import im.zego.liveaudioroomdemo.feature.login.UserLoginActivity;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MessageListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.adapter.SeatListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.dialog.IMInputDialog;
@@ -165,7 +165,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             PermissionHelper.requestRecordAudio(this, isAllGranted -> {
                 if (isAllGranted) {
                     boolean bool = ivMic.isSelected();
-                    ZegoRoomManager.getInstance().speakerSeatService.muteMic(!bool, error -> {
+                    ZegoRoomManager.getInstance().speakerSeatService.muteMic(bool, error -> {
                         if (error == ZegoRoomErrorCode.SUCCESS) {
                             ivMic.setSelected(!bool);
                         }
@@ -260,7 +260,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                                 }
                             });
                         } else {
-                            ToastUtils.showShort(R.string.toast_lock_seat_fail, ZegoRoomErrorCode.ALREADY_IN_SEAT);
+                            ToastUtils.showShort(R.string.toast_lock_seat_already_take_seat);
                         }
                     });
             } else if (seatModel.status == ZegoSpeakerSeatStatus.Closed) {
@@ -336,6 +336,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
             } else if (seatModel.status == ZegoSpeakerSeatStatus.Occupied) {
                 if (getMyUserID().equals(seatModel.userID)) {
                     speakerLeaveSeat();
+                } else {
+                    ToastUtils.showShort(R.string.the_wheat_position_has_been_locked);
                 }
             }
         }
@@ -478,19 +480,22 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         seatService.setListener(model -> {
-            seatListAdapter.updateUserInfo(model);
-            if (UserInfoHelper.isSelfOwner()) {
-                uiToOwner();
-            } else {
-                if (Objects.equals(model.userID, getMyUserID())) {
-                    if (model.status == ZegoSpeakerSeatStatus.Occupied) {
-                        uiToSpeaker();
-                        ivMic.setSelected(model.mic);
-                    } else {
-                        uiToAudience();
+            ZegoUserInfo userInfo = userService.getUserInfo(getMyUserID());
+            if (userInfo != null) {
+                if (userInfo.getRole() == ZegoRoomUserRole.Speaker) {
+                    uiToSpeaker();
+                    for (ZegoSpeakerSeatModel seatModel : seatService.getSpeakerSeatList()) {
+                        if (Objects.equals(seatModel.userID, getMyUserID())) {
+                            ivMic.setSelected(seatModel.mic);
+                        }
                     }
+                } else if (userInfo.getRole() == ZegoRoomUserRole.Host) {
+                    uiToOwner();
+                } else {
+                    uiToAudience();
                 }
             }
+            seatListAdapter.updateUserInfo(model);
             updateMemberListDialog();
             if (giftDialog != null && giftDialog.isShowing()) {
                 giftDialog.updateList();
@@ -525,10 +530,12 @@ public class LiveAudioRoomActivity extends BaseActivity {
                         } else if (event == ZIMConnectionEvent.KICKED_OUT) {
                             //disconnect because of multiple login,been kicked out
                             ToastUtils.showShort(R.string.toast_kickout_error);
-                            ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
+                            ActivityUtils.finishAllActivities();
+                            ActivityUtils.startLauncherActivity();
                         } else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
-                            ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
+                            ActivityUtils.finishAllActivities();
+                            ActivityUtils.startLauncherActivity();
                         }
 
                     }
@@ -547,7 +554,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
         builder2.setMessage(R.string.network_connect_failed);
         builder2.setCancelable(false);
         builder2.setPositiveButton(R.string.dialog_confirm, (dialog1, which1) -> {
-            ActivityUtils.startActivity(LiveAudioRoomActivity.this, UserLoginActivity.class);
+            ActivityUtils.finishAllActivities();
+            ActivityUtils.startLauncherActivity();
         });
         if (!LiveAudioRoomActivity.this.isFinishing()) {
             AlertDialog alertDialog = builder2.create();

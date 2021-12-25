@@ -193,7 +193,7 @@ public class ZegoSpeakerSeatService {
             callback.roomCallback(ZegoRoomErrorCode.NOT_IN_SEAT);
         } else {
             ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(mySeatIndex);
-            changeSeatStatus(mySeatIndex, speakerSeatModel.userID, isMuted, speakerSeatModel.status,
+            changeSeatStatus(mySeatIndex, speakerSeatModel.userID, !isMuted, speakerSeatModel.status,
                 callback);
         }
     }

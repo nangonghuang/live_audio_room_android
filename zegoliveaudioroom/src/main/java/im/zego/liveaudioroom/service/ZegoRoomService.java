@@ -170,6 +170,7 @@ public class ZegoRoomService {
             ZegoRoomAttributesHelper.getRoomConfigByTextMessage(isMuted, roomInfo),
             roomInfo.getRoomID(),
             ZegoRoomAttributesHelper.getAttributesSetConfig(), errorInfo -> {
+                Log.d(TAG, "disableTextMessage() called with: isMuted = [" + isMuted);
                 if (callback != null) {
                     callback.roomCallback(errorInfo.code.value());
                 }
