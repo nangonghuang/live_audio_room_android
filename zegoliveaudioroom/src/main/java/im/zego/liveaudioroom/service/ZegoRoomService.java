@@ -41,7 +41,6 @@ public class ZegoRoomService {
     private ZegoRoomServiceListener listener;
     // room info object
     public ZegoRoomInfo roomInfo = new ZegoRoomInfo();
-    private ZIMConnectionState connectionState;
 
     private static final String TAG = "ZegoRoomService";
 
@@ -217,7 +216,25 @@ public class ZegoRoomService {
         String roomID) {
         Log.d(TAG, "onRoomStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = [" + event
             + "], extendedData = [" + extendedData + "], roomID = [" + roomID + "]");
-
+        if (state == ZIMRoomState.CONNECTED) {
+            boolean newInRoom = (this.roomInfo.getSeatNum() == 0);
+            if (!newInRoom && !TextUtils.isEmpty(roomID)) {
+                ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomAttributes, errorInfo) -> {
+                    boolean hostLeft = errorInfo.getCode() == ZIMErrorCode.SUCCESS
+                        && !roomAttributes.keySet().contains(ZegoRoomConstants.KEY_ROOM_INFO);
+                    boolean roomNotExisted = errorInfo.getCode() == ZIMErrorCode.ROOM_NOT_EXIST;
+                    if (hostLeft || roomNotExisted) {
+                        if (listener != null) {
+                            listener.onReceiveRoomInfoUpdate(null);
+                        }
+                    }
+                });
+            }
+        } else if (state == ZIMRoomState.DISCONNECTED) {
+            if (listener != null) {
+                listener.onReceiveRoomInfoUpdate(null);
+            }
+        }
     }
 
     public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
@@ -225,23 +242,6 @@ public class ZegoRoomService {
         Log.d(TAG,
             "onConnectionStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = ["
                 + event + "], extendedData = [" + extendedData + "]");
-        if (connectionState == ZIMConnectionState.CONNECTING && state == ZIMConnectionState.CONNECTED) {
-            boolean newInRoom = (this.roomInfo.getSeatNum() == 0);
-            String roomID = this.roomInfo.getRoomID();
-            if (!newInRoom && !TextUtils.isEmpty(roomID)) {
-                ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomAttributes, errorInfo) -> {
-                    Log.d(TAG,
-                        "queryRoomAllAttributes() called with: roomAttributes = " + roomAttributes + ",errorInfo:"
-                            + errorInfo.getCode());
-                    if (errorInfo.getCode() == ZIMErrorCode.ROOM_NOT_EXIST) {
-                        if (listener != null) {
-                            listener.onReceiveRoomInfoUpdate(null);
-                        }
-                    }
-                });
-            }
-        }
-        connectionState = state;
         if (listener != null) {
             listener.onConnectionStateChanged(state, event);
         }
