@@ -75,7 +75,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private ImageView ivSettings;
     private ImageView ivMore;
     private TextView tvRoomName;
-    private TextView tvRoomNum;
+    private TextView tvRoomID;
     private RecyclerView rvSeatList;
     private RecyclerView rvMessageList;
     private ImageView ivGift;
@@ -114,7 +114,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private void initUI() {
         ivLogout = findViewById(R.id.iv_logout);
         tvRoomName = findViewById(R.id.tv_room_name);
-        tvRoomNum = findViewById(R.id.tv_room_num);
+        tvRoomID = findViewById(R.id.tv_room_id);
 
         rvSeatList = findViewById(R.id.rv_seat_list);
         rvMessageList = findViewById(R.id.rv_message_list);
@@ -155,7 +155,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                             }
                         });
                     } else {
-                        ToastUtils.showShort(R.string.toast_send_message_error, ZegoRoomErrorCode.NO_PERMISSION);
+                        ToastUtils.showShort(R.string.room_page_bands_send_message);
                     }
                 });
                 imInputDialog.show();
@@ -240,7 +240,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
         tvRoomName.setText(roomInfo.getRoomName());
-        tvRoomNum.setText(roomInfo.getRoomID());
+        tvRoomID.setText(roomInfo.getRoomID());
     }
 
     private void onSpeakerSeatClicked(ZegoSpeakerSeatModel seatModel) {
