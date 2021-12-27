@@ -47,6 +47,9 @@ public class GiftTargetPopWindow extends PopupWindow {
             @Override
             public void onItemClick(RecyclerView.ViewHolder vh) {
                 int adapterPosition = vh.getAdapterPosition();
+                if (adapterPosition == RecyclerView.NO_POSITION) {
+                    return;
+                }
                 target.clear();
                 if (adapterPosition == 0) {
                     target.addAll(userList);

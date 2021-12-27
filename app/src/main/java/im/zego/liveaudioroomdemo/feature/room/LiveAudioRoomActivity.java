@@ -384,7 +384,20 @@ public class LiveAudioRoomActivity extends BaseActivity {
             StringUtils.getString(R.string.dialog_refuse),
             (dialog, which) -> {
                 ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
+                ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
                 List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService.getSpeakerSeatList();
+                boolean isSpeaker = false;
+                for (int i = 0; i < speakerSeatList.size(); i++) {
+                    ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(i);
+                    if (speakerSeatModel.userID.equals(localUserInfo.getUserID())
+                        && speakerSeatModel.status == ZegoSpeakerSeatStatus.Occupied) {
+                        isSpeaker = true;
+                        break;
+                    }
+                }
+                if (isSpeaker) {
+                    return;
+                }
                 int seatIndex = -1;
                 for (int i = 0; i < speakerSeatList.size(); i++) {
                     ZegoSpeakerSeatModel model = speakerSeatList.get(i);

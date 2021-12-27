@@ -165,6 +165,9 @@ public class ZegoRoomManager {
             public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
                 String roomID) {
                 super.onRoomStateChanged(zim, state, event, extendedData, roomID);
+                if (roomService != null) {
+                    roomService.onRoomStateChanged(zim, state, event, extendedData, roomID);
+                }
             }
 
             @Override

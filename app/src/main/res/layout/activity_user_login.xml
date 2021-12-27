@@ -26,7 +26,7 @@
         android:digits="01234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM"
         android:ems="10"
         android:hint="@string/login_page_user_id"
-        android:maxLength="20"
+        android:maxLength="16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
@@ -38,7 +38,7 @@
         android:ems="10"
         android:hint="@string/login_page_user_name"
         android:inputType="textPersonName"
-        android:maxLength="32"
+        android:maxLength="16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_user_id" />
