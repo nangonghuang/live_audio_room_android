@@ -1,5 +1,6 @@
 package im.zego.liveaudioroom.service;
 
+import android.util.Log;
 import com.google.gson.Gson;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
@@ -54,13 +55,13 @@ public class ZegoGiftService {
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
                 ZIMCustomMessage zimCustomMessage = (ZIMCustomMessage) zimMessage;
-                ZegoCustomCommand command = new Gson()
-                    .fromJson(new String(zimCustomMessage.message), ZegoCustomCommand.class);
+                String json = new String(zimCustomMessage.message);
+                ZegoCustomCommand command = new Gson().fromJson(json, ZegoCustomCommand.class);
                 if (command.actionType == ZegoCustomCommand.Gift) {
                     String giftID = command.content.get("giftID");
                     List<String> toUserList = command.target;
                     if (giftServiceListener != null) {
-                        giftServiceListener.onReceiveGift(giftID, command.userID, toUserList);
+                        giftServiceListener.onReceiveGift(giftID, zimCustomMessage.userID, toUserList);
                     }
                 }
             }
