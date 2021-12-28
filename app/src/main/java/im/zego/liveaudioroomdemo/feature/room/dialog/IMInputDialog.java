@@ -79,8 +79,8 @@ public class IMInputDialog extends BaseDialog {
         return R.layout.layout_im_input;
     }
 
-    public void updateSendButtonState(boolean isMuted) {
-        sendButton.setEnabled(isMuted);
+    public void updateSendButtonState(boolean enable) {
+        sendButton.setEnabled(enable);
     }
 
     private void hideInputWindow(View view) {

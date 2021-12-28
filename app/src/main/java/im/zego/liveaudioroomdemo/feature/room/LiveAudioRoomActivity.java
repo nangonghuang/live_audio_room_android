@@ -90,7 +90,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private MemberListDialog memberListDialog;
 
     private List<ZegoTextMessage> textMessageList = new ArrayList<>();
-    private boolean isImMuted = false;
+    private boolean isImDisabled = false;
     private Runnable hideGiftTips = () -> {
         tvGiftToast.setText("");
         ((ViewGroup) tvGiftToast.getParent()).setVisibility(View.INVISIBLE);
@@ -134,7 +134,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private void setListener() {
         ivLogout.setOnClickListener(v -> this.onBackPressed());
         ivIm.setOnClickListener(v -> {
-            if (isImMuted && !UserInfoHelper.isSelfOwner()) {
+            if (isImDisabled && !UserInfoHelper.isSelfOwner()) {
                 ToastUtils.showShort(R.string.room_page_bands_send_message);
             } else {
                 imInputDialog = new IMInputDialog(this);
@@ -277,23 +277,23 @@ public class LiveAudioRoomActivity extends BaseActivity {
                         });
                     });
             } else if (seatModel.status == ZegoSpeakerSeatStatus.Occupied) {
-                final String userId = seatModel.userID;
-                if (getMyUserID().equals(userId)) {
+                if (Objects.equals(seatModel.userID, getMyUserID())) {
                     return;
                 }
                 if (seatModel.status == ZegoSpeakerSeatStatus.Occupied) {
+                    String userName = ZegoRoomManager.getInstance().userService.getUserName(seatModel.userID);
                     DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
                         StringUtils.getString(R.string.room_page_leave_speaker_seat), dialog -> {
                             DialogHelper.showAlertDialog(LiveAudioRoomActivity.this,
                                 StringUtils.getString(R.string.room_page_leave_speaker_seat),
-                                StringUtils.getString(R.string.dialog_warning_leave_seat_message, userId),
+                                StringUtils.getString(R.string.dialog_warning_leave_seat_message, userName),
                                 StringUtils.getString(R.string.dialog_confirm),
                                 StringUtils.getString(R.string.dialog_cancel),
                                 (alertDialog, which) -> {
                                     seatService.removeUserFromSeat(seatModel.seatIndex, errorCode -> {
                                         if (errorCode != ZegoRoomErrorCode.SUCCESS) {
                                             ToastUtils.showShort(R.string.toast_kickout_leave_seat_error,
-                                                userId, errorCode);
+                                                userName, errorCode);
                                         }
                                     });
                                 },
@@ -301,8 +301,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
                             );
                         });
                 } else {
+                    String userName = ZegoRoomManager.getInstance().userService.getUserName(seatModel.userID);
                     ToastUtils
-                        .showShort(R.string.toast_kickout_leave_seat_error, userId, ZegoRoomErrorCode.NOT_IN_SEAT);
+                        .showShort(R.string.toast_kickout_leave_seat_error, userName, ZegoRoomErrorCode.NOT_IN_SEAT);
                 }
 
             }
@@ -585,13 +586,13 @@ public class LiveAudioRoomActivity extends BaseActivity {
         }
     }
 
-    private void onUserMessageDisabled(boolean isMuted) {
-        isImMuted = isMuted;
+    private void onUserMessageDisabled(boolean disable) {
+        isImDisabled = disable;
         if (imInputDialog != null) {
-            imInputDialog.updateSendButtonState(isMuted);
+            imInputDialog.updateSendButtonState(!disable);
         }
         if (!UserInfoHelper.isSelfOwner()) {
-            ivIm.setActivated(!isMuted);
+            ivIm.setActivated(!disable);
         }
     }
 

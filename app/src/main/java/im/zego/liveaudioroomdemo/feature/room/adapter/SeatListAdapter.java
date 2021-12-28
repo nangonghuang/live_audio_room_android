@@ -78,6 +78,7 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
                     holder.ivOwnerAvatar.setVisibility(View.INVISIBLE);
                 }
 
+                Log.d(TAG, "onBindViewHolder: speakerSeatModel.soundLevel:" + speakerSeatModel.soundLevel);
                 if (canShowSoundWaves(speakerSeatModel.soundLevel)) {
                     holder.ivAvatarTalking.setVisibility(View.VISIBLE);
                 } else {
@@ -137,14 +138,13 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
     }
 
     public void setSeatList(List<ZegoSpeakerSeatModel> seatList) {
-        Log.d(TAG, "setSeatList() called with: seatList = [" + seatList + "]");
         this.seatList = seatList;
     }
 
-    public void updateUserInfo(ZegoSpeakerSeatModel zimSpeakerSeat) {
-        seatList.set(zimSpeakerSeat.seatIndex, zimSpeakerSeat);
+    public void updateUserInfo(ZegoSpeakerSeatModel seatModel) {
+        seatList.set(seatModel.seatIndex, seatModel);
         notifyDataSetChanged();
-//        notifyItemChanged(zimSpeakerSeat.seatIndex, new Object());
+        //        notifyItemChanged(seatModel.seatIndex, new Object());
     }
 
     public void setOnSeatClickListener(OnSeatClickListener itemListener) {
