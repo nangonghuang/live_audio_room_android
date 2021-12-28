@@ -68,6 +68,7 @@
   <string name="mic_request">请允许我们使用你的麦克风，以便你能正常进行语音聊天。</string>
   <string name="toast_unlock_seat_fail">解锁麦位失败，错误码：%d</string>
   <string name="toast_lock_seat_fail">锁定麦位失败，错误码：%d</string>
+  <string name="toast_lock_seat_already_take_seat">锁定麦位失败，麦上已有用户</string>
   <string name="dialog_warning_leave_seat_message">是否踢 %s下麦？</string>
   <string name="dialog_confirm">确认</string>
   <string name="dialog_cancel">取消</string>
@@ -94,4 +95,5 @@
   <string name="network_connect_failed">网络连接失败，请尝试退出房间重新加入</string>
   <string name="network_connect_failed_title">网络错误</string>
   <string name="network_reconnect">网络发生了错误，正在重连中...</string>
+  <string name="toast_room_existed">创建房间失败，房间已存在</string>
 </resources>

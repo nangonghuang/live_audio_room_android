@@ -1,8 +1,10 @@
 package im.zego.liveaudioroom.service;
 
 import android.util.Log;
+import com.google.gson.Gson;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
+import im.zego.liveaudioroom.callback.ZegoOnlineRoomUsersCallback;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
 import im.zego.liveaudioroom.listener.ZegoUserServiceListener;
 import im.zego.liveaudioroom.model.ZegoCustomCommand;
@@ -17,27 +19,51 @@ import im.zego.zim.entity.ZIMMessage;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by rocket_wang on 2021/12/14.
+ * Class user information management.
+ * <p>Description: This class contains the user information management logics, such as the logic of log in, log out,
+ * get the logged-in user info, get the in-room user list, and add co-hosts, etc. </>
  */
 public class ZegoUserService {
 
     private static final String TAG = "ZegoUserService";
 
-    // local login user info
+    /**
+     * The local logged-in user information.
+     */
     public ZegoUserInfo localUserInfo;
-    // room member list,contains self
+    /**
+     * In-room user list, can be used when displaying the user list in the room.
+     */
     private final List<ZegoUserInfo> userList = new ArrayList<>();
+    /**
+     * In-room user dictionary,  can be used to update user information.¬
+     */
     private final Map<String, ZegoUserInfo> userMap = new HashMap<>();
+
+    /**
+     * The listener related to user status.
+     */
     private ZegoUserServiceListener listener;
 
-    // user login
+    /**
+     * User to log in.
+     * <p>Description: Call this method with user ID and username to log in to the LiveAudioRoom service.</>
+     * <p>Call this method at: After the SDK initialization</>
+     *
+     * @param userInfo refers to the user information. You only need to enter the user ID and username.
+     * @param token    refers to the authentication token. To get this, refer to the documentation:
+     *                 https://doc-en.zego.im/article/11648
+     * @param callback refers to the callback for log in.
+     */
     public void login(ZegoUserInfo userInfo, String token, final ZegoRoomCallback callback) {
         ZIMUserInfo zimUserInfo = new ZIMUserInfo();
         zimUserInfo.userID = userInfo.getUserID();
@@ -56,9 +82,12 @@ public class ZegoUserService {
         });
     }
 
-    // user logout
+    /**
+     * User to log out.
+     * <p>Description: This method can be used to log out from the current user account.</>
+     * <p>Call this method at: After the user login</>
+     */
     public void logout() {
-        Log.d(TAG, "logout() called");
         ZegoZIMManager.getInstance().zim.logout();
         reset();
     }
@@ -73,13 +102,28 @@ public class ZegoUserService {
         this.listener = listener;
     }
 
+    /**
+     * contains self
+     *
+     * @param zim
+     * @param memberList
+     * @param roomID
+     */
     public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
         List<ZegoUserInfo> joinUsers = generateRoomUsers(memberList);
-        userList.addAll(joinUsers);
-        for (ZegoUserInfo joinUser : joinUsers) {
-            userMap.put(joinUser.getUserID(), joinUser);
+        Iterator<ZegoUserInfo> iterator = joinUsers.iterator();
+        while (iterator.hasNext()) {
+            ZegoUserInfo next = iterator.next();
+            Log.d(TAG, "onRoomMemberJoined() called with: joinUser = [" + next);
+            if (!userMap.containsKey(next.getUserID())) {
+                userList.add(next); // avoid duplicate
+                userMap.put(next.getUserID(), next);
+            } else {
+                // if duplicate,don't notify outside
+                iterator.remove();
+            }
         }
-        if (listener != null) {
+        if (joinUsers.size() > 0 && listener != null) {
             listener.onRoomUserJoin(joinUsers);
         }
     }
@@ -89,6 +133,7 @@ public class ZegoUserService {
         userList.removeAll(leaveUsers);
         for (ZegoUserInfo leaveUser : leaveUsers) {
             userMap.remove(leaveUser.getUserID());
+            Log.d(TAG, "onRoomMemberLeft() called with: leaveUser = [" + leaveUser);
         }
         if (listener != null) {
             listener.onRoomUserLeave(leaveUsers);
@@ -139,15 +184,18 @@ public class ZegoUserService {
         }
     }
 
-    ZegoUserInfo getUserInfo(String userID) {
+    public ZegoUserInfo getUserInfo(String userID) {
         return userMap.get(userID);
     }
 
     /**
-     * send invitation to room user.
+     * Invite users to speak .
+     * <p>Description: This method can be called to invite users to take a speaker seat to speak, and the invitee will
+     * receive an invitation.</>
+     * <p>Call this method at:  After joining a room</>
      *
-     * @param userID   userID
-     * @param callback operation result callback
+     * @param userID   refers to the ID of the user that you want to invite
+     * @param callback refers to the callback for invite users to speak
      */
     public void sendInvitation(String userID, ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
@@ -155,23 +203,42 @@ public class ZegoUserService {
         command.actionType = ZegoCustomCommand.INVITATION;
         command.target = Collections.singletonList(userID);
         command.userID = localUserInfo.getUserID();
-        command.toJson();
-        String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-        ZegoZIMManager.getInstance().zim.sendPeerMessage(command, roomID, (message, errorInfo) -> {
+        String string = new Gson().toJson(command);
+        Log.d(TAG, "sendInvitation: " + string);
+        command.message = string.getBytes(StandardCharsets.UTF_8);
+        ZegoZIMManager.getInstance().zim.sendPeerMessage(command, userID, (message, errorInfo) -> {
+            Log.d(TAG, "sendInvitation: " + errorInfo.code);
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
             }
         });
     }
 
+    /**
+     * Get the total number of in-room users
+     * <p>Description: This method can be called to get the total number of the in-room users.</>
+     * <p>Call this method at: After joining a room</>
+     *
+     * @param callback refers to the callback for get the total number of in-room users.
+     */
+    public void getOnlineRoomUsersNum(final ZegoOnlineRoomUsersCallback callback) {
+        ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
+        ZegoZIMManager.getInstance().zim.queryRoomOnlineMemberCount(roomInfo.getRoomID(), (count, errorInfo) -> {
+            if (callback != null) {
+                callback.userCountCallback(errorInfo.code.value(), count);
+            }
+        });
+    }
+
     public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
+        Log.d(TAG, "onReceivePeerMessage() called with: zim = [" + zim + "], messageList = [" + messageList
+            + "], fromUserID = [" + fromUserID + "]");
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
                 ZIMCustomMessage zimCustomMessage = (ZIMCustomMessage) zimMessage;
-                ZegoCustomCommand command = new ZegoCustomCommand();
-                command.type = zimCustomMessage.type;
-                command.userID = zimCustomMessage.userID;
-                command.fromJson(zimCustomMessage.message);
+                ZegoCustomCommand command = new Gson()
+                    .fromJson(new String(zimCustomMessage.message), ZegoCustomCommand.class);
+                Log.d(TAG, "onReceivePeerMessage: command" + command.actionType);
                 if (command.actionType == ZegoCustomCommand.INVITATION) {
                     ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
                     if (command.target.contains(localUserInfo.getUserID())) {

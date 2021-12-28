@@ -41,11 +41,6 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
     private Button btnJoin;
     private static final String TAG = "RoomLoginActivity";
 
-    public static void startActivity(Context context) {
-        Intent intent = new Intent(context, RoomLoginActivity.class);
-        context.startActivity(intent);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +57,8 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
                 if (state == ZIMConnectionState.DISCONNECTED && event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
-                    ActivityUtils.startActivity(RoomLoginActivity.this, UserLoginActivity.class);
+                    ActivityUtils.finishAllActivities();
+                    ActivityUtils.startLauncherActivity();
                 }
             }
         });
@@ -137,10 +133,12 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                     String token = ZegoRTCServerAssistant.generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges, KeyCenter.appExpressSign(), 660).data;
                     ZegoRoomManager.getInstance().roomService.createRoom(roomID, roomName, token, errorCode -> {
                         dialog.dismiss();
-                        if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                        if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                             LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_success));
-                        } else {
+                        } else if(errorCode == ZIMErrorCode.CREATE_EXIST_ROOM.value()){
+                            ToastUtils.showShort(R.string.toast_room_existed);
+                        }else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_fail, errorCode));
                         }
                     });

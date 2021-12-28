@@ -3,16 +3,11 @@ package im.zego.liveaudioroomdemo.feature.room.dialog;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
-
-import java.util.List;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.service.ZegoGiftService;
@@ -21,6 +16,8 @@ import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.GiftListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * dialog display when click gift button in the bottom.
@@ -32,6 +29,7 @@ public class SendGiftDialog extends BaseBottomDialog {
     private TextView tvChooseMember;
     private GiftTargetPopWindow giftTargetPopWindow;
     private SendGiftListener sendGiftListener;
+    private List<String> selectedUsers = new ArrayList<>();
 
     public SendGiftDialog(@NonNull Context context) {
         super(context);
@@ -59,12 +57,11 @@ public class SendGiftDialog extends BaseBottomDialog {
         tvSendGift.setOnClickListener(view -> {
             RoomGift selectedGift = giftListAdapter.getSelectedGift();
             if (giftTargetPopWindow != null) {
-                List<String> giftTargetUsers = giftTargetPopWindow.getGiftTargetUsers();
                 ZegoGiftService giftService = ZegoRoomManager.getInstance().giftService;
-                giftService.sendGift(selectedGift.getId(), giftTargetUsers, errorCode -> {
+                giftService.sendGift(selectedGift.getId(), selectedUsers, errorCode -> {
                     if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                         if (sendGiftListener != null) {
-                            sendGiftListener.onSendGift(giftTargetUsers, selectedGift.getId());
+                            sendGiftListener.onSendGift(selectedUsers, selectedGift.getId());
                         }
                     } else {
                         ToastUtils
@@ -73,24 +70,25 @@ public class SendGiftDialog extends BaseBottomDialog {
                 });
             }
             dismiss();
-
         });
         tvChooseMember.setOnClickListener(view -> {
             List<String> targetUserList = getTargetUserList();
             giftTargetPopWindow = new GiftTargetPopWindow(getContext(), targetUserList, tvChooseMember.getWidth());
-            giftTargetPopWindow.setGiftTargetListener((index, targetList) -> {
+            giftTargetPopWindow.setGiftTargetListener((index, selectedUserList) -> {
                 if (index == 0) {
-                    if (targetList.size() > 0) {
+                    if (selectedUserList.size() > 0) {
                         tvChooseMember.setText(R.string.room_page_select_all_speakers);
                     }
                 } else {
-                    if (targetList.size() > 0) {
-                        String userID = targetList.get(0);
+                    if (selectedUserList.size() > 0) {
+                        String userID = selectedUserList.get(0);
                         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                         tvChooseMember.setText(userService.getUserName(userID));
                     }
                 }
-                tvSendGift.setEnabled(targetList.size() > 0);
+                selectedUsers.clear();
+                selectedUsers.addAll(selectedUserList);
+                tvSendGift.setEnabled(selectedUserList.size() > 0);
             });
             giftTargetPopWindow.show(tvChooseMember, Gravity.TOP, 0, -SizeUtils.dp2px(10f));
         });
@@ -115,7 +113,6 @@ public class SendGiftDialog extends BaseBottomDialog {
         if (giftTargetPopWindow != null && giftTargetPopWindow.isShowing()) {
             giftTargetPopWindow.updateList(targetUserList);
         }
-        tvSendGift.setEnabled(targetUserList.size() > 0);
     }
 
     public interface SendGiftListener {

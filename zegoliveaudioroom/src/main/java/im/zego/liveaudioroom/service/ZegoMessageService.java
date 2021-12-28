@@ -15,11 +15,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * manage room text message.
+ * Class IM message management.
+ * <p>Description: This class contains the logics of the IM messages management, such as send or receive messages.</>
  */
 public class ZegoMessageService {
 
+    /**
+     * The listener related to message updates.
+     */
     private ZegoMessageServiceListener messageServiceListener;
+    /**
+     * The message list.
+     */
     private List<ZegoTextMessage> messageList;
 
     public ZegoMessageService() {
@@ -27,10 +34,13 @@ public class ZegoMessageService {
     }
 
     /**
-     * send text message to room.
+     * Send IM text message.
+     * <p>Description: This method can be used to send IM text message, and all users in the room will receive the
+     * message notification.</>
+     * <p>Call this method at:  After joining the room</>
      *
-     * @param text     message text
-     * @param callback operation result callback
+     * @param text     refers to the text message content, which is limited to 1kb.
+     * @param callback refers to the callback for send text messages.
      */
     public void sendTextMessage(String text, ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager
@@ -62,7 +72,7 @@ public class ZegoMessageService {
                 textMessage.timestamp = zimTextMessage.timestamp;
                 messageList.add(textMessage);
                 if (messageServiceListener != null) {
-                    messageServiceListener.onReceiveTextMessage(textMessage, fromRoomID);
+                    messageServiceListener.onReceiveTextMessage(textMessage);
                 }
             }
         }

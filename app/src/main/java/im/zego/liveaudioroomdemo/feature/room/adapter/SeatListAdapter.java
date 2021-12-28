@@ -142,7 +142,6 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
     }
 
     public void updateUserInfo(ZegoSpeakerSeatModel zimSpeakerSeat) {
-        Log.d(TAG, "updateUserInfo() called with: zimSpeakerSeat = [" + zimSpeakerSeat + "]");
         seatList.set(zimSpeakerSeat.seatIndex, zimSpeakerSeat);
         notifyDataSetChanged();
 //        notifyItemChanged(zimSpeakerSeat.seatIndex, new Object());

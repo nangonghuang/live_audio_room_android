@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.blankj.utilcode.util.SizeUtils;
 import im.zego.liveaudioroom.model.ZegoRoomUserRole;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroomdemo.R;
@@ -38,6 +39,7 @@ public class MemberListAdapter extends RecyclerView.Adapter<MemberListAdapter.Us
 
         holder.ivUserAvatar.setImageDrawable(UserInfoHelper.getAvatarByUserName(userInfo.getUserName()));
         holder.tvUserName.setText(userInfo.getUserName());
+        holder.tvUserName.setMaxWidth(SizeUtils.dp2px(173.5f));
         if (userInfo.getRole() == ZegoRoomUserRole.Listener) {
             holder.tvUserInfo.setVisibility(View.GONE);
             // Audience

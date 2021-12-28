@@ -1,8 +1,18 @@
 package im.zego.liveaudioroom.callback;
 
 /**
- * Created by rocket_wang on 2021/12/14.
+ * Callback for get the total number of in-room users.
  */
 public interface ZegoOnlineRoomUsersCallback {
+
+    /**
+     * This callback will be triggered when the method call that get the total number of in-room users has finished its
+     * execution.
+     *
+     * @param errorCode refers to the operation status code. <br> 0: Operation successful. <br> 600xxxx: The ZIM SDK
+     *                  error code. For details, refer to the error code documentation. [iOS]:
+     *                  https://doc-en.zego.im/article/13791 [Android]: https://doc-en.zego.im/article/13792
+     * @param count     refers to the in-room user list
+     */
     void userCountCallback(int errorCode, int count);
 }

@@ -1,16 +1,12 @@
 package im.zego.liveaudioroomdemo.helper;
 
 import android.graphics.drawable.Drawable;
-
 import com.blankj.utilcode.util.ResourceUtils;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.model.ZegoRoomUserRole;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
+import java.security.MessageDigest;
 
 public final class UserInfoHelper {
 
@@ -33,26 +29,34 @@ public final class UserInfoHelper {
 
     private static Drawable getUserAvatar(int position) {
         return ResourceUtils.getDrawable(
-                ResourceUtils.getDrawableIdByName("icon_avatar_" + (position % MAX_INDEX + 1)));
+            ResourceUtils.getDrawableIdByName("icon_avatar_" + (position % MAX_INDEX + 1)));
     }
 
     private static int getIndex(String userName) {
-        byte[] value;
         try {
-            value = md5(userName);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return 0;
-        }
-
-        if (value.length > 0) {
-            return Math.abs(value[0] % MAX_INDEX);
-        } else {
+            final MessageDigest digest = MessageDigest.getInstance("md5");
+            digest.update(userName.getBytes());
+            final byte[] bytes = digest.digest();
+            final StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%02X", bytes[0]));
+            return Integer.parseInt(sb.toString()) % MAX_INDEX;
+        } catch (Exception exc) {
             return 0;
         }
     }
 
-    private static byte[] md5(String input) throws NoSuchAlgorithmException {
-        return MessageDigest.getInstance("MD5").digest(input.getBytes());
+    public static final String md5(final String toEncrypt) {
+        try {
+            final MessageDigest digest = MessageDigest.getInstance("md5");
+            digest.update(toEncrypt.getBytes());
+            final byte[] bytes = digest.digest();
+            final StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(String.format("%02X", bytes[i]));
+            }
+            return sb.toString().toLowerCase();
+        } catch (Exception exc) {
+            return ""; // Impossibru!
+        }
     }
 }

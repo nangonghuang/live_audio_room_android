@@ -3,14 +3,24 @@ package im.zego.liveaudioroom.model;
 import java.util.Objects;
 
 /**
- * Created by rocket_wang on 2021/12/14.
+ * Class user information.
+ * <p>Description: This class contains the user related information.</>
  */
 public class ZegoUserInfo {
-    // user ID
+
+    /**
+     * User ID, refers to the user unique ID, can only contains numbers and letters.
+     */
     private String userID;
-    // user name
+
+    /**
+     * User name, cannot be null.
+     */
     private String userName;
-    // user role
+
+    /**
+     * User role
+     */
     private ZegoRoomUserRole role;
 
     public String getUserID() {
@@ -39,12 +49,18 @@ public class ZegoUserInfo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         ZegoUserInfo that = (ZegoUserInfo) o;
 
-        if (!Objects.equals(userID, that.userID)) return false;
+        if (!Objects.equals(userID, that.userID)) {
+            return false;
+        }
         return Objects.equals(userName, that.userName);
     }
 
@@ -58,9 +74,9 @@ public class ZegoUserInfo {
     @Override
     public String toString() {
         return "ZegoUserInfo{" +
-                "userID='" + userID + '\'' +
-                ", userName='" + userName + '\'' +
-                ", role=" + role +
-                '}';
+            "userID='" + userID + '\'' +
+            ", userName='" + userName + '\'' +
+            ", role=" + role +
+            '}';
     }
 }

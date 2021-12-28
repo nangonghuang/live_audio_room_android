@@ -4,16 +4,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
-
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
-
-import org.json.JSONException;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
@@ -22,8 +16,12 @@ import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.liveaudioroomdemo.helper.PermissionHelper;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.json.JSONException;
 
 public class UserLoginActivity extends BaseActivity {
+
     private EditText etUserId;
     private EditText etUserName;
     private Button btnLogin;
@@ -51,25 +49,24 @@ public class UserLoginActivity extends BaseActivity {
             if (TextUtils.isEmpty(userName)) {
                 userName = userID;
             }
-            String regEx = "^[a-zA-Z\\d]+$";
-            Pattern p = Pattern.compile(regEx);
-            Matcher m = p.matcher(etUserId.getText().toString());
-            if (!m.matches()) {
-                ToastUtils.showShort(R.string.toast_user_id_error);
-                return;
-            }
-
-
             ZegoUserInfo user = new ZegoUserInfo();
             if (!(TextUtils.isEmpty(userID))) {
+                String regEx = "^[a-zA-Z\\d]+$";
+                Pattern p = Pattern.compile(regEx);
+                Matcher m = p.matcher(etUserId.getText().toString());
+                if (!m.matches()) {
+                    ToastUtils.showShort(R.string.toast_user_id_error);
+                    return;
+                }
                 user.setUserID(userID);
                 user.setUserName(userName);
                 try {
                     // Call Chat Room SDK
-                    String token = TokenServerAssistant.generateToken(KeyCenter.appID(), userID, KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data;
+                    String token = TokenServerAssistant
+                        .generateToken(KeyCenter.appID(), userID, KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data;
                     ZegoRoomManager.getInstance().userService.login(user, token, errorCode -> {
                         if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                            RoomLoginActivity.startActivity(UserLoginActivity.this);
+                            ActivityUtils.startActivity(RoomLoginActivity.class);
                         } else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_login_fail, errorCode));
                         }

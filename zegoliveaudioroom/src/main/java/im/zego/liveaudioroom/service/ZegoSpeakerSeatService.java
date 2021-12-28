@@ -30,16 +30,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import org.apache.commons.lang.math.NumberUtils;
 
 /**
- * user interface to manager speaker seat.
+ * Class speaker seat management.
+ * <p>Description: This class contains the logics related to speaker seat management, such as take/leave a speaker
+ * seat,close a speaker seat, remove user from seat, change speaker seats, etc.</>
  */
 public class ZegoSpeakerSeatService {
 
     private static final String TAG = "SpeakerSeatService";
 
+    /**
+     * The speaker seat list.
+     */
     private List<ZegoSpeakerSeatModel> speakerSeatList;
+    /**
+     * The listener related to speaker seat status.
+     */
     private ZegoSpeakerSeatServiceListener speakerSeatServiceListener;
     private final Gson gson;
 
@@ -55,10 +64,11 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * remove user from seat,make it unTaken status.
+     * Remove a user from speaker seat.
+     * <p>Description: This method can be used to remove a specified user (except the host) from the speaker seat. </>
      *
-     * @param seatIndex index
-     * @param callback  operation result callback
+     * @param seatIndex refers to the seat index of the user you want to remove.
+     * @param callback  refers to the callback for remove a user from the speaker seat.
      */
     public void removeUserFromSeat(int seatIndex, ZegoRoomCallback callback) {
         boolean isOccupied = isSeatOccupied(seatIndex);
@@ -70,10 +80,13 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * close all unused seat,make them closed.And when user leave seat, the seat will become closed
+     * Close all untaken speaker seat/Open all closed speaker seat.
+     * <p>Description: This method can be used to close all untaken seats or open all closed seats. And the status of
+     * the isSeatClosed will also be updated automatically.</>
+     * <p>Call this method at: After joining the room</>
      *
-     * @param isClose  close or not
-     * @param callback operation result callback
+     * @param isClose  isClose can be used to close all untaken speaker seats.
+     * @param callback callback refers to the callback for close all speaker seats.
      */
     public void closeAllSeat(boolean isClose, ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
@@ -164,11 +177,14 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * close specific speaker seat,make it Closed .
+     * lose specified untaken speaker seat/Open specified closed speaker seat.
+     * <p>Description: You can call this method to close untaken speaker seats, and the status of the specified speaker
+     * seat will change to closed or unused.</>
+     * <p>Call this method at: After joining the room</>
      *
-     * @param isClose   close or not
-     * @param seatIndex seat index
-     * @param callback  operation result callback
+     * @param isClose   can be used to close specified untaken speaker seats.
+     * @param seatIndex refers to the seat index of the seat that you want to close/open.
+     * @param callback  refers to the callback for close/open specified speaker seats.
      */
     public void closeSeat(boolean isClose, int seatIndex, ZegoRoomCallback callback) {
         ZegoSpeakerSeatStatus status;
@@ -181,10 +197,13 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * mute self's mic and broadcast to all room users.
+     * Mute/Unmute your own microphone.
+     * <p>Description: This method can be used to mute/unmute your own microphone.</>
+     * <p>Call this method at:  After the host enters the room/listener takes a speaker seat</>
      *
-     * @param isMuted  micPhone state
-     * @param callback operation result callback
+     * @param isMuted  isMuted can be set to [true] to mute the microphone; or set it to [false] to unmute the
+     *                 microphone.
+     * @param callback refers to the callback for mute/unmute the microphone.
      */
     public void muteMic(boolean isMuted, ZegoRoomCallback callback) {
         int mySeatIndex = findMySeatIndex();
@@ -192,13 +211,16 @@ public class ZegoSpeakerSeatService {
             callback.roomCallback(ZegoRoomErrorCode.NOT_IN_SEAT);
         } else {
             ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(mySeatIndex);
-            changeSeatStatus(mySeatIndex, speakerSeatModel.userID, isMuted, speakerSeatModel.status,
+            changeSeatStatus(mySeatIndex, speakerSeatModel.userID, !isMuted, speakerSeatModel.status,
                 callback);
         }
     }
 
     /**
-     * take a specific speaker seat.make it occupied
+     * Take the speaker seat.
+     * <p>Description: This method can be used to help a listener to take a speaker seat to speak. And at the same
+     * time,the microphone will be enabled, the audio streams will be published.</>
+     * <p>Call this method at:  After joining the room</>
      *
      * @param seatIndex seatIndex to take
      * @param callback  operation result callback
@@ -210,12 +232,7 @@ public class ZegoSpeakerSeatService {
             return;
         }
         if (isSeatAvailable(seatIndex)) {
-            changeSeatStatus(seatIndex, selfUserInfo.getUserID(), true, ZegoSpeakerSeatStatus.Occupied, errorCode -> {
-                if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                    ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
-                }
-                callback.roomCallback(errorCode);
-            });
+            changeSeatStatus(seatIndex, selfUserInfo.getUserID(), true, ZegoSpeakerSeatStatus.Occupied, callback);
         } else {
             callback.roomCallback(ZegoRoomErrorCode.SEAT_EXISTED);
         }
@@ -229,9 +246,12 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * leave speaker seat.make it unTaken
+     * leave the speaker seat.
+     * <p>Description: This method can be used to help a speaker to leave the speaker seat to become a listener again.
+     * And at the same time, the microphone will be disabled, the audio stream publishing will be stopped.</>
+     * <p>Call this method at:  After the listener takes a speaker seat</>
      *
-     * @param callback operation result callback
+     * @param callback refers to the callback for leave the speaker seat.
      */
     public void leaveSeat(ZegoRoomCallback callback) {
         int mySeatIndex = findMySeatIndex();
@@ -239,20 +259,19 @@ public class ZegoSpeakerSeatService {
             callback.roomCallback(ZegoRoomErrorCode.NOT_IN_SEAT);
         } else {
             ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(mySeatIndex);
-            changeSeatStatus(mySeatIndex, "", speakerSeatModel.mic, ZegoSpeakerSeatStatus.Untaken, errorCode -> {
-                if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                    ZegoExpressEngine.getEngine().stopPublishingStream();
-                }
-                callback.roomCallback(errorCode);
-            });
+            changeSeatStatus(mySeatIndex, "", speakerSeatModel.mic, ZegoSpeakerSeatStatus.Untaken, callback);
         }
     }
 
     /**
-     * switch seat from current to toSeatIndex.
+     * Change the speaker seats.
+     * <p>Description: This method can be used for users to change from the current speaker seat to another speaker
+     * seat, and make the current seat available.</>
+     * <p>Call this method at: After the listener takes a speaker seat</>
      *
-     * @param toSeatIndex seat index to switch to
-     * @param callback    operation result callback
+     * @param toSeatIndex refers to the seat index of the seat that you want to switch to, you can only change to the
+     *                    open and untaken speaker seats.
+     * @param callback    refers to the callback for change the speaker seats.
      */
     public void switchSeat(int toSeatIndex, ZegoRoomCallback callback) {
         int mySeatIndex = findMySeatIndex();
@@ -286,8 +305,6 @@ public class ZegoSpeakerSeatService {
                 int errorCode;
                 if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
                     errorCode = ZegoRoomErrorCode.SUCCESS;
-                    speakerSeatList.set(mySeatIndex, speakerSeatModel1);
-                    speakerSeatList.set(toSeatIndex, speakerSeatModel2);
                     onSpeakerSeatStatusChanged(speakerSeatModel1);
                     onSpeakerSeatStatusChanged(speakerSeatModel2);
                 } else {
@@ -329,7 +346,6 @@ public class ZegoSpeakerSeatService {
             int errorCode;
             if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
                 errorCode = ZegoRoomErrorCode.SUCCESS;
-                speakerSeatList.set(seatIndex, speakerSeatModel);
                 onSpeakerSeatStatusChanged(speakerSeatModel);
             } else {
                 errorCode = ZegoRoomErrorCode.SET_SEAT_INFO_FAILED;
@@ -339,9 +355,10 @@ public class ZegoSpeakerSeatService {
     }
 
     private void onSpeakerSeatStatusChanged(ZegoSpeakerSeatModel updateModel) {
-        Log.d(TAG, "onSpeakerSeatStatusChanged() called with: updateModel = [" + updateModel + "]");
         if (speakerSeatList.size() > updateModel.seatIndex) {
             ZegoSpeakerSeatModel model = speakerSeatList.get(updateModel.seatIndex);
+            Log.d(TAG,
+                "onSpeakerSeatStatusChanged() called with: updateModel = [" + updateModel + "],oldModel:" + model);
             boolean statusChanged = model.status != updateModel.status;
             String oldUserID = model.userID;
             model.userID = updateModel.userID;
@@ -350,20 +367,29 @@ public class ZegoSpeakerSeatService {
             model.status = updateModel.status;
 
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            ZegoUserInfo selfUserInfo = userService.localUserInfo;
-            if (selfUserInfo.getUserID().equals(updateModel.userID)) {
-                ZegoExpressEngine.getEngine().muteMicrophone(!updateModel.mic);
+            String hostID = ZegoRoomManager.getInstance().roomService.roomInfo.getHostID();
+
+            // this may involves two person,old and new one,so search the list
+            // to find if self is on seat
+            int mySeatIndex = findMySeatIndex();
+            if (mySeatIndex != -1) {
+                ZegoSpeakerSeatModel seatModel = speakerSeatList.get(mySeatIndex);
+                ZegoExpressEngine.getEngine().muteMicrophone(!seatModel.mic);
+                ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
+            } else {
+                ZegoExpressEngine.getEngine().muteMicrophone(true);
+                ZegoExpressEngine.getEngine().stopPublishingStream();
             }
 
             if (statusChanged) {
                 if (model.status == ZegoSpeakerSeatStatus.Occupied) {
                     ZegoUserInfo userInfo = userService.getUserInfo(updateModel.userID);
-                    if (userInfo != null && !selfUserInfo.getUserID().equals(userInfo.getUserID())) {
+                    if (userInfo != null && userInfo.getRole() != ZegoRoomUserRole.Host) {
                         userInfo.setRole(ZegoRoomUserRole.Speaker);
                     }
                 } else {
                     ZegoUserInfo userInfo = userService.getUserInfo(oldUserID);
-                    if (userInfo != null && !selfUserInfo.getUserID().equals(userInfo.getUserID())) {
+                    if (userInfo != null && userInfo.getRole() != ZegoRoomUserRole.Host) {
                         userInfo.setRole(ZegoRoomUserRole.Listener);
                     }
                 }
@@ -407,9 +433,6 @@ public class ZegoSpeakerSeatService {
                 if (NumberUtils.isNumber(entry.getKey())) {
                     String jsonValue = entry.getValue();
                     ZegoSpeakerSeatModel model = gson.fromJson(jsonValue, ZegoSpeakerSeatModel.class);
-                    Log.d(TAG,
-                        "onRoomAttributesUpdated() called with: zim = [" + zim + "], info = [" + info + "], roomID = ["
-                            + roomID + "]");
                     onSpeakerSeatStatusChanged(model);
                 }
             }
@@ -458,10 +481,6 @@ public class ZegoSpeakerSeatService {
 
     public List<ZegoSpeakerSeatModel> getSpeakerSeatList() {
         return speakerSeatList;
-    }
-
-    public ZegoSpeakerSeatModel getSpeakerSeatModel(int index) {
-        return speakerSeatList.get(index);
     }
 
     /**

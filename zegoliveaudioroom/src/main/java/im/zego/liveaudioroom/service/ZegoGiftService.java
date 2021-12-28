@@ -1,8 +1,6 @@
 package im.zego.liveaudioroom.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.Gson;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -13,20 +11,30 @@ import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMMessage;
 import im.zego.zim.enums.ZIMMessageType;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * room gift send and receive.
+ * Class gift management.
+ * <p>Description: This class contains the logics of send and receive gifts.</>
  */
 public class ZegoGiftService {
 
+    /**
+     * The listener related to gift updates.
+     */
     private ZegoGiftServiceListener giftServiceListener;
 
     /**
-     * send gift to room users.
+     * Send virtual gift.
+     * <p>Description: This method can be used to send a virtual gift, all room users will receive a notification. You
+     * can determine whether you are the gift recipient by the toUserList parameter.</>
+     * <p>Call this method at:  After joining the room</>
      *
-     * @param giftID     giftID
-     * @param toUserList send gift target
-     * @param callback   operation result callback
+     * @param giftID     refers to the gift type.
+     * @param toUserList refers to the gift recipient.
+     * @param callback   refers to the callback for send a virtual gift.
      */
     public void sendGift(String giftID, List<String> toUserList, ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
@@ -35,7 +43,8 @@ public class ZegoGiftService {
         command.target = toUserList;
         command.userID = localUserInfo.getUserID();
         command.content.put("giftID", giftID);
-        command.toJson();
+        String string = new Gson().toJson(command);
+        command.message = string.getBytes(StandardCharsets.UTF_8);
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
         ZegoZIMManager.getInstance().zim.sendRoomMessage(command, roomID, (message, errorInfo) -> {
             if (callback != null) {
@@ -52,15 +61,13 @@ public class ZegoGiftService {
         for (ZIMMessage zimMessage : messageList) {
             if (zimMessage.type == ZIMMessageType.CUSTOM) {
                 ZIMCustomMessage zimCustomMessage = (ZIMCustomMessage) zimMessage;
-                ZegoCustomCommand command = new ZegoCustomCommand();
-                command.type = zimCustomMessage.type;
-                command.userID = zimCustomMessage.userID;
-                command.fromJson(zimCustomMessage.message);
+                String json = new String(zimCustomMessage.message);
+                ZegoCustomCommand command = new Gson().fromJson(json, ZegoCustomCommand.class);
                 if (command.actionType == ZegoCustomCommand.Gift) {
                     String giftID = command.content.get("giftID");
                     List<String> toUserList = command.target;
                     if (giftServiceListener != null) {
-                        giftServiceListener.onReceiveGift(giftID, command.userID, toUserList);
+                        giftServiceListener.onReceiveGift(giftID, zimCustomMessage.userID, toUserList);
                     }
                 }
             }

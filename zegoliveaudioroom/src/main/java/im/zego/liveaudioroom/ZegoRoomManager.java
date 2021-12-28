@@ -29,7 +29,9 @@ import java.util.HashMap;
 import org.json.JSONObject;
 
 /**
- * Created by rocket_wang on 2021/12/14.
+ * Class LiveAudioRoom business logic management.
+ * <p> Description: This class contains the LiveAudioRoom business logics, manages the service instances of different
+ * modules, and also distributing the data delivered by the SDK.
  */
 public class ZegoRoomManager {
 
@@ -38,6 +40,13 @@ public class ZegoRoomManager {
     private ZegoRoomManager() {
     }
 
+    /**
+     * Get the ZegoRoomManager singleton instance.
+     * <p> Description: This method can be used to get the ZegoRoomManager singleton instance.
+     * <p> Call this method at: Any time
+     *
+     * @return
+     */
     public static ZegoRoomManager getInstance() {
         if (singleton == null) {
             synchronized (ZegoRoomManager.class) {
@@ -49,12 +58,38 @@ public class ZegoRoomManager {
         return singleton;
     }
 
+    /**
+     * The room information management instance, contains the room information, room status and other business logics.
+     */
     public ZegoRoomService roomService;
+    /**
+     * The user information management instance, contains the in-room user information management, logged-in user
+     * information and other business logics.
+     */
     public ZegoUserService userService;
+    /**
+     * The room speaker seat management instance, contains the speaker seat management logic.
+     */
     public ZegoSpeakerSeatService speakerSeatService;
+    /**
+     * The message management instance, contains the IM messages management logic.
+     */
     public ZegoMessageService messageService;
+    /**
+     * The gift management instance, contains the gift sending and receiving logics.
+     */
     public ZegoGiftService giftService;
 
+    /**
+     * Initialize the SDK.
+     * <p>Call this method at: Before you log in. We recommend you call this method when the application starts.
+     *
+     * @param appID       refers to the project ID. To get this, go to ZEGOCLOUD Admin Console:
+     *                    https://console.zego.im/dashboard?lang=en
+     * @param appSign     refers to the secret key for authentication. To get this, go to ZEGOCLOUD Admin Console:
+     *                    https://console.zego.im/dashboard?lang=en
+     * @param application th app context
+     */
     public void init(long appID, String appSign, Application application) {
         roomService = new ZegoRoomService();
         userService = new ZegoUserService();
@@ -165,6 +200,9 @@ public class ZegoRoomManager {
             public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
                 String roomID) {
                 super.onRoomStateChanged(zim, state, event, extendedData, roomID);
+                if (roomService != null) {
+                    roomService.onRoomStateChanged(zim, state, event, extendedData, roomID);
+                }
             }
 
             @Override
@@ -186,11 +224,26 @@ public class ZegoRoomManager {
         });
     }
 
+    /**
+     * The method to deinitialize the SDK.
+     * <p> Description: This method can be used to deinitialize the SDK and release the resources it occupies.</>
+     * <p> Call this method at: When the SDK is no longer be used. We recommend you call this method when the
+     * application exits.</>
+     */
     public void unInit() {
         ZegoZIMManager.getInstance().destroyZIM();
         ZegoExpressEngine.destroyEngine(null);
     }
 
+    /**
+     * Upload local logs to the ZEGOCLOUD server.
+     * <p>Description: You can call this method to upload the local logs to the ZEGOCLOUD Server for troubleshooting
+     * when exception occurs.</>
+     * <p>Call this method at: When exceptions occur </>
+     *
+     * @param callback refers to the callback that be triggered when the logs are upload successfully or failed to
+     *                 upload logs.
+     */
     public void uploadLog(final ZegoRoomCallback callback) {
         ZegoZIMManager.getInstance().zim
             .uploadLog(errorInfo -> callback.roomCallback(errorInfo.code.value()));
