@@ -241,7 +241,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
         tvRoomName.setText(roomInfo.getRoomName());
-        tvRoomID.setText(roomInfo.getRoomID());
+        tvRoomID.setText(String.format("ID:%s", roomInfo.getRoomID()));
     }
 
     private void onSpeakerSeatClicked(ZegoSpeakerSeatModel seatModel) {
@@ -377,27 +377,36 @@ public class LiveAudioRoomActivity extends BaseActivity {
             });
     }
 
+    private boolean isSelfSpeaker() {
+        ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
+        List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService.getSpeakerSeatList();
+        ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+        boolean isSpeaker = false;
+        for (int i = 0; i < speakerSeatList.size(); i++) {
+            ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(i);
+            if (speakerSeatModel.userID.equals(localUserInfo.getUserID())
+                && speakerSeatModel.status == ZegoSpeakerSeatStatus.Occupied) {
+                isSpeaker = true;
+                break;
+            }
+        }
+        return isSpeaker;
+    }
+
     private void showInviteDialog() {
+        if (isSelfSpeaker()) {
+            return;
+        }
         if (inviteDialog == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(StringUtils.getString(R.string.dialog_invition_title));
             builder.setMessage(StringUtils.getString(R.string.dialog_invition_descrip));
             builder.setPositiveButton(StringUtils.getString(R.string.dialog_accept), (dialog, which) -> {
-                ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
-                ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
-                List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService.getSpeakerSeatList();
-                boolean isSpeaker = false;
-                for (int i = 0; i < speakerSeatList.size(); i++) {
-                    ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(i);
-                    if (speakerSeatModel.userID.equals(localUserInfo.getUserID())
-                        && speakerSeatModel.status == ZegoSpeakerSeatStatus.Occupied) {
-                        isSpeaker = true;
-                        break;
-                    }
-                }
-                if (isSpeaker) {
+                if (isSelfSpeaker()) {
                     return;
                 }
+                ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
+                List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService.getSpeakerSeatList();
                 int seatIndex = -1;
                 for (int i = 0; i < speakerSeatList.size(); i++) {
                     ZegoSpeakerSeatModel model = speakerSeatList.get(i);
