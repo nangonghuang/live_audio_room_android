@@ -59,6 +59,7 @@ import java.util.Objects;
 public class LiveAudioRoomActivity extends BaseActivity {
 
     private LoadingDialog loadingDialog;
+    private AlertDialog inviteDialog;
 
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, LiveAudioRoomActivity.class);
@@ -377,12 +378,11 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     private void showInviteDialog() {
-        DialogHelper.showAlertDialog(LiveAudioRoomActivity.this,
-            StringUtils.getString(R.string.dialog_invition_title),
-            StringUtils.getString(R.string.dialog_invition_descrip),
-            StringUtils.getString(R.string.dialog_accept),
-            StringUtils.getString(R.string.dialog_refuse),
-            (dialog, which) -> {
+        if (inviteDialog == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(StringUtils.getString(R.string.dialog_invition_title));
+            builder.setMessage(StringUtils.getString(R.string.dialog_invition_descrip));
+            builder.setPositiveButton(StringUtils.getString(R.string.dialog_accept), (dialog, which) -> {
                 ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
                 ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
                 List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService.getSpeakerSeatList();
@@ -415,12 +415,16 @@ public class LiveAudioRoomActivity extends BaseActivity {
                         }
                     });
                 }
-                dialog.cancel();
-            },
-            (dialog, which) -> {
-                dialog.cancel();
-            }
-        );
+                dialog.dismiss();
+            });
+            builder.setNegativeButton(StringUtils.getString(R.string.dialog_refuse), (dialog, which) -> {
+                dialog.dismiss();
+            });
+            inviteDialog = builder.create();
+        }
+        if (!inviteDialog.isShowing()) {
+            inviteDialog.show();
+        }
     }
 
     private void initSDCallback() {
@@ -695,6 +699,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         dismissDialog(imInputDialog);
         dismissDialog(memberListDialog);
         dismissDialog(loadingDialog);
+        dismissDialog(inviteDialog);
         ZegoRoomManager.getInstance().roomService.leaveRoom(error -> {
         });
     }

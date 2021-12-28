@@ -16,6 +16,7 @@ import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.GiftListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public class SendGiftDialog extends BaseBottomDialog {
     private TextView tvChooseMember;
     private GiftTargetPopWindow giftTargetPopWindow;
     private SendGiftListener sendGiftListener;
+    private List<String> selectedUsers = new ArrayList<>();
 
     public SendGiftDialog(@NonNull Context context) {
         super(context);
@@ -55,12 +57,11 @@ public class SendGiftDialog extends BaseBottomDialog {
         tvSendGift.setOnClickListener(view -> {
             RoomGift selectedGift = giftListAdapter.getSelectedGift();
             if (giftTargetPopWindow != null) {
-                List<String> giftTargetUsers = giftTargetPopWindow.getGiftTargetUsers();
                 ZegoGiftService giftService = ZegoRoomManager.getInstance().giftService;
-                giftService.sendGift(selectedGift.getId(), giftTargetUsers, errorCode -> {
+                giftService.sendGift(selectedGift.getId(), selectedUsers, errorCode -> {
                     if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                         if (sendGiftListener != null) {
-                            sendGiftListener.onSendGift(giftTargetUsers, selectedGift.getId());
+                            sendGiftListener.onSendGift(selectedUsers, selectedGift.getId());
                         }
                     } else {
                         ToastUtils
@@ -68,6 +69,7 @@ public class SendGiftDialog extends BaseBottomDialog {
                     }
                 });
             }
+            dismiss();
         });
         tvChooseMember.setOnClickListener(view -> {
             List<String> targetUserList = getTargetUserList();
@@ -84,6 +86,8 @@ public class SendGiftDialog extends BaseBottomDialog {
                         tvChooseMember.setText(userService.getUserName(userID));
                     }
                 }
+                selectedUsers.clear();
+                selectedUsers.addAll(selectedUserList);
                 tvSendGift.setEnabled(selectedUserList.size() > 0);
             });
             giftTargetPopWindow.show(tvChooseMember, Gravity.TOP, 0, -SizeUtils.dp2px(10f));

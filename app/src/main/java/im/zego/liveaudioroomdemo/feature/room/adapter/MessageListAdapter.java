@@ -15,12 +15,14 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.SizeUtils;
 import im.zego.liveaudioroom.ZegoRoomManager;
+import im.zego.liveaudioroom.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.model.ZegoTextMessage;
 import im.zego.liveaudioroom.service.ZegoRoomService;
 import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.helper.RoundBackgroundColorSpan;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Show all the information sent
@@ -46,7 +48,8 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         ZegoTextMessage message = messageList.get(position);
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
-        boolean isHostMessage = roomService.roomInfo.getHostID().equals(message.userID);
+        ZegoRoomInfo roomInfo = roomService.roomInfo;
+        boolean isHostMessage = Objects.equals(message.userID, roomInfo.getHostID());
         String fromUserName = userService.getUserName(message.userID);
         String content = message.message;
         Context context = holder.itemView.getContext();

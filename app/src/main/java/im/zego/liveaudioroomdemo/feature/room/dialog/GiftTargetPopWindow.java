@@ -28,7 +28,7 @@ public class GiftTargetPopWindow extends PopupWindow {
     private static final String TAG = "GiftTargetPopWindow";
     private final GiftTargetAdapter targetAdapter;
     private GiftTargetListener giftTargetListener;
-    List<String> target = new ArrayList<>();
+    private List<String> target = new ArrayList<>();
 
     public GiftTargetPopWindow(Context context, List<String> userList, int width) {
         super(context);
@@ -101,10 +101,6 @@ public class GiftTargetPopWindow extends PopupWindow {
             break;
             default:
         }
-    }
-
-    public List<String> getGiftTargetUsers() {
-        return target;
     }
 
     public void setGiftTargetListener(GiftTargetListener giftTargetListener) {

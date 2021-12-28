@@ -155,12 +155,11 @@ public class ZegoRoomService {
 
     // query the number of chat rooms available online
     public void queryOnlineRoomUsers(final ZegoOnlineRoomUsersCallback callback) {
-        ZegoZIMManager.getInstance().zim
-            .queryRoomOnlineMemberCount(roomInfo.getRoomID(), (count, errorInfo) -> {
-                if (callback != null) {
-                    callback.userCountCallback(errorInfo.code.value(), count);
-                }
-            });
+        ZegoZIMManager.getInstance().zim.queryRoomOnlineMemberCount(roomInfo.getRoomID(), (count, errorInfo) -> {
+            if (callback != null) {
+                callback.userCountCallback(errorInfo.code.value(), count);
+            }
+        });
     }
 
     // disable text chat for all
