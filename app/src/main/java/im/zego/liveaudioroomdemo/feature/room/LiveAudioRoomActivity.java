@@ -384,7 +384,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         boolean isSpeaker = false;
         for (int i = 0; i < speakerSeatList.size(); i++) {
             ZegoSpeakerSeatModel speakerSeatModel = speakerSeatList.get(i);
-            if (speakerSeatModel.userID.equals(localUserInfo.getUserID())
+            if (Objects.equals(localUserInfo.getUserID(), speakerSeatModel.userID)
                 && speakerSeatModel.status == ZegoSpeakerSeatStatus.Occupied) {
                 isSpeaker = true;
                 break;
@@ -443,23 +443,19 @@ public class LiveAudioRoomActivity extends BaseActivity {
         });
 
         ZegoMessageService messageService = ZegoRoomManager.getInstance().messageService;
-        messageService.setListener((textMessage, roomID) -> {
+        messageService.setListener((textMessage) -> {
             textMessageList.add(textMessage);
             refreshMessageList();
         });
 
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(new ZegoUserServiceListener() {
-            @Override
-            public void userInfoUpdate(ZegoUserInfo userInfo) {
-
-            }
 
             @Override
-            public void onRoomUserJoin(List<ZegoUserInfo> userInfos) {
+            public void onRoomUserJoin(List<ZegoUserInfo> userList) {
                 boolean containsSelf = false;
                 ZegoUserInfo localUserInfo = userService.localUserInfo;
-                for (ZegoUserInfo userInfo : userInfos) {
+                for (ZegoUserInfo userInfo : userList) {
                     if (Objects.equals(userInfo.getUserID(), localUserInfo.getUserID())) {
                         containsSelf = true;
                         break;
@@ -472,7 +468,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     textMessageList.add(textMessage);
                     refreshMessageList();
                 } else {
-                    for (ZegoUserInfo user : userInfos) {
+                    for (ZegoUserInfo user : userList) {
                         ZegoTextMessage textMessage = new ZegoTextMessage();
                         textMessage.message = StringUtils
                             .getString(R.string.room_page_joined_the_room, user.getUserName());
@@ -485,8 +481,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
             }
 
             @Override
-            public void onRoomUserLeave(List<ZegoUserInfo> memberList) {
-                for (ZegoUserInfo user : memberList) {
+            public void onRoomUserLeave(List<ZegoUserInfo> userList) {
+                for (ZegoUserInfo user : userList) {
                     ZegoTextMessage textMessage = new ZegoTextMessage();
                     textMessage.message = StringUtils
                         .getString(R.string.room_page_has_left_the_room, user.getUserName());

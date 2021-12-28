@@ -34,13 +34,21 @@ import java.util.Objects;
 import org.apache.commons.lang.math.NumberUtils;
 
 /**
- * user interface to manager speaker seat.
+ * Class speaker seat management.
+ * <p>Description: This class contains the logics related to speaker seat management, such as take/leave a speaker
+ * seat,close a speaker seat, remove user from seat, change speaker seats, etc.</>
  */
 public class ZegoSpeakerSeatService {
 
     private static final String TAG = "SpeakerSeatService";
 
+    /**
+     * The speaker seat list.
+     */
     private List<ZegoSpeakerSeatModel> speakerSeatList;
+    /**
+     * The listener related to speaker seat status.
+     */
     private ZegoSpeakerSeatServiceListener speakerSeatServiceListener;
     private final Gson gson;
 
@@ -56,10 +64,11 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * remove user from seat,make it unTaken status.
+     * Remove a user from speaker seat.
+     * <p>Description: This method can be used to remove a specified user (except the host) from the speaker seat. </>
      *
-     * @param seatIndex index
-     * @param callback  operation result callback
+     * @param seatIndex refers to the seat index of the user you want to remove.
+     * @param callback  refers to the callback for remove a user from the speaker seat.
      */
     public void removeUserFromSeat(int seatIndex, ZegoRoomCallback callback) {
         boolean isOccupied = isSeatOccupied(seatIndex);
@@ -71,10 +80,13 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * close all unused seat,make them closed.And when user leave seat, the seat will become closed
+     * Close all untaken speaker seat/Open all closed speaker seat.
+     * <p>Description: This method can be used to close all untaken seats or open all closed seats. And the status of
+     * the isSeatClosed will also be updated automatically.</>
+     * <p>Call this method at: After joining the room</>
      *
-     * @param isClose  close or not
-     * @param callback operation result callback
+     * @param isClose  isClose can be used to close all untaken speaker seats.
+     * @param callback callback refers to the callback for close all speaker seats.
      */
     public void closeAllSeat(boolean isClose, ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
@@ -165,11 +177,14 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * close specific speaker seat,make it Closed .
+     * lose specified untaken speaker seat/Open specified closed speaker seat.
+     * <p>Description: You can call this method to close untaken speaker seats, and the status of the specified speaker
+     * seat will change to closed or unused.</>
+     * <p>Call this method at: After joining the room</>
      *
-     * @param isClose   close or not
-     * @param seatIndex seat index
-     * @param callback  operation result callback
+     * @param isClose   can be used to close specified untaken speaker seats.
+     * @param seatIndex refers to the seat index of the seat that you want to close/open.
+     * @param callback  refers to the callback for close/open specified speaker seats.
      */
     public void closeSeat(boolean isClose, int seatIndex, ZegoRoomCallback callback) {
         ZegoSpeakerSeatStatus status;
@@ -182,10 +197,13 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * mute self's mic and broadcast to all room users.
+     * Mute/Unmute your own microphone.
+     * <p>Description: This method can be used to mute/unmute your own microphone.</>
+     * <p>Call this method at:  After the host enters the room/listener takes a speaker seat</>
      *
-     * @param isMuted  micPhone state
-     * @param callback operation result callback
+     * @param isMuted  isMuted can be set to [true] to mute the microphone; or set it to [false] to unmute the
+     *                 microphone.
+     * @param callback refers to the callback for mute/unmute the microphone.
      */
     public void muteMic(boolean isMuted, ZegoRoomCallback callback) {
         int mySeatIndex = findMySeatIndex();
@@ -199,7 +217,10 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * take a specific speaker seat.make it occupied
+     * Take the speaker seat.
+     * <p>Description: This method can be used to help a listener to take a speaker seat to speak. And at the same
+     * time,the microphone will be enabled, the audio streams will be published.</>
+     * <p>Call this method at:  After joining the room</>
      *
      * @param seatIndex seatIndex to take
      * @param callback  operation result callback
@@ -225,9 +246,12 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * leave speaker seat.make it unTaken
+     * leave the speaker seat.
+     * <p>Description: This method can be used to help a speaker to leave the speaker seat to become a listener again.
+     * And at the same time, the microphone will be disabled, the audio stream publishing will be stopped.</>
+     * <p>Call this method at:  After the listener takes a speaker seat</>
      *
-     * @param callback operation result callback
+     * @param callback refers to the callback for leave the speaker seat.
      */
     public void leaveSeat(ZegoRoomCallback callback) {
         int mySeatIndex = findMySeatIndex();
@@ -240,10 +264,14 @@ public class ZegoSpeakerSeatService {
     }
 
     /**
-     * switch seat from current to toSeatIndex.
+     * Change the speaker seats.
+     * <p>Description: This method can be used for users to change from the current speaker seat to another speaker
+     * seat, and make the current seat available.</>
+     * <p>Call this method at: After the listener takes a speaker seat</>
      *
-     * @param toSeatIndex seat index to switch to
-     * @param callback    operation result callback
+     * @param toSeatIndex refers to the seat index of the seat that you want to switch to, you can only change to the
+     *                    open and untaken speaker seats.
+     * @param callback    refers to the callback for change the speaker seats.
      */
     public void switchSeat(int toSeatIndex, ZegoRoomCallback callback) {
         int mySeatIndex = findMySeatIndex();

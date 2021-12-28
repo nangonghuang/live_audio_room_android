@@ -34,17 +34,37 @@ import java.util.Set;
 import org.json.JSONObject;
 
 /**
- * Created by rocket_wang on 2021/12/14.
+ * Class LiveAudioRoom information management.
+ * <p>Description: This class contains the room information management logics, such as the logic of create a room, join
+ * a room, leave a room, disable the text chat in room, etc.</>
  */
 public class ZegoRoomService {
 
+    /**
+     * The listener related to the room status.
+     */
     private ZegoRoomServiceListener listener;
-    // room info object
+    /**
+     * Room information, it will be assigned after join the room successfully. And it will be updated synchronously when
+     * the room status updates.
+     */
     public ZegoRoomInfo roomInfo = new ZegoRoomInfo();
 
     private static final String TAG = "ZegoRoomService";
 
-    // create a room
+    /**
+     * Create a room.
+     * <p>Description: This method can be used to create a room. The room creator will be the Host by default when the
+     * room is created successfully.</>
+     * <p>Call this method at: After user logs in </>
+     *
+     * @param roomID   roomID refers to the room ID, the unique identifier of the room. This is required to join a room
+     *                 and cannot be null.
+     * @param roomName roomName refers to the room name. This is used for display in the room and cannot be null.
+     * @param token    token refers to the authentication token. To get this, see the documentation:
+     *                 https://doc-en.zego.im/article/11648
+     * @param callback callback refers to the callback for create a room.
+     */
     public void createRoom(String roomID, String roomName, final String token,
         final ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
@@ -78,7 +98,16 @@ public class ZegoRoomService {
         });
     }
 
-    // join a room
+    /**
+     * Join a room.
+     * <p>Description: This method can be used to join a room, the room must be an existing room.</>
+     * <p>Call this method at: After user logs in</>
+     *
+     * @param roomID   refers to the ID of the room you want to join, and cannot be null.
+     * @param token    token refers to the authentication token. To get this, see the documentation:
+     *                 https://doc-en.zego.im/article/11648
+     * @param callback callback refers to the callback for join a room.
+     */
     public void joinRoom(String roomID, final String token, final ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         localUserInfo.setRole(ZegoRoomUserRole.Listener);
@@ -110,7 +139,14 @@ public class ZegoRoomService {
         ZegoExpressEngine.getEngine().startSoundLevelMonitor(500);
     }
 
-    // leave the room
+    /**
+     * Leave the room.
+     * <p>Description: This method can be used to leave the room you joined. The room will be ended when the Host
+     * leaves, and all users in the room will be forced to leave the room.</>
+     * <p>Call this method at: After joining a room</>
+     *
+     * @param callback callback refers to the callback for leave a room.
+     */
     public void leaveRoom(final ZegoRoomCallback callback) {
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         if (seatService != null) {
@@ -153,22 +189,21 @@ public class ZegoRoomService {
         listener = null;
     }
 
-    // query the number of chat rooms available online
-    public void queryOnlineRoomUsers(final ZegoOnlineRoomUsersCallback callback) {
-        ZegoZIMManager.getInstance().zim.queryRoomOnlineMemberCount(roomInfo.getRoomID(), (count, errorInfo) -> {
-            if (callback != null) {
-                callback.userCountCallback(errorInfo.code.value(), count);
-            }
-        });
-    }
-
-    // disable text chat for all
-    public void disableTextMessage(boolean isMuted, ZegoRoomCallback callback) {
+    /**
+     * Disable text chat in the room.
+     * <p>Description: This method can be used to disable the text chat in the room.</>
+     * <p>Call this method at: After joining a room</>
+     *
+     * @param disable  refers to the parameter that whether to disable the text chat. To disable the text chat, set it
+     *                 to [true]; To allow the text chat, set it to [false].
+     * @param callback refers to the callback for disable text chat.
+     */
+    public void disableTextMessage(boolean disable, ZegoRoomCallback callback) {
         ZegoZIMManager.getInstance().zim.setRoomAttributes(
-            ZegoRoomAttributesHelper.getRoomConfigByTextMessage(isMuted, roomInfo),
+            ZegoRoomAttributesHelper.getRoomConfigByTextMessage(disable, roomInfo),
             roomInfo.getRoomID(),
             ZegoRoomAttributesHelper.getAttributesSetConfig(), errorInfo -> {
-                Log.d(TAG, "disableTextMessage() called with: isMuted = [" + isMuted);
+                Log.d(TAG, "disableTextMessage() called with: disable = [" + disable);
                 if (callback != null) {
                     callback.roomCallback(errorInfo.code.value());
                 }

@@ -1,10 +1,19 @@
 package im.zego.liveaudioroom.model;
 
 /**
- * Created by rocket_wang on 2021/12/14.
+ * Enumeration values of the user role.
  */
 public enum ZegoRoomUserRole {
+    /**
+     * Listener.
+     */
     Listener,
+    /**
+     * Speaker.
+     */
     Speaker,
+    /**
+     * Host.
+     */
     Host
 }

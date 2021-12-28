@@ -1,6 +1,5 @@
 package im.zego.liveaudioroom.service;
 
-import android.util.Log;
 import com.google.gson.Gson;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
@@ -17,18 +16,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * room gift send and receive.
+ * Class gift management.
+ * <p>Description: This class contains the logics of send and receive gifts.</>
  */
 public class ZegoGiftService {
 
+    /**
+     * The listener related to gift updates.
+     */
     private ZegoGiftServiceListener giftServiceListener;
 
     /**
-     * send gift to room users.
+     * Send virtual gift.
+     * <p>Description: This method can be used to send a virtual gift, all room users will receive a notification. You
+     * can determine whether you are the gift recipient by the toUserList parameter.</>
+     * <p>Call this method at:  After joining the room</>
      *
-     * @param giftID     giftID
-     * @param toUserList send gift target
-     * @param callback   operation result callback
+     * @param giftID     refers to the gift type.
+     * @param toUserList refers to the gift recipient.
+     * @param callback   refers to the callback for send a virtual gift.
      */
     public void sendGift(String giftID, List<String> toUserList, ZegoRoomCallback callback) {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;

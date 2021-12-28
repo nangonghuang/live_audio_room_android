@@ -3,25 +3,44 @@ package im.zego.liveaudioroom.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by rocket_wang on 2021/12/14.
+ * Class room information.
+ * <p>Description: This class contain the room status related information.</>
  */
 public class ZegoRoomInfo {
-    // room ID
+
+    /**
+     * Room ID, refers to the the unique identifier of the room, can be used when joining the room.
+     */
     @SerializedName("id")
     private String roomID;
-    // room name
+
+    /**
+     * Room name, refers to the room title, can be used for display.
+     */
     @SerializedName("name")
     private String roomName;
-    // host user ID
+
+    /**
+     * Host ID, refers to the ID of the room creator.
+     */
     @SerializedName("hostID")
     private String hostID;
-    // speaker seat count
+
+    /**
+     * The number of speaker seats.
+     */
     @SerializedName("num")
     private int seatNum;
-    // whether to mute message
+
+    /**
+     * Whether the text chat is disabled in the room.
+     */
     @SerializedName("disable")
     private boolean isTextMessageDisabled;
-    // whether to lock seat when leave seat
+
+    /**
+     * whether the speaker seat is closed.
+     */
     @SerializedName("close")
     private boolean isClosed;
 
@@ -71,17 +90,5 @@ public class ZegoRoomInfo {
 
     public void setClosed(boolean closed) {
         isClosed = closed;
-    }
-
-    @Override
-    public String toString() {
-        return "ZegoRoomInfo{" +
-                "roomID='" + roomID + '\'' +
-                ", roomName='" + roomName + '\'' +
-                ", hostID='" + hostID + '\'' +
-                ", seatCount=" + seatNum +
-                ", isMuteMessage=" + isTextMessageDisabled +
-                ", isLock=" + isClosed +
-                '}';
     }
 }

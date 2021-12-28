@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * send gift or invitation.
+ * Class custom signaling.
+ * <p>Description: This class contains the custom signaling related logics, such as send virtual gift, send seat-taking
+ * invitation, etc.</>
  */
 public class ZegoCustomCommand extends ZIMCustomMessage {
 
@@ -16,14 +18,20 @@ public class ZegoCustomCommand extends ZIMCustomMessage {
     public static final int Gift = 2;
 
     /**
-     * [actionType] == 1 means invitation, [actionType] == 2 means gift
+     * Custom signaling type 1: Invite to take the speaker seat 2: Send virtual gifts.
      */
     @SerializedName("actionType")
     public int actionType;
 
+    /**
+     * Target users.
+     */
     @SerializedName("target")
     public List<String> target = new ArrayList<>();
 
+    /**
+     * Signaling content Invite to speak: {}, send gift: {"giftID": ""}
+     */
     @SerializedName("content")
     public Map<String, String> content = new HashMap<>();
 }

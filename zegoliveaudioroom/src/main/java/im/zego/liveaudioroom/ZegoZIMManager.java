@@ -5,7 +5,8 @@ import android.app.Application;
 import im.zego.zim.ZIM;
 
 /**
- *
+ * This class contains and manages the ZIM SDK instance objects, so that ZIM related methods can be called more
+ * effectively according to different modules.
  */
 public class ZegoZIMManager {
 
