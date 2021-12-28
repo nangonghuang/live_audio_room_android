@@ -3,7 +3,7 @@ package im.zego.liveaudioroom.callback;
 /**
  * Callback for get the total number of in-room users.
  */
-public interface ZegoOnlineRoomUsersCallback {
+public interface ZegoOnlineRoomUsersNumCallback {
 
     /**
      * This callback will be triggered when the method call that get the total number of in-room users has finished its
