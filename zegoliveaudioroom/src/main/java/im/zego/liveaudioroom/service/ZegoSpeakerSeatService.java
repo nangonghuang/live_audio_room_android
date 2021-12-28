@@ -394,16 +394,14 @@ public class ZegoSpeakerSeatService {
 
             boolean myStateBefore = seatedUserListBefore.contains(selfUserInfo.getUserID());
             boolean myStateNow = seatedUserListNow.contains(selfUserInfo.getUserID());
-            if (myStateBefore != myStateNow) {
-                if (myStateNow) {
-                    int mySeatIndex = findMySeatIndex();
-                    ZegoSpeakerSeatModel seatModel = speakerSeatList.get(mySeatIndex);
-                    ZegoExpressEngine.getEngine().muteMicrophone(!seatModel.mic);
-                    ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
-                } else {
-                    ZegoExpressEngine.getEngine().muteMicrophone(true);
-                    ZegoExpressEngine.getEngine().stopPublishingStream();
-                }
+            if (myStateNow) {
+                int mySeatIndex = findMySeatIndex();
+                ZegoSpeakerSeatModel seatModel = speakerSeatList.get(mySeatIndex);
+                ZegoExpressEngine.getEngine().muteMicrophone(!seatModel.mic);
+                ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
+            } else {
+                ZegoExpressEngine.getEngine().muteMicrophone(true);
+                ZegoExpressEngine.getEngine().stopPublishingStream();
             }
 
             if (speakerSeatServiceListener != null) {
