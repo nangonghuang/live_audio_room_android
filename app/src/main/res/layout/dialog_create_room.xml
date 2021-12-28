@@ -36,7 +36,7 @@
         android:layout_marginTop="18dp"
         android:digits="01234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPLKJHGFDSAZXCVBNM"
         android:hint="@string/create_page_room_name"
-        android:maxLength="32"
+        android:maxLength="16"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
