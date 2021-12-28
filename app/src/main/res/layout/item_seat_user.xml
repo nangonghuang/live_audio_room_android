@@ -2,14 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content">
+  android:layout_width="86dp"
+  android:layout_height="90dp">
 
   <ImageView
     android:id="@+id/iv_avatar_talking"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="10dp"
     android:src="@drawable/icon_sound_waves"
     android:visibility="invisible"
     app:layout_constraintEnd_toEndOf="parent"
@@ -99,10 +98,11 @@
     android:id="@+id/tv_user_name"
     android:layout_width="54dp"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
+    android:layout_marginTop="4.5dp"
     android:ellipsize="end"
     android:gravity="center"
     android:singleLine="true"
+    android:text="dasdsad"
     android:textColor="#ff000000"
     android:textSize="10sp"
     app:layout_constraintEnd_toEndOf="@id/iv_avatar"

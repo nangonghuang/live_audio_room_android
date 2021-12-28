@@ -78,7 +78,6 @@ public class SeatListAdapter extends RecyclerView.Adapter<SeatListAdapter.SeatLi
                     holder.ivOwnerAvatar.setVisibility(View.INVISIBLE);
                 }
 
-                Log.d(TAG, "onBindViewHolder: speakerSeatModel.soundLevel:" + speakerSeatModel.soundLevel);
                 if (canShowSoundWaves(speakerSeatModel.soundLevel)) {
                     holder.ivAvatarTalking.setVisibility(View.VISIBLE);
                 } else {
