@@ -146,8 +146,8 @@ public class ZegoRoomManager {
             public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
                 JSONObject extendedData) {
                 super.onConnectionStateChanged(zim, state, event, extendedData);
-                if (roomService != null) {
-                    roomService.onConnectionStateChanged(zim, state, event, extendedData);
+                if (userService != null) {
+                    userService.onConnectionStateChanged(zim, state, event, extendedData);
                 }
             }
 

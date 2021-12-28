@@ -39,6 +39,7 @@ import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroom.service.ZegoUserService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
+import im.zego.liveaudioroomdemo.feature.login.UserLoginActivity;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MessageListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.adapter.SeatListAdapter;
 import im.zego.liveaudioroomdemo.feature.room.dialog.IMInputDialog;
@@ -283,7 +284,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 if (seatModel.status == ZegoSpeakerSeatStatus.Occupied) {
                     DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
                         StringUtils.getString(R.string.room_page_leave_speaker_seat), dialog -> {
-                            DialogHelper.showAlertDialog(LiveAudioRoomActivity.this, null,
+                            DialogHelper.showAlertDialog(LiveAudioRoomActivity.this,
+                                StringUtils.getString(R.string.room_page_leave_speaker_seat),
                                 StringUtils.getString(R.string.dialog_warning_leave_seat_message, userId),
                                 StringUtils.getString(R.string.dialog_confirm),
                                 StringUtils.getString(R.string.dialog_cancel),
@@ -498,6 +500,35 @@ public class LiveAudioRoomActivity extends BaseActivity {
             public void onReceiveTakeSeatInvitation() {
                 showInviteDialog();
             }
+
+            @Override
+            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
+                Log.d(TAG, "onConnectionStateChanged() called with: state = [" + state + "], event = [" + event + "]");
+                if (state == ZIMConnectionState.DISCONNECTED) {
+                    dismissDialog(loadingDialog);
+                    if (event == ZIMConnectionEvent.LOGIN_TIMEOUT) {
+                        showDisconnectDialog();
+                    } else {
+                        if (event == ZIMConnectionEvent.SUCCESS) {
+                            // disconnect because of room end
+                            ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
+                            finish();
+                        } else if (event == ZIMConnectionEvent.KICKED_OUT) {
+                            //disconnect because of multiple login,been kicked out
+                            ToastUtils.showShort(R.string.toast_kickout_error);
+                            ActivityUtils.finishToActivity(UserLoginActivity.class, false);
+                        } else {
+                            ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
+                            ActivityUtils.finishToActivity(UserLoginActivity.class, false);
+                        }
+
+                    }
+                } else if (state == ZIMConnectionState.RECONNECTING) {
+                    showLoadingDialog();
+                } else if (state == ZIMConnectionState.CONNECTED) {
+                    dismissDialog(loadingDialog);
+                }
+            }
         });
 
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
@@ -536,37 +567,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     onUserMessageDisabled(roomInfo.isTextMessageDisabled());
                 }
             }
-
-            @Override
-            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-                Log.d(TAG, "onConnectionStateChanged() called with: state = [" + state + "], event = [" + event + "]");
-                if (state == ZIMConnectionState.DISCONNECTED) {
-                    dismissDialog(loadingDialog);
-                    if (event == ZIMConnectionEvent.LOGIN_TIMEOUT) {
-                        showDisconnectDialog();
-                    } else {
-                        if (event == ZIMConnectionEvent.SUCCESS) {
-                            // disconnect because of room end
-                            ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
-                            finish();
-                        } else if (event == ZIMConnectionEvent.KICKED_OUT) {
-                            //disconnect because of multiple login,been kicked out
-                            ToastUtils.showShort(R.string.toast_kickout_error);
-                            ActivityUtils.finishAllActivities();
-                            ActivityUtils.startLauncherActivity();
-                        } else {
-                            ToastUtils.showShort(StringUtils.getString(R.string.toast_disconnect_tips));
-                            ActivityUtils.finishAllActivities();
-                            ActivityUtils.startLauncherActivity();
-                        }
-
-                    }
-                } else if (state == ZIMConnectionState.RECONNECTING) {
-                    showLoadingDialog();
-                } else if (state == ZIMConnectionState.CONNECTED) {
-                    dismissDialog(loadingDialog);
-                }
-            }
         });
     }
 
@@ -576,8 +576,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         builder2.setMessage(R.string.network_connect_failed);
         builder2.setCancelable(false);
         builder2.setPositiveButton(R.string.dialog_confirm, (dialog1, which1) -> {
-            ActivityUtils.finishAllActivities();
-            ActivityUtils.startLauncherActivity();
+            ActivityUtils.finishToActivity(UserLoginActivity.class, false);
         });
         if (!LiveAudioRoomActivity.this.isFinishing()) {
             AlertDialog alertDialog = builder2.create();

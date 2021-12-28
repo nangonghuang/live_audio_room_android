@@ -271,17 +271,6 @@ public class ZegoRoomService {
         }
     }
 
-    public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
-        JSONObject extendedData) {
-        Log.d(TAG,
-            "onConnectionStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = ["
-                + event + "], extendedData = [" + extendedData + "]");
-        if (listener != null) {
-            listener.onConnectionStateChanged(state, event);
-        }
-
-    }
-
     public void onRoomStreamUpdate(String roomID, ZegoUpdateType updateType, List<ZegoStream> streamList) {
         for (ZegoStream zegoStream : streamList) {
             if (updateType == ZegoUpdateType.ADD) {

@@ -17,6 +17,8 @@ import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMMessage;
 import im.zego.zim.entity.ZIMUserInfo;
+import im.zego.zim.enums.ZIMConnectionEvent;
+import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  * Class user information management.
@@ -249,5 +252,16 @@ public class ZegoUserService {
                 }
             }
         }
+    }
+
+    public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
+        JSONObject extendedData) {
+        Log.d(TAG,
+            "onConnectionStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = ["
+                + event + "], extendedData = [" + extendedData + "]");
+        if (listener != null) {
+            listener.onConnectionStateChanged(state, event);
+        }
+
     }
 }
