@@ -23,7 +23,7 @@ public class ZegoRoomInfo {
     /**
      * Host ID, refers to the ID of the room creator.
      */
-    @SerializedName("hostID")
+    @SerializedName("host_id")
     private String hostID;
 
     /**
