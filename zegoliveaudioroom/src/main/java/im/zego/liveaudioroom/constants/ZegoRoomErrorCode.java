@@ -1,9 +1,7 @@
 package im.zego.liveaudioroom.constants;
 
-/**
- * Created by rocket_wang on 2021/12/17.
- */
 public class ZegoRoomErrorCode {
+
     public static final int SUCCESS = 0;
     public static final int ERROR = 1;
     public static final int ROOM_EXISTED = 1001;
