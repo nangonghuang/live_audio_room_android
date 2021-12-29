@@ -17,5 +17,5 @@ public interface ZegoOnlineRoomUsersCallback {
      *                 https://doc-en.zego.im/article/13792</>
      * @param userList refers to the in-room user list
      */
-    void onlineUserCallback(int error, List<ZegoUserInfo> userList);
+    void onlineUserCallback(int error,String nextFlag, List<ZegoUserInfo> userList);
 }
