@@ -15,7 +15,8 @@ public interface ZegoOnlineRoomUsersCallback {
      *                 <p>0: Operation successful.</>
      *                 <p>600xxxx: The ZIM SDK error code. For details, refer to the error code documentation.
      *                 https://doc-en.zego.im/article/13792</>
+     * @param nextFlag
      * @param userList refers to the in-room user list
      */
-    void onlineUserCallback(int error, List<ZegoUserInfo> userList);
+    void onlineUserCallback(int error,String nextFlag, List<ZegoUserInfo> userList);
 }

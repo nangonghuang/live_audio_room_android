@@ -33,8 +33,6 @@ public class App extends Application {
             appSign = jsonObject.getString("appSign");
             serverSecret = jsonObject.getString("serverSecret");
 
-            Log.d("App", "onCreate() called:" + serverSecret);
-
             // init LiveAudioRoom SDK
             ZegoRoomManager.getInstance().init(appID, appSign, this);
         } catch (JSONException e) {
@@ -57,7 +55,6 @@ public class App extends Application {
     private String readJsonFile(String fileName) {
         String jsonStr = "";
         try {
-            ;
             InputStream inputStream = getAssets().open(fileName);
             Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             int ch = 0;

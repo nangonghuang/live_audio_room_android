@@ -8,15 +8,13 @@ With ZEGOCLOUD's Live Audio Room, you can build different types of live audio ap
 
 ## Getting started 
 
-To get started with the Live Audio Room application, do the following:
+Before getting started with the Live Audio Room application, **contact us to activate the Live Audio Room (RTC + IM) service first**, and then do the following:
 
 ### Prerequisites
 
-* Contact us to activate the Live Audio Room (RTC + IM) service.
 * [Android Studio 2020.3.1 or later\|_blank](https://developer.android.com/studio)
 * Android SDK Packages: Android SDK 30, Android SDK Platform-Tools 30.x.x or later.
 * An Android device or Simulator that is running on Android 4.1 or later and supports audio and video. We recommend you use a real device (Remember to enable **USB debugging** for the device).
-* [Python 3.8.0 or later\|_blank](https://www.python.org/downloads/release/python-380/)
 * Create a project in [ZEGO Admin Console\|_blank](https://console.zego.im/). For details, see [ZEGO Admin Console - Project management\|_blank](https://doc-en.zego.im/article/1271).
 
 
@@ -25,7 +23,8 @@ To get started with the Live Audio Room application, do the following:
 
 1. Clone the Live Audio Room Github repository.
 2. Open Terminal, navigate to the cloned project repository.
-3. Run the configuration script with the `python3 configure.py` command, and fill in the AppID, AppSign, and Secret correctly.
+3. Run the configuration script with the `./configure.sh` command. And fill in the AppID, AppSign, and ServerSecret, which can be obtained in the [ZEGO Admin Console\|_blank](https://console.zego.im/).  
+**Note**: If you are using Windows system, double-click the `configure.bat` to run the configuration script. 
 <img width="700px" src="images/configure_android.png"/>
 
 ### Run the sample code
