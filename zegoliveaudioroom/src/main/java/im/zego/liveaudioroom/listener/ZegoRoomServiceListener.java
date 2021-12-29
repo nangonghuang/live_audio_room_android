@@ -18,15 +18,4 @@ public interface ZegoRoomServiceListener {
      * @param roomInfo refers to the updated room information.
      */
     void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo);
-
-    /**
-     * Callbacks related to the user connection status.
-     * <p>Description: This callback will be triggered when user gets disconnected due to network error, or gets
-     * offline
-     * due to the operations in other clients.</>
-     *
-     * @param state refers to the current connection state.
-     * @param event refers to the the event that causes the connection status changes.
-     */
-    void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event);
 }

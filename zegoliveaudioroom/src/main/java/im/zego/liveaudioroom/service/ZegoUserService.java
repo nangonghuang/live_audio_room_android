@@ -1,10 +1,12 @@
 package im.zego.liveaudioroom.service;
 
+import android.text.TextUtils;
 import android.util.Log;
 import com.google.gson.Gson;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoOnlineRoomUsersCallback;
+import im.zego.liveaudioroom.callback.ZegoOnlineRoomUsersNumCallback;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
 import im.zego.liveaudioroom.listener.ZegoUserServiceListener;
 import im.zego.liveaudioroom.model.ZegoCustomCommand;
@@ -14,9 +16,13 @@ import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
+import im.zego.zim.callback.ZIMMemberQueriedCallback;
 import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMMessage;
+import im.zego.zim.entity.ZIMQueryMemberConfig;
 import im.zego.zim.entity.ZIMUserInfo;
+import im.zego.zim.enums.ZIMConnectionEvent;
+import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONObject;
 
 /**
  * Class user information management.
@@ -221,11 +228,56 @@ public class ZegoUserService {
      *
      * @param callback refers to the callback for get the total number of in-room users.
      */
-    public void getOnlineRoomUsersNum(final ZegoOnlineRoomUsersCallback callback) {
+    public void getOnlineRoomUsersNum(final ZegoOnlineRoomUsersNumCallback callback) {
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
         ZegoZIMManager.getInstance().zim.queryRoomOnlineMemberCount(roomInfo.getRoomID(), (count, errorInfo) -> {
             if (callback != null) {
                 callback.userCountCallback(errorInfo.code.value(), count);
+            }
+        });
+    }
+
+    /**
+     * Get the in-room user list
+     * <p>Description: Description: This method can be called to get the in-room user list.</>
+     * <p>Call this method at:  After joining the room</>
+     *
+     * @param page     refers to the page of the in-room user list. Starts from 0, it contains 100 entries of data every
+     *                 page. When the [nextpage] is returned in the callback, it indicates that the user list has a next
+     *                 page, and you need to increase the [page] and call the method again.
+     * @param callback refers to the callback for get the in-room user list.
+     */
+    public void getOnlineRoomUsers(int page, ZegoOnlineRoomUsersCallback callback) {
+        ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
+        ZIMQueryMemberConfig config = new ZIMQueryMemberConfig();
+        config.count = 100;
+
+        queryRoomUser(roomInfo.getRoomID(), config, (memberList, nextFlag, errorInfo) -> {
+            List<ZegoUserInfo> zegoUserInfos = generateRoomUsers(memberList);
+            callback.onlineUserCallback(errorInfo.code.value(), zegoUserInfos);
+        });
+    }
+
+    private void queryRoomUser(String roomID, ZIMQueryMemberConfig config, ZIMMemberQueriedCallback callback) {
+        ArrayList<ZIMUserInfo> zimUserInfoList = new ArrayList<>();
+        ZegoZIMManager.getInstance().zim.queryRoomMember(roomID, config, (memberList, nextFlag, errorInfo) -> {
+            if (errorInfo.code == ZIMErrorCode.SUCCESS) {
+                zimUserInfoList.addAll(memberList);
+                config.nextFlag = nextFlag;
+                while (!TextUtils.isEmpty(config.nextFlag)) {
+                    ZegoZIMManager.getInstance().zim
+                        .queryRoomMember(roomID, config, (memberList1, nextFlag1, errorInfo1) -> {
+                            if (errorInfo.code == ZIMErrorCode.SUCCESS) {
+                                config.nextFlag = nextFlag1;
+                                zimUserInfoList.addAll(memberList1);
+                            } else {
+                                config.nextFlag = "";
+                            }
+                        });
+                }
+                callback.onMemberQueried(zimUserInfoList, "", errorInfo);
+            } else {
+                callback.onMemberQueried(null, "", errorInfo);
             }
         });
     }
@@ -249,5 +301,16 @@ public class ZegoUserService {
                 }
             }
         }
+    }
+
+    public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
+        JSONObject extendedData) {
+        Log.d(TAG,
+            "onConnectionStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = ["
+                + event + "], extendedData = [" + extendedData + "]");
+        if (listener != null) {
+            listener.onConnectionStateChanged(state, event);
+        }
+
     }
 }

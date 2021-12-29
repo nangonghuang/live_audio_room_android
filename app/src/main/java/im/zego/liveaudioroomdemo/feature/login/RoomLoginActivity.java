@@ -1,8 +1,6 @@
 package im.zego.liveaudioroomdemo.feature.login;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,17 +13,17 @@ import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
+import im.zego.liveaudioroom.listener.ZegoUserServiceListener;
+import im.zego.liveaudioroomdemo.App;
 import im.zego.zim.enums.ZIMErrorCode;
+import java.util.List;
 import org.json.JSONException;
 
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
-import im.zego.liveaudioroom.listener.ZegoRoomServiceListener;
-import im.zego.liveaudioroom.model.ZegoRoomInfo;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroom.util.TokenServerAssistant;
 import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
-import im.zego.liveaudioroomdemo.KeyCenter;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.liveaudioroomdemo.feature.room.LiveAudioRoomActivity;
@@ -35,6 +33,7 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 
 public class RoomLoginActivity extends BaseActivity implements View.OnClickListener {
+
     private EditText etRoomID;
     private TextView btnSettings;
     private Button btnCreate;
@@ -47,9 +46,19 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
         setContentView(R.layout.activity_room_login);
         initUI();
 
-        ZegoRoomManager.getInstance().roomService.setListener(new ZegoRoomServiceListener() {
+        ZegoRoomManager.getInstance().userService.setListener(new ZegoUserServiceListener() {
             @Override
-            public void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo) {
+            public void onRoomUserJoin(List<ZegoUserInfo> userList) {
+
+            }
+
+            @Override
+            public void onRoomUserLeave(List<ZegoUserInfo> userList) {
+
+            }
+
+            @Override
+            public void onReceiveTakeSeatInvitation() {
 
             }
 
@@ -57,8 +66,7 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
                 if (state == ZIMConnectionState.DISCONNECTED && event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
-                    ActivityUtils.finishAllActivities();
-                    ActivityUtils.startLauncherActivity();
+                    ActivityUtils.finishToActivity(UserLoginActivity.class, false);
                 }
             }
         });
@@ -90,7 +98,11 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
 
             try {
                 ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
-                String token = TokenServerAssistant.generateToken(KeyCenter.appID(), selfUser.getUserID(), KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data;
+                App app = (App) getApplication();
+                long appID = app.getAppID();
+                String appSecret = app.getServerSecret();
+                String token = TokenServerAssistant
+                    .generateToken(appID, selfUser.getUserID(), appSecret, 60 * 60 * 24).data;
                 ZegoRoomManager.getInstance().roomService.joinRoom(roomID, token, errorCode -> {
                     if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                         LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
@@ -130,15 +142,19 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                     ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
                     privileges.canLoginRoom = true;
                     privileges.canPublishStream = true;
-                    String token = ZegoRTCServerAssistant.generateToken(KeyCenter.appID(), roomID, selfUser.getUserID(), privileges, KeyCenter.appExpressSign(), 660).data;
+                    App app = (App) getApplication();
+                    long appID = app.getAppID();
+                    String appSign = app.getAppSign();
+                    String token = ZegoRTCServerAssistant
+                        .generateToken(appID, roomID, selfUser.getUserID(), privileges, appSign, 660).data;
                     ZegoRoomManager.getInstance().roomService.createRoom(roomID, roomName, token, errorCode -> {
                         dialog.dismiss();
                         if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                             LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_success));
-                        } else if(errorCode == ZIMErrorCode.CREATE_EXIST_ROOM.value()){
+                        } else if (errorCode == ZIMErrorCode.CREATE_EXIST_ROOM.value()) {
                             ToastUtils.showShort(R.string.toast_room_existed);
-                        }else {
+                        } else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_fail, errorCode));
                         }
                     });

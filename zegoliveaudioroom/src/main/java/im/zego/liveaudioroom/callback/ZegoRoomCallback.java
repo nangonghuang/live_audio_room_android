@@ -9,10 +9,8 @@ public interface ZegoRoomCallback {
 
     /**
      * @param errorCode refers to the operation status code.<br> 0: Operation successful. <br> 100xxxx: The Express SDK
-     *                  error code. For details, refer to the error code documentation. [iOS]:
-     *                  https://doc-en.zego.im/article/5547 [Android]: https://doc-en.zego.im/article/5548 <br> 600xxxx:
-     *                  The ZIM SDK error code. For details, refer to the error code documentation. [iOS]:
-     *                  https://doc-en.zego.im/article/13791 [Android]: https://doc-en.zego.im/article/13792
+     *                  error code. For details, refer to the error code documentation.https://doc-en.zego.im/article/5548 <br> 600xxxx:
+     *                  The ZIM SDK error code. For details, refer to the error code documentation.https://doc-en.zego.im/article/13792
      */
     void roomCallback(int errorCode);
 }

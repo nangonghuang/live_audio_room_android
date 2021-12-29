@@ -1,18 +1,21 @@
 package im.zego.liveaudioroom.callback;
 
+import im.zego.liveaudioroom.model.ZegoUserInfo;
+import java.util.List;
+
 /**
- * Callback for get the total number of in-room users.
+ * Callback for get the user list.
+ * <p>Description: This callback will be triggered when the method call that get the user list has finished its
+ * execution.</>
  */
 public interface ZegoOnlineRoomUsersCallback {
 
     /**
-     * This callback will be triggered when the method call that get the total number of in-room users has finished its
-     * execution.
-     *
-     * @param errorCode refers to the operation status code. <br> 0: Operation successful. <br> 600xxxx: The ZIM SDK
-     *                  error code. For details, refer to the error code documentation. [iOS]:
-     *                  https://doc-en.zego.im/article/13791 [Android]: https://doc-en.zego.im/article/13792
-     * @param count     refers to the in-room user list
+     * @param error    error refers to the operation status code.
+     *                 <p>0: Operation successful.</>
+     *                 <p>600xxxx: The ZIM SDK error code. For details, refer to the error code documentation.
+     *                 https://doc-en.zego.im/article/13792</>
+     * @param userList refers to the in-room user list
      */
-    void userCountCallback(int errorCode, int count);
+    void onlineUserCallback(int error, List<ZegoUserInfo> userList);
 }

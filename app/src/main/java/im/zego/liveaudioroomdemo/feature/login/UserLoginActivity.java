@@ -12,7 +12,7 @@ import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroom.util.TokenServerAssistant;
-import im.zego.liveaudioroomdemo.KeyCenter;
+import im.zego.liveaudioroomdemo.App;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.liveaudioroomdemo.helper.PermissionHelper;
@@ -61,9 +61,12 @@ public class UserLoginActivity extends BaseActivity {
                 user.setUserID(userID);
                 user.setUserName(userName);
                 try {
+                    App app = (App) getApplication();
                     // Call Chat Room SDK
+                    long appID = app.getAppID();
+                    String appSecret = app.getServerSecret();
                     String token = TokenServerAssistant
-                        .generateToken(KeyCenter.appID(), userID, KeyCenter.appZIMServerSecret(), 60 * 60 * 24).data;
+                        .generateToken(appID, userID, appSecret, 60 * 60 * 24).data;
                     ZegoRoomManager.getInstance().userService.login(user, token, errorCode -> {
                         if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                             ActivityUtils.startActivity(RoomLoginActivity.class);

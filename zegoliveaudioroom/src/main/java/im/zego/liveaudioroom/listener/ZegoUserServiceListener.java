@@ -1,6 +1,8 @@
 package im.zego.liveaudioroom.listener;
 
 import im.zego.liveaudioroom.model.ZegoUserInfo;
+import im.zego.zim.enums.ZIMConnectionEvent;
+import im.zego.zim.enums.ZIMConnectionState;
 import java.util.List;
 
 /**
@@ -32,4 +34,15 @@ public interface ZegoUserServiceListener {
      * <p>Description: The invitee receives a notification when he is be invited to take a speaker seat to speak.</>
      */
     void onReceiveTakeSeatInvitation();
+
+    /**
+     * Callbacks related to the user connection status.
+     * <p>Description: This callback will be triggered when user gets disconnected due to network error, or gets
+     * offline
+     * due to the operations in other clients.</>
+     *
+     * @param state refers to the current connection state.
+     * @param event refers to the the event that causes the connection status changes.
+     */
+    void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event);
 }

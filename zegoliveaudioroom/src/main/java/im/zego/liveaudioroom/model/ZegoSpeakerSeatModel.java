@@ -47,6 +47,7 @@ public class ZegoSpeakerSeatModel {
             "userID='" + userID + '\'' +
             ", seatIndex=" + seatIndex +
             ", mic=" + mic +
+            ", soundLevel=" + soundLevel +
             ", status=" + status +
             '}';
     }

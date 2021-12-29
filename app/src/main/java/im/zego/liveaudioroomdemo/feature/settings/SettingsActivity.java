@@ -14,6 +14,7 @@ import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
+import im.zego.liveaudioroomdemo.feature.login.UserLoginActivity;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zim.ZIM;
 
@@ -66,7 +67,6 @@ public class SettingsActivity extends BaseActivity {
 
     private void logout() {
         ZegoRoomManager.getInstance().userService.logout();
-        ActivityUtils.finishAllActivities();
-        ActivityUtils.startLauncherActivity();
+        ActivityUtils.finishToActivity(UserLoginActivity.class,false);
     }
 }
