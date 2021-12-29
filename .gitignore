@@ -8,4 +8,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/src/main/java/im/zego/liveaudioroomdemo/KeyCenter.json
+app/src/main/assets/KeyCenter.json

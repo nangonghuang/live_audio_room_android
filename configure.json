@@ -1,6 +1,6 @@
 {
   "key_center": {
-    "key_center_file": "app/src/main/java/im/zego/liveaudioroomdemo/KeyCenter.json",
-    "key_center_template_file": "app/src/main/java/im/zego/liveaudioroomdemo/KeyCenterTemplate.json"
+    "key_center_file": "app/src/main/assets/KeyCenter.json",
+    "key_center_template_file": "KeyCenterTemplate.json"
   }
 }
