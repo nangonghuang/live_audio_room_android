@@ -151,11 +151,9 @@
 
   <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/rv_seat_list"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="26dp"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/tv_room_id" />
