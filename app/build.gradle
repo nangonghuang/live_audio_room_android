@@ -46,5 +46,8 @@ dependencies {
     implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
     implementation 'com.guolindev.permissionx:permissionx:1.6.1'
 
+    // webView
+    implementation 'com.github.Justson.AgentWeb:agentweb-core:v5.0.0-alpha.1-androidx'
+
     implementation project(':zegoliveaudioroom')
 }

@@ -52,7 +52,7 @@
   <string name="room_page_joined_the_room">%s 加入房间</string>
   <string name="toast_send_message_error">发送消息失败，错误码：%d</string>
   <string name="room_page_send_message">发送</string>
-  <string name="room_page_bands_send_message">房主已开启禁言</string>
+  <string name="toast_disable_text_chat_tips">房主已开启禁言</string>
 
   <string name="room_page_gift">礼物</string>
 
@@ -70,6 +70,7 @@
   <string name="toast_lock_seat_fail">锁定麦位失败，错误码：%d</string>
   <string name="toast_lock_seat_already_take_seat">锁定麦位失败，麦上已有用户</string>
   <string name="dialog_warning_leave_seat_message">是否踢 %s下麦？</string>
+  <string name="dialog_tips_title">提示</string>
   <string name="dialog_confirm">确认</string>
   <string name="dialog_cancel">取消</string>
   <string name="toast_kickout_leave_seat_error">踢下麦 %s 失败，错误码：%d</string>

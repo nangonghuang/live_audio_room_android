@@ -27,7 +27,10 @@
   <string name="setting_page_settings">Settings</string>
   <string name="setting_page_sdk_version">Express SDK Version</string>
   <string name="setting_page_zim_sdk_version">ZIM SDK Version</string>
+  <string name="setting_page_version">APP Version</string>
   <string name="setting_page_upload_log">Upload logs</string>
+  <string name="setting_page_terms_of_service">Terms of service</string>
+  <string name="setting_page_privacy_policy">Privacy Policy</string>
   <string name="setting_page_logout">Log out</string>
   <string name="toast_upload_log_success">Logs uploaded successfully.</string>
   <string name="toast_upload_log_fail">Failed to upload logs. Error code: %d.</string>
@@ -52,7 +55,11 @@
   <string name="room_page_joined_the_room">%s joined the room</string>
   <string name="toast_send_message_error">Failed to send message. Error code: %d.</string>
   <string name="room_page_send_message">Send</string>
-  <string name="room_page_bands_send_message">The host has disabled text chat for everyone.</string>
+
+  <string name="toast_disable_text_chat_success">Disabled text chat successfully.</string>
+  <string name="toast_allow_text_chat_success">Allow text chat successfully.</string>
+  <string name="toast_disable_text_chat_tips">The host has disabled text chat for everyone.</string>
+  <string name="toast_allow_text_chat_tips">The host has allowed text chat for everyone.</string>
 
   <string name="room_page_gift">Gifts</string>
 
@@ -70,6 +77,7 @@
   <string name="toast_lock_seat_fail">Failed to close the seat. Error code: %d.</string>
   <string name="toast_lock_seat_already_take_seat">Failed to close the seat. A speaker has already take the seat.</string>
   <string name="dialog_warning_leave_seat_message">Remove %s from the speaker seat?</string>
+  <string name="dialog_tips_title">Tips</string>
   <string name="dialog_confirm">OK</string>
   <string name="dialog_cancel">Cancel</string>
   <string name="toast_kickout_leave_seat_error">Failed to remove %s from the speaker seat. Error code: %d.</string>

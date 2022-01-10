@@ -1,12 +1,17 @@
 package im.zego.liveaudioroomdemo.feature.login;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -34,6 +39,7 @@ import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 
 public class RoomLoginActivity extends BaseActivity implements View.OnClickListener {
+    private static final int REQUEST_CODE_ROOM_ENDED = 0x01;
 
     private EditText etRoomID;
     private TextView btnSettings;
@@ -107,13 +113,13 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                 long appID = app.getAppID();
                 String appSecret = app.getServerSecret();
                 String token = TokenServerAssistant
-                    .generateToken(appID, selfUser.getUserID(), appSecret, 60 * 60 * 24).data;
+                        .generateToken(appID, selfUser.getUserID(), appSecret, 60 * 60 * 24).data;
                 /**
                  * Join an existed room with roomID and generate token
                  */
                 ZegoRoomManager.getInstance().roomService.joinRoom(roomID, token, errorCode -> {
                     if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                        LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
+                        LiveAudioRoomActivity.startActivityForResult(RoomLoginActivity.this, REQUEST_CODE_ROOM_ENDED);
                     } else if (errorCode == ZIMErrorCode.ROOM_NOT_EXIST.value()) {
                         ToastUtils.showShort(StringUtils.getString(R.string.toast_room_not_exist_fail));
                     } else {
@@ -124,6 +130,28 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_ROOM_ENDED) {
+                showRoomEndedDialog();
+            }
+        }
+    }
+
+    private void showRoomEndedDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(StringUtils.getString(R.string.dialog_tips_title))
+                .setMessage(StringUtils.getString(R.string.toast_room_has_destroyed))
+                .setPositiveButton(StringUtils.getString(R.string.dialog_confirm), (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setCancelable(false)
+                .create()
+                .show();
     }
 
     private void showCreateDialog() {
@@ -155,7 +183,7 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                         long appID = app.getAppID();
                         String appSign = app.getAppSign();
                         String token = ZegoRTCServerAssistant
-                            .generateToken(appID, roomID, selfUser.getUserID(), privileges, appSign, 660).data;
+                                .generateToken(appID, roomID, selfUser.getUserID(), privileges, appSign, 660).data;
                         /**
                          * create a room with room ID, room name and generate token, then join it.
                          */

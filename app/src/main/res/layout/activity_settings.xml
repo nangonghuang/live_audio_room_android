@@ -42,96 +42,104 @@
 
     <LinearLayout
         android:id="@+id/layout_rtc_sdk_version"
+        style="@style/SettingsItemLayoutStyle"
         android:layout_width="match_parent"
-        android:layout_height="54dp"
         android:layout_marginTop="16dp"
-        android:background="@color/white"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_title">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/setting_page_sdk_version"
-            android:textColor="#1B1B1B"
-            android:textSize="16sp" />
+            style="@style/SettingsItemTitleStyle"
+            android:text="@string/setting_page_sdk_version" />
 
         <TextView
             android:id="@+id/tv_rtc_sdk_version"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:textColor="#ff989ba8"
-            android:textSize="14sp"
+            style="@style/SettingsItemContentStyle"
             tools:text="v1.0.0" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layout_zim_sdk_version"
-        android:layout_width="match_parent"
-        android:layout_height="54dp"
+        style="@style/SettingsItemLayoutStyle"
         android:layout_marginTop="1dp"
-        android:background="@color/white"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_rtc_sdk_version">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/setting_page_zim_sdk_version"
-            android:textColor="#1B1B1B"
-            android:textSize="16sp" />
+            style="@style/SettingsItemTitleStyle"
+            android:text="@string/setting_page_zim_sdk_version" />
 
         <TextView
             android:id="@+id/tv_zim_sdk_version"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:textColor="#ff989ba8"
-            android:textSize="14sp"
+            style="@style/SettingsItemContentStyle"
             tools:text="v1.0.0" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layout_share_log"
-        android:layout_width="match_parent"
-        android:layout_height="54dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:id="@+id/layout_app_version"
+        style="@style/SettingsItemLayoutStyle"
+        android:layout_marginTop="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_zim_sdk_version">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/setting_page_upload_log"
-            android:textColor="#1B1B1B"
-            android:textSize="16sp" />
+            style="@style/SettingsItemTitleStyle"
+            android:text="@string/setting_page_version" />
+
+        <TextView
+            android:id="@+id/tv_app_version"
+            style="@style/SettingsItemContentStyle"
+            tools:text="v1.0.0" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_terms_of_service"
+        style="@style/SettingsItemLayoutStyle"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_app_version">
+
+        <TextView
+            style="@style/SettingsItemTitleStyle"
+            android:text="@string/setting_page_terms_of_service" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_privacy_policy"
+        style="@style/SettingsItemLayoutStyle"
+        android:layout_marginTop="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_terms_of_service">
+
+        <TextView
+            style="@style/SettingsItemTitleStyle"
+            android:text="@string/setting_page_privacy_policy" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_share_log"
+        style="@style/SettingsItemLayoutStyle"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_privacy_policy">
+
+        <TextView
+            style="@style/SettingsItemTitleStyle"
+            android:text="@string/setting_page_upload_log" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/tv_logout"
+        style="@style/SettingsItemLayoutStyle"
         android:layout_width="match_parent"
-        android:layout_height="54dp"
         android:layout_gravity="center_vertical"
         android:layout_marginTop="60dp"
-        android:background="@color/white"
         android:gravity="center"
         android:text="@string/setting_page_logout"
         android:textColor="#EE1515"

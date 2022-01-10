@@ -1,5 +1,6 @@
 package im.zego.liveaudioroomdemo.feature.room;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -71,6 +72,11 @@ public class LiveAudioRoomActivity extends BaseActivity {
         context.startActivity(intent);
     }
 
+    public static void startActivityForResult(Activity activity, int requestCode) {
+        Intent intent = new Intent(activity, LiveAudioRoomActivity.class);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
     private static final String TAG = "LiveAudioRoomActivity";
 
     private ImageView ivLogout;
@@ -99,6 +105,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
         tvGiftToast.setText("");
         ((ViewGroup) tvGiftToast.getParent()).setVisibility(View.INVISIBLE);
     };
+
+    private boolean isFirstIn = true;
 
     @Override
     protected int getStatusBarColor() {
@@ -139,7 +147,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         ivLogout.setOnClickListener(v -> this.onBackPressed());
         ivIm.setOnClickListener(v -> {
             if (isImDisabled && !UserInfoHelper.isSelfOwner()) {
-                ToastUtils.showShort(R.string.room_page_bands_send_message);
+                ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
             } else {
                 imInputDialog = new IMInputDialog(this);
                 imInputDialog.setOnSendListener(imText -> {
@@ -161,7 +169,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                             }
                         });
                     } else {
-                        ToastUtils.showShort(R.string.room_page_bands_send_message);
+                        ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
                     }
                 });
                 imInputDialog.show();
@@ -555,7 +563,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     } else {
                         if (event == ZIMConnectionEvent.SUCCESS) {
                             // disconnect because of room end
-                            ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
+                            setResult(RESULT_OK);
                             finish();
                         } else if (event == ZIMConnectionEvent.KICKED_OUT) {
                             //disconnect because of multiple login,been kicked out
@@ -611,9 +619,20 @@ public class LiveAudioRoomActivity extends BaseActivity {
             public void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo) {
                 Log.d(TAG, "onReceiveRoomInfoUpdate() called with: roomInfo = [" + roomInfo + "]");
                 if (roomInfo == null) {
-                    ToastUtils.showShort(StringUtils.getString(R.string.toast_room_has_destroyed));
+                    setResult(RESULT_OK);
                     finish();
                 } else {
+                    if (isFirstIn) {
+                        isFirstIn = false;
+                        return;
+                    }
+                    if (!UserInfoHelper.isSelfOwner()) {
+                        if (roomInfo.isTextMessageDisabled()) {
+                            ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
+                        } else {
+                            ToastUtils.showShort(R.string.toast_allow_text_chat_tips);
+                        }
+                    }
                     onUserMessageDisabled(roomInfo.isTextMessageDisabled());
                 }
             }
@@ -721,7 +740,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
             StringUtils.getString(R.string.dialog_confirm),
             StringUtils.getString(R.string.dialog_cancel),
             (dialog, which) -> {
-                ToastUtils.showShort(R.string.toast_room_has_destroyed);
                 dialog.dismiss();
                 finish();
             },

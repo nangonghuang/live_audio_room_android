@@ -37,7 +37,13 @@ public class SettingsDialog extends BaseBottomDialog {
          */
         switchDisableMessage.setOnCheckedChangeListener((buttonView, isChecked) -> {
             ZegoRoomManager.getInstance().roomService.disableTextMessage(isChecked, errorCode -> {
-
+                if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                    if (isChecked) {
+                        ToastUtils.showShort(R.string.toast_disable_text_chat_success);
+                    } else {
+                        ToastUtils.showShort(R.string.toast_allow_text_chat_success);
+                    }
+                }
             });
         });
 
