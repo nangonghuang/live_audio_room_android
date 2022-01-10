@@ -56,13 +56,17 @@ public class SettingsActivity extends BaseActivity {
     protected void initListener() {
         mIvBack.setOnClickListener(v -> finish());
         mTvLogout.setOnClickListener(v -> logout());
-        mShareLog.setOnClickListener(v -> ZegoRoomManager.getInstance().uploadLog(errorCode -> {
-            if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                ToastUtils.showShort(R.string.toast_upload_log_success);
-            } else {
-                ToastUtils.showShort(R.string.toast_upload_log_fail, errorCode);
-            }
-        }));
+        mShareLog.setOnClickListener(v ->
+                /**
+                 * Upload log to SDK server, let the sdk grow up
+                 */
+                ZegoRoomManager.getInstance().uploadLog(errorCode -> {
+                    if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                        ToastUtils.showShort(R.string.toast_upload_log_success);
+                    } else {
+                        ToastUtils.showShort(R.string.toast_upload_log_fail, errorCode);
+                    }
+                }));
     }
 
     private void logout() {

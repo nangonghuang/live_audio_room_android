@@ -1,17 +1,20 @@
 package im.zego.liveaudioroomdemo;
 
 import android.app.Application;
-import android.util.Log;
+
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.Utils;
-import im.zego.liveaudioroom.ZegoRoomManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import im.zego.liveaudioroom.ZegoRoomManager;
 
 public class App extends Application {
 
@@ -33,7 +36,9 @@ public class App extends Application {
             appSign = jsonObject.getString("appSign");
             serverSecret = jsonObject.getString("serverSecret");
 
-            // init LiveAudioRoom SDK
+            /**
+             * init LiveAudioRoom SDK with your appID and appSign
+             */
             ZegoRoomManager.getInstance().init(appID, appSign, this);
         } catch (JSONException e) {
             e.printStackTrace();

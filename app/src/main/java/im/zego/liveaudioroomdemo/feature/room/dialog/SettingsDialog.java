@@ -31,11 +31,20 @@ public class SettingsDialog extends BaseBottomDialog {
     @Override
     protected void initListener() {
         super.initListener();
+        /**
+         * disable text message:
+         * let the whole user in room can not speak via IM, except Host
+         */
         switchDisableMessage.setOnCheckedChangeListener((buttonView, isChecked) -> {
             ZegoRoomManager.getInstance().roomService.disableTextMessage(isChecked, errorCode -> {
 
             });
         });
+
+        /**
+         * close all seat:
+         * let the whole user in room can not take seat
+         */
         switchCloseSeat.setOnCheckedChangeListener((buttonView, isChecked) -> {
             ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
             seatService.closeAllSeat(isChecked, errorCode -> {

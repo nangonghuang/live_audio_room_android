@@ -4,10 +4,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
+
+import org.json.JSONException;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
@@ -16,9 +23,6 @@ import im.zego.liveaudioroomdemo.App;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.liveaudioroomdemo.helper.PermissionHelper;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.json.JSONException;
 
 public class UserLoginActivity extends BaseActivity {
 
@@ -67,6 +71,9 @@ public class UserLoginActivity extends BaseActivity {
                     String appSecret = app.getServerSecret();
                     String token = TokenServerAssistant
                         .generateToken(appID, userID, appSecret, 60 * 60 * 24).data;
+                    /**
+                     * Login room with user ID, user name and generate token
+                     */
                     ZegoRoomManager.getInstance().userService.login(user, token, errorCode -> {
                         if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                             ActivityUtils.startActivity(RoomLoginActivity.class);

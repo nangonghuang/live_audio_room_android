@@ -13,15 +13,22 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.listener.ZegoRoomServiceListener;
@@ -53,9 +60,6 @@ import im.zego.liveaudioroomdemo.helper.PermissionHelper;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class LiveAudioRoomActivity extends BaseActivity {
 
@@ -211,6 +215,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private void requestRecordAudio() {
         PermissionHelper.requestRecordAudio(this, isAllGranted -> {
             ivMic.setSelected(isAllGranted);
+            /**
+             * If you do not grant microphone permissions, you need to turn off your seat microphone.
+             */
             if (!isAllGranted) {
                 ZegoRoomManager.getInstance().speakerSeatService.muteMic(true, error -> {
                 });
@@ -232,6 +239,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
             .setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         if (UserInfoHelper.isSelfOwner()) {
+            /**
+             * If it is Host, you need to let Host take the initiative to seat.
+             */
             uiToOwner();
             ZegoRoomManager.getInstance().speakerSeatService.takeSeat(0, error -> {
                 requestRecordAudio();
@@ -248,6 +258,12 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private void onSpeakerSeatClicked(ZegoSpeakerSeatModel seatModel) {
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         if (UserInfoHelper.isSelfOwner()) {
+            /**
+             * If the operator clicking on the seat position is Host, the business logic that should be processed needs to be judged according to the current state of the seat position:
+             * 1. the seat position is not occupied, Host can lock the seat position
+             * 2. the seat position is locked, Host can unlock the seat position
+             * 3. the seat position is occupied, Host can remove the person from the seat position and lower the seat position
+             */
             if (seatModel.status == ZegoSpeakerSeatStatus.Untaken) {
                 DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
                     StringUtils.getString(R.string.room_page_lock_seat), dialog -> {
@@ -308,7 +324,12 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
             }
         } else {
-            // is visitor
+            /**
+             * If the operator clicking on the seat position is Listener, the business logic that should be processed needs to be judged according to the current state of the seat position:
+             * 1. the seat position is not occupied, Listener can take the seat
+             * 2. the seat position is locked, Listener can not take the seat
+             * 3. the seat position is occupied, Listener can only leave self seat
+             */
             if (seatModel.status == ZegoSpeakerSeatStatus.Untaken) {
                 DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
                     StringUtils.getString(R.string.room_page_take_seat), dialog -> {
@@ -347,6 +368,11 @@ public class LiveAudioRoomActivity extends BaseActivity {
         }
     }
 
+    /**
+     * The business logic of leave seat:
+     * If it is a Host, you can leave any members on seat except yourself
+     * If it is a Speaker, you can only leave yourself seat
+     */
     private void speakerLeaveSeat() {
         DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
             StringUtils.getString(R.string.room_page_leave_speaker_seat), dialog -> {
@@ -380,6 +406,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
             });
     }
 
+    /**
+     * Check if myself is a speaker
+     */
     private boolean isSelfSpeaker() {
         ZegoSpeakerSeatService speakerSeatService = ZegoRoomManager.getInstance().speakerSeatService;
         List<ZegoSpeakerSeatModel> speakerSeatList = speakerSeatService.getSpeakerSeatList();
@@ -396,6 +425,11 @@ public class LiveAudioRoomActivity extends BaseActivity {
         return isSpeaker;
     }
 
+    /**
+     * When Host invites you to be a speaker, you will see this dialog:
+     * If you accept, you will take the seat and be a speaker.
+     * If you decline, dialog will dismiss, and do nothing
+     */
     private void showInviteDialog() {
         if (isSelfSpeaker()) {
             return;
@@ -440,17 +474,26 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     private void initSDCallback() {
+        /**
+         * Add GiftService Listener, listener to gifts sent
+         */
         ZegoGiftService giftService = ZegoRoomManager.getInstance().giftService;
         giftService.setListener((giftID, fromUserID, toUserList) -> {
             showGiftTips(toUserList, fromUserID, giftID);
         });
 
+        /**
+         * Add MessageService Listener, listener to message sent
+         */
         ZegoMessageService messageService = ZegoRoomManager.getInstance().messageService;
         messageService.setListener((textMessage) -> {
             textMessageList.add(textMessage);
             refreshMessageList();
         });
 
+        /**
+         * Add UserService Listener, listener to Events like room user join/leave, receiveTakeSeatInvitation, connectionStateChanged
+         */
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(new ZegoUserServiceListener() {
 
@@ -532,6 +575,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
             }
         });
 
+        /**
+         * Add SpeakerSeatService Listener, listener to the speaker seat update events
+         */
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         seatService.setListener(model -> {
             ZegoUserInfo userInfo = userService.getUserInfo(getMyUserID());
@@ -556,6 +602,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
             }
         });
 
+        /**
+         * Add RoomService Listener, listener to the room info update events
+         */
         ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
         roomService.setListener(new ZegoRoomServiceListener() {
             @Override
@@ -628,6 +677,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
         rvMessageList.scrollToPosition(messageListAdapter.getItemCount() - 1);
     }
 
+    /**
+     * When user send gifts, you will see this gift showing on UI
+     */
     private void showGiftTips(List<String> toUserIDList, String fromUserID, String giftID) {
         String giftName = "";
         for (RoomGift value : RoomGift.values()) {
@@ -677,11 +729,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
         );
     }
 
-    private String getRoomID() {
-        ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
-        return roomInfo.getRoomID();
-    }
-
     private String getMyUserID() {
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         return localUserInfo.getUserID();
@@ -696,6 +743,10 @@ public class LiveAudioRoomActivity extends BaseActivity {
         }
     }
 
+    /**
+     * When this activity destroyed, we need dismiss all showing Dialog
+     * and let self leave room
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
