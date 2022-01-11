@@ -10,19 +10,21 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AlertDialog.Builder;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
@@ -79,6 +81,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
 
     private static final String TAG = "LiveAudioRoomActivity";
 
+    private ConstraintLayout constraintLayout;
     private ImageView ivLogout;
     private TextView tvGiftToast;
     private ImageView ivIm;
@@ -103,7 +106,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private boolean isImDisabled = false;
     private Runnable hideGiftTips = () -> {
         tvGiftToast.setText("");
-        ((ViewGroup) tvGiftToast.getParent()).setVisibility(View.INVISIBLE);
+        tvGiftToast.setVisibility(View.INVISIBLE);
     };
 
     private boolean isFirstIn = true;
@@ -126,6 +129,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     private void initUI() {
+        constraintLayout = findViewById(R.id.constraint_root_layout);
         ivLogout = findViewById(R.id.iv_logout);
         tvRoomName = findViewById(R.id.tv_room_name);
         tvRoomID = findViewById(R.id.tv_room_id);
@@ -694,6 +698,16 @@ public class LiveAudioRoomActivity extends BaseActivity {
     private void refreshMessageList() {
         messageListAdapter.notifyItemInserted(textMessageList.size());
         rvMessageList.scrollToPosition(messageListAdapter.getItemCount() - 1);
+
+        int measuredHeight = rvMessageList.getMeasuredHeight();
+        int maxHeight = SizeUtils.dp2px(315F);
+        if (measuredHeight >= maxHeight) {
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.clear(R.id.tv_gift_toast, ConstraintSet.BOTTOM);
+            constraintSet.connect(R.id.tv_gift_toast, ConstraintSet.TOP, R.id.rv_message_list, ConstraintSet.TOP);
+            constraintSet.applyTo(constraintLayout);
+        }
     }
 
     /**
@@ -727,7 +741,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         string.setSpan(yellowSpan, indexOfGiftName,
             indexOfGiftName + giftName.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
 
-        ((ViewGroup) tvGiftToast.getParent()).setVisibility(View.VISIBLE);
+        tvGiftToast.setVisibility(View.VISIBLE);
         tvGiftToast.setText(string);
         tvGiftToast.removeCallbacks(hideGiftTips);
         tvGiftToast.postDelayed(hideGiftTips, 10_000L);
