@@ -13,6 +13,16 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * To avoid unauthorized service access or operations, ZEGO uses digital tokens to control and validate user privileges.
+ * Currently, ZEGO supports validating the following:
+ * Room login privilege: a user's privilege to log in to a specific room
+ * <p>
+ * token refers to the authentication token. To get this, see the documentation:
+ * https://doc-en.zego.im/article/11648
+ * <p>
+ * When you login a room, you need to pass in the express token.
+ */
 public class TokenServerAssistant {
     static final private String VERSION_FLAG = "04";
     static final private int IV_LENGTH = 16;
@@ -20,25 +30,45 @@ public class TokenServerAssistant {
 
     static public boolean VERBOSE = false;
 
-    static public class Privileges {
-        public boolean canLoginRoom;
-
-        public boolean canPublishStream;
-
-        public Privileges() {
-            canLoginRoom = false;
-            canPublishStream = false;
-        }
-    }
-
     public enum ErrorCode {
+        /**
+         * token for authentication generated successfully
+         */
         SUCCESS(0),
+
+        /**
+         * appId parameter is incorrect
+         */
         ILLEGAL_APP_ID(1),
+
+        /**
+         * roomId parameter is incorrect
+         */
         ILLEGAL_ROOM_ID(2),
+
+        /**
+         * userId parameter is incorrect
+         */
         ILLEGAL_USER_ID(3),
+
+        /**
+         * privilege parameter is incorrect
+         */
         ILLEGAL_PRIVILEGE(4),
+
+        /**
+         * secret parameter is incorrect
+         */
         ILLEGAL_SECRET(5),
+
+        /**
+         * effectiveTimeInSeconds parameter is incorrect
+         */
         ILLEGAL_EFFECTIVE_TIME(6),
+
+        /**
+         * other errors
+         */
         OTHER(-1);
 
         ErrorCode(int code) {
@@ -81,6 +111,14 @@ public class TokenServerAssistant {
     private TokenServerAssistant() {
     }
 
+    /**
+     * Use the following parameters to generate the token for authentication when accessing to ZEGO service
+     * @param appId App ID assigned by ZEGO, the unique identifier of user.
+     * @param userId User ID
+     * @param secret  The secret key corresponding to AppID assigned by ZEGO. Please keep it carefully.
+     * @param effectiveTimeInSeconds The validity period of token, unit: second
+     * @return Returned token content. Before using the token, check whether the error field is SUCCESS. The actual token content is stored in the data field.
+     */
     static public TokenInfo generateToken(long appId, String userId, String secret,
                                           int effectiveTimeInSeconds) throws JSONException {
         TokenInfo token = new TokenInfo();

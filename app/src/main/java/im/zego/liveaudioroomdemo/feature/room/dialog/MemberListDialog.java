@@ -2,10 +2,15 @@ package im.zego.liveaudioroomdemo.feature.room.dialog;
 
 import android.content.Context;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
+
+import java.util.List;
+
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
@@ -15,7 +20,6 @@ import im.zego.liveaudioroom.service.ZegoSpeakerSeatService;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.room.adapter.MemberListAdapter;
 import im.zego.liveaudioroomdemo.helper.DialogHelper;
-import java.util.List;
 
 public class MemberListDialog extends BaseBottomDialog {
 
@@ -59,6 +63,9 @@ public class MemberListDialog extends BaseBottomDialog {
                     }
                 }
                 if (haveUnTakenSeat) {
+                    /**
+                     * When there have unTaken seat, Host can send invitation to Listener to be a Speaker
+                     */
                     ZegoRoomManager.getInstance().userService.sendInvitation(userInfo.getUserID(), errorCode -> {
                         if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                             ToastUtils.showShort(R.string.room_page_invitation_has_sent);

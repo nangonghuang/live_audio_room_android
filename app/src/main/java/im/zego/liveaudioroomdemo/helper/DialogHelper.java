@@ -27,7 +27,9 @@ public final class DialogHelper {
         builder.setMessage(content);
 
         builder.setPositiveButton(positiveText, positiveClickListener);
-        builder.setNegativeButton(negativeText, negativeClickListener);
+        if (!StringUtils.isTrimEmpty(negativeText)) {
+            builder.setNegativeButton(negativeText, negativeClickListener);
+        }
 
         AlertDialog dialog = builder.create();
         dialog.show();
