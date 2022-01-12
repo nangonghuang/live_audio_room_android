@@ -89,4 +89,30 @@
         <item name="android:background">@drawable/white_fill_circle_bg</item>
     </style>
 
+    <style name="SettingsItemLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">54dp</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <style name="SettingsItemTitleStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textColor">#1B1B1B</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="SettingsItemContentStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textColor">#ff989ba8</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>

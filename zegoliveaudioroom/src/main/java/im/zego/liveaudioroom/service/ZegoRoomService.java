@@ -2,7 +2,15 @@ package im.zego.liveaudioroom.service;
 
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -25,10 +33,6 @@ import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
 import im.zego.zim.enums.ZIMRoomEvent;
 import im.zego.zim.enums.ZIMRoomState;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import org.json.JSONObject;
 
 /**
  * Class LiveAudioRoom information management.
@@ -114,9 +118,22 @@ public class ZegoRoomService {
                 loginRTCRoom(roomID, token, localUserInfo);
                 this.roomInfo.setRoomID(roomInfo.baseInfo.roomID);
                 this.roomInfo.setRoomName(roomInfo.baseInfo.roomName);
-            }
-            if (callback != null) {
-                callback.roomCallback(errorInfo.code.value());
+                ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomAttributes, errorInfo2) -> {
+                    Set<String> keys = roomAttributes.keySet();
+                    for (String key : keys) {
+                        if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
+                            this.roomInfo = new Gson().fromJson(roomAttributes.get(key), ZegoRoomInfo.class);
+                        }
+                    }
+
+                    if (callback != null) {
+                        callback.roomCallback(errorInfo2.code.value());
+                    }
+                });
+            } else {
+                if (callback != null) {
+                    callback.roomCallback(errorInfo.code.value());
+                }
             }
         });
     }

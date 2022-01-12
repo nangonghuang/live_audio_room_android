@@ -9,8 +9,8 @@ android {
         applicationId "im.zego.liveaudioroomdemo"
         minSdk 21
         targetSdk 31
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 5
+        versionName "1.2.0.2"
 
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a'
@@ -45,6 +45,9 @@ dependencies {
     implementation 'com.blankj:utilcodex:1.30.6'
     implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
     implementation 'com.guolindev.permissionx:permissionx:1.6.1'
+
+    // webView
+    implementation 'com.github.Justson.AgentWeb:agentweb-core:v5.0.0-alpha.1-androidx'
 
     implementation project(':zegoliveaudioroom')
 }
