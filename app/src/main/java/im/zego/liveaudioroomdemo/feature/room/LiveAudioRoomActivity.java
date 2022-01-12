@@ -265,6 +265,15 @@ public class LiveAudioRoomActivity extends BaseActivity {
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
         tvRoomName.setText(roomInfo.getRoomName());
         tvRoomID.setText(String.format("ID:%s", roomInfo.getRoomID()));
+
+        if (textMessageList.isEmpty()) {
+            ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
+            ZegoTextMessage textMessage = new ZegoTextMessage();
+            textMessage.message = StringUtils
+                    .getString(R.string.room_page_joined_the_room, localUserInfo.getUserName());
+            textMessageList.add(textMessage);
+            refreshMessageList();
+        }
     }
 
     private void onSpeakerSeatClicked(ZegoSpeakerSeatModel seatModel) {
@@ -519,6 +528,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                         break;
                     }
                 }
+
                 if (containsSelf) {
                     ZegoTextMessage textMessage = new ZegoTextMessage();
                     textMessage.message = StringUtils
@@ -700,7 +710,13 @@ public class LiveAudioRoomActivity extends BaseActivity {
         rvMessageList.scrollToPosition(messageListAdapter.getItemCount() - 1);
 
         int measuredHeight = rvMessageList.getMeasuredHeight();
-        int maxHeight = SizeUtils.dp2px(315F);
+        int maxHeight = constraintLayout.getMeasuredHeight() - (rvSeatList.getBottom() + SizeUtils.dp2px(55F + 30F));
+        if (maxHeight > 0) {
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.constrainMaxHeight(R.id.rv_message_list, maxHeight);
+            constraintSet.applyTo(constraintLayout);
+        }
         if (measuredHeight >= maxHeight) {
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(constraintLayout);
