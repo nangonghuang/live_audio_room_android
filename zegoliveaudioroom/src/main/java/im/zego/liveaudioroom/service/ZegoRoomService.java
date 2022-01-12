@@ -130,6 +130,10 @@ public class ZegoRoomService {
                         callback.roomCallback(errorInfo2.code.value());
                     }
                 });
+            } else {
+                if (callback != null) {
+                    callback.roomCallback(errorInfo.code.value());
+                }
             }
         });
     }
