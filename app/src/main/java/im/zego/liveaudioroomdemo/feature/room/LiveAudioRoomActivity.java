@@ -717,7 +717,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             constraintSet.constrainMaxHeight(R.id.rv_message_list, maxHeight);
             constraintSet.applyTo(constraintLayout);
         }
-        if (measuredHeight >= maxHeight) {
+        if (maxHeight > 0 && measuredHeight >= maxHeight) {
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(constraintLayout);
             constraintSet.clear(R.id.tv_gift_toast, ConstraintSet.BOTTOM);

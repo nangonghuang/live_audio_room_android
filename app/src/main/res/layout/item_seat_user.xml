@@ -95,7 +95,6 @@
     android:ellipsize="end"
     android:gravity="center"
     android:singleLine="true"
-    android:text="dasdsad"
     android:textColor="#ff000000"
     android:textSize="10sp"
     app:layout_constraintEnd_toEndOf="@id/iv_avatar"
