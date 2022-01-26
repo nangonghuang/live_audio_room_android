@@ -3,9 +3,20 @@ package im.zego.liveaudioroom.service;
 
 import android.text.TextUtils;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.apache.commons.lang.math.NumberUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -26,12 +37,6 @@ import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Objects;
-import org.apache.commons.lang.math.NumberUtils;
 
 /**
  * Class speaker seat management.
@@ -192,13 +197,13 @@ public class ZegoSpeakerSeatService {
      * seat will change to closed or unused.</>
      * <p>Call this method at: After joining the room</>
      *
-     * @param isClose   can be used to close specified untaken speaker seats.
+     * @param isClosed   can be used to close specified untaken speaker seats.
      * @param seatIndex refers to the seat index of the seat that you want to close/open.
      * @param callback  refers to the callback for close/open specified speaker seats.
      */
-    public void closeSeat(boolean isClose, int seatIndex, ZegoRoomCallback callback) {
+    public void convertClosedOpenSeat(boolean isClosed, int seatIndex, ZegoRoomCallback callback) {
         ZegoSpeakerSeatStatus status;
-        if (isClose) {
+        if (isClosed) {
             status = ZegoSpeakerSeatStatus.Closed;
         } else {
             status = ZegoSpeakerSeatStatus.Untaken;
