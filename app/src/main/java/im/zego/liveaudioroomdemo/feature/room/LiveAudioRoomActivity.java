@@ -289,7 +289,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
                     StringUtils.getString(R.string.room_page_lock_seat), dialog -> {
                         if (seatModel.status == ZegoSpeakerSeatStatus.Untaken) {
-                            seatService.closeSeat(true, seatModel.seatIndex, errorCode -> {
+                            seatService.convertClosedOpenSeat(true, seatModel.seatIndex, errorCode -> {
                                 if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                     ZegoSpeakerSeatModel model = seatService.getSpeakerSeatList()
                                         .get(seatModel.seatIndex);
@@ -305,7 +305,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             } else if (seatModel.status == ZegoSpeakerSeatStatus.Closed) {
                 DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
                     StringUtils.getString(R.string.room_page_unlock_seat), dialog -> {
-                        seatService.closeSeat(false, seatModel.seatIndex, errorCode -> {
+                        seatService.convertClosedOpenSeat(false, seatModel.seatIndex, errorCode -> {
                             if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                 ZegoSpeakerSeatModel model = seatService.getSpeakerSeatList()
                                     .get(seatModel.seatIndex);
