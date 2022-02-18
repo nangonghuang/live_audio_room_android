@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import im.zego.liveaudioroom.constants.ZegoRoomConstants;
 import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.ArrayList;
@@ -178,7 +179,7 @@ public class ZegoSpeakerSeatService {
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
         roomInfo.setClosed(close);
         HashMap<String, String> roomAttributes = new HashMap<>();
-        roomAttributes.put("roomInfo", gson.toJson(roomInfo));
+        roomAttributes.put(ZegoRoomConstants.KEY_ROOM_INFO, gson.toJson(roomInfo));
         String roomID = roomInfo.getRoomID();
         ZegoZIMManager.getInstance().zim.setRoomAttributes(roomAttributes, roomID, setConfig, callback);
     }
