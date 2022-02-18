@@ -665,6 +665,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 });
             }
         });
+        onUserMessageDisabled(roomService.roomInfo.isTextMessageDisabled());
     }
 
     private void showDisconnectDialog() {
