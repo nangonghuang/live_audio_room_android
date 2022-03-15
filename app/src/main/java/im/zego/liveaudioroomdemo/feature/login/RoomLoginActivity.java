@@ -181,9 +181,14 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                         privileges.canPublishStream = true;
                         App app = (App) getApplication();
                         long appID = app.getAppID();
-                        String appSign = app.getAppSign();
-                        String token = ZegoRTCServerAssistant
-                                .generateToken(appID, roomID, selfUser.getUserID(), privileges, appSign, 660).data;
+                        String appSecret = app.getServerSecret();
+                        String token = null;
+                        try {
+                            token = TokenServerAssistant
+                                    .generateToken(appID, selfUser.getUserID(), appSecret, 660).data;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         /**
                          * create a room with room ID, room name and generate token, then join it.
                          */
