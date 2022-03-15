@@ -20,7 +20,6 @@ public class App extends Application {
 
     private String serverSecret;
     private long appID;
-    private String appSign;
 
     @Override
     public void onCreate() {
@@ -33,13 +32,12 @@ public class App extends Application {
         try {
             JSONObject jsonObject = new JSONObject(jsonFile);
             appID = jsonObject.getLong("appID");
-            appSign = jsonObject.getString("appSign");
             serverSecret = jsonObject.getString("serverSecret");
 
             /**
              * init LiveAudioRoom SDK with your appID and appSign
              */
-            ZegoRoomManager.getInstance().init(appID, appSign, this);
+            ZegoRoomManager.getInstance().init(appID, this);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -51,10 +49,6 @@ public class App extends Application {
 
     public long getAppID() {
         return appID;
-    }
-
-    public String getAppSign() {
-        return appSign;
     }
 
     private String readJsonFile(String fileName) {
