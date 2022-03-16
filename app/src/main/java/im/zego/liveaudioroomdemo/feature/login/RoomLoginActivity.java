@@ -27,7 +27,6 @@ import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.listener.ZegoUserServiceListener;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.liveaudioroom.util.TokenServerAssistant;
-import im.zego.liveaudioroom.util.ZegoRTCServerAssistant;
 import im.zego.liveaudioroomdemo.App;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
@@ -176,14 +175,16 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
 
                     if ((!TextUtils.isEmpty(roomID)) && (!TextUtils.isEmpty(roomName))) {
                         ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
-                        ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
-                        privileges.canLoginRoom = true;
-                        privileges.canPublishStream = true;
                         App app = (App) getApplication();
                         long appID = app.getAppID();
-                        String appSign = app.getAppSign();
-                        String token = ZegoRTCServerAssistant
-                                .generateToken(appID, roomID, selfUser.getUserID(), privileges, appSign, 660).data;
+                        String appSecret = app.getServerSecret();
+                        String token = null;
+                        try {
+                            token = TokenServerAssistant
+                                    .generateToken(appID, selfUser.getUserID(), appSecret, 660).data;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         /**
                          * create a room with room ID, room name and generate token, then join it.
                          */
