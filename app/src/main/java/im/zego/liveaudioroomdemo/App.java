@@ -29,6 +29,10 @@ public class App extends Application {
         LogUtils.getConfig().setBorderSwitch(false);
 
         String jsonFile = readJsonFile("KeyCenter.json");
+        if (jsonFile == null) {
+            /// Please run the script './configure.sh' first on the root directory
+            throw new IllegalArgumentException("\n========\n*** Please run the script './configure.sh' first！***\n========");
+        }
         try {
             JSONObject jsonObject = new JSONObject(jsonFile);
             appID = jsonObject.getLong("appID");
