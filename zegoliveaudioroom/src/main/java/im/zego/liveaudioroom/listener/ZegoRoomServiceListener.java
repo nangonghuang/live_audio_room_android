@@ -1,8 +1,6 @@
 package im.zego.liveaudioroom.listener;
 
 import im.zego.liveaudioroom.model.ZegoRoomInfo;
-import im.zego.zim.enums.ZIMConnectionEvent;
-import im.zego.zim.enums.ZIMConnectionState;
 
 /**
  * The delegate related to room status callbacks.
@@ -18,4 +16,6 @@ public interface ZegoRoomServiceListener {
      * @param roomInfo refers to the updated room information.
      */
     void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo);
+
+    void onRoomTokenWillExpire(int second, String roomID);
 }
