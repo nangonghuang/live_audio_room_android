@@ -655,7 +655,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             }
 
             @Override
-            public void onRoomTokenWillExpire(int second, String roomID) {
+            public void onRoomTokenWillExpire(int remainTimeInSecond, String roomID) {
                 ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
                 ZegoTokenManager.getInstance().getToken(selfUser.getUserID(), true, new ZegoTokenCallback() {
                     @Override
