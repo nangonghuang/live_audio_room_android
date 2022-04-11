@@ -26,6 +26,8 @@ import im.zego.zegoexpress.entity.ZegoRoomConfig;
 import im.zego.zegoexpress.entity.ZegoStream;
 import im.zego.zegoexpress.entity.ZegoUser;
 import im.zego.zim.ZIM;
+import im.zego.zim.callback.ZIMTokenRenewedCallback;
+import im.zego.zim.entity.ZIMError;
 import im.zego.zim.entity.ZIMRoomAdvancedConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.entity.ZIMRoomInfo;
@@ -196,6 +198,12 @@ public class ZegoRoomService {
         });
     }
 
+    public void onRoomTokenWillExpire(int second, String roomID) {
+        if (listener != null) {
+            listener.onRoomTokenWillExpire(second, roomID);
+        }
+    }
+
     void reset() {
         roomInfo.setRoomName("");
         roomInfo.setSeatNum(0);
@@ -293,5 +301,22 @@ public class ZegoRoomService {
                 ZegoExpressEngine.getEngine().stopPlayingStream(zegoStream.streamID);
             }
         }
+    }
+
+    /**
+     * Renew token.
+     * <p>
+     * Description: After the developer receives [onRoomTokenWillExpire], they can use this API to update the token to ensure that the subsequent RTC&ZIM functions are normal.
+     *
+     * @param token  The token that needs to be renew.
+     * @param roomID Room ID.
+     */
+    public void renewToken(String token, String roomID) {
+        ZegoZIMManager.getInstance().zim.renewToken(token, new ZIMTokenRenewedCallback() {
+            @Override
+            public void onTokenRenewed(String token, ZIMError errorInfo) {
+
+            }
+        });
     }
 }
