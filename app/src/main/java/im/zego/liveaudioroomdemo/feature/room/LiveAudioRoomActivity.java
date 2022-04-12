@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -61,6 +62,8 @@ import im.zego.liveaudioroomdemo.feature.room.enums.RoomGift;
 import im.zego.liveaudioroomdemo.helper.DialogHelper;
 import im.zego.liveaudioroomdemo.helper.PermissionHelper;
 import im.zego.liveaudioroomdemo.helper.UserInfoHelper;
+import im.zego.liveaudioroomdemo.token.ZegoTokenCallback;
+import im.zego.liveaudioroomdemo.token.ZegoTokenManager;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 
@@ -647,6 +650,19 @@ public class LiveAudioRoomActivity extends BaseActivity {
                         }
                     }
                 }
+            }
+
+            @Override
+            public void onRoomTokenWillExpire(int remainTimeInSecond, String roomID) {
+                ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
+                ZegoTokenManager.getInstance().getToken(selfUser.getUserID(), true, new ZegoTokenCallback() {
+                    @Override
+                    public void onTokenCallback(int errorCode, @Nullable String token) {
+                        if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                            ZegoRoomManager.getInstance().roomService.renewToken(token, roomID);
+                        }
+                    }
+                });
             }
         });
     }

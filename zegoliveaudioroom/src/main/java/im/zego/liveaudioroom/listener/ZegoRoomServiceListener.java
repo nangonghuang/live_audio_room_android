@@ -1,8 +1,6 @@
 package im.zego.liveaudioroom.listener;
 
 import im.zego.liveaudioroom.model.ZegoRoomInfo;
-import im.zego.zim.enums.ZIMConnectionEvent;
-import im.zego.zim.enums.ZIMConnectionState;
 
 /**
  * The delegate related to room status callbacks.
@@ -18,4 +16,14 @@ public interface ZegoRoomServiceListener {
      * @param roomInfo refers to the updated room information.
      */
     void onReceiveRoomInfoUpdate(ZegoRoomInfo roomInfo);
+
+    /**
+     * Callback notification that Token authentication is about to expire.
+     * <p>
+     * Description:The callback notification that the Token authentication is about to expire, please use [renewToken] to update the Token authentication.
+     *
+     * @param remainTimeInSecond The remaining time before the token expires.
+     * @param roomID             Room ID where the user is logged in, a string of up to 128 bytes in length.
+     */
+    void onRoomTokenWillExpire(int remainTimeInSecond, String roomID);
 }

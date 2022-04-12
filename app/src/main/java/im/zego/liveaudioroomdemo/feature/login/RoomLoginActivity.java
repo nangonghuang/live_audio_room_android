@@ -18,21 +18,19 @@ import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 
-import org.json.JSONException;
-
 import java.util.List;
 
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.listener.ZegoUserServiceListener;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
-import im.zego.liveaudioroom.util.TokenServerAssistant;
-import im.zego.liveaudioroomdemo.App;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.liveaudioroomdemo.feature.room.LiveAudioRoomActivity;
 import im.zego.liveaudioroomdemo.feature.room.dialog.CreateRoomDialog;
 import im.zego.liveaudioroomdemo.feature.settings.SettingsActivity;
+import im.zego.liveaudioroomdemo.token.ZegoTokenCallback;
+import im.zego.liveaudioroomdemo.token.ZegoTokenManager;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
@@ -106,28 +104,24 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                 return;
             }
 
-            try {
-                ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
-                App app = (App) getApplication();
-                long appID = app.getAppID();
-                String appSecret = app.getServerSecret();
-                String token = TokenServerAssistant
-                        .generateToken(appID, selfUser.getUserID(), appSecret, 60 * 60 * 24).data;
-                /**
-                 * Join an existed room with roomID and generate token
-                 */
-                ZegoRoomManager.getInstance().roomService.joinRoom(roomID, token, errorCode -> {
-                    if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                        LiveAudioRoomActivity.startActivityForResult(RoomLoginActivity.this, REQUEST_CODE_ROOM_ENDED);
-                    } else if (errorCode == ZIMErrorCode.ROOM_NOT_EXIST.value()) {
-                        ToastUtils.showShort(StringUtils.getString(R.string.toast_room_not_exist_fail));
-                    } else {
-                        ToastUtils.showShort(StringUtils.getString(R.string.toast_join_room_fail, errorCode));
-                    }
-                });
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
+            ZegoTokenManager.getInstance().getToken(selfUser.getUserID(), new ZegoTokenCallback() {
+                @Override
+                public void onTokenCallback(int errorCode1, @Nullable String token) {
+                    /**
+                     * Join an existed room with roomID and generate token
+                     */
+                    ZegoRoomManager.getInstance().roomService.joinRoom(roomID, token, errorCode -> {
+                        if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                            LiveAudioRoomActivity.startActivityForResult(RoomLoginActivity.this, REQUEST_CODE_ROOM_ENDED);
+                        } else if (errorCode == ZIMErrorCode.ROOM_NOT_EXIST.value()) {
+                            ToastUtils.showShort(StringUtils.getString(R.string.toast_room_not_exist_fail));
+                        } else {
+                            ToastUtils.showShort(StringUtils.getString(R.string.toast_join_room_fail, errorCode));
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -175,28 +169,23 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
 
                     if ((!TextUtils.isEmpty(roomID)) && (!TextUtils.isEmpty(roomName))) {
                         ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
-                        App app = (App) getApplication();
-                        long appID = app.getAppID();
-                        String appSecret = app.getServerSecret();
-                        String token = null;
-                        try {
-                            token = TokenServerAssistant
-                                    .generateToken(appID, selfUser.getUserID(), appSecret, 660).data;
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        /**
-                         * create a room with room ID, room name and generate token, then join it.
-                         */
-                        ZegoRoomManager.getInstance().roomService.createRoom(roomID, roomName, token, errorCode -> {
-                            dialog.dismiss();
-                            if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                                LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
-                                ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_success));
-                            } else if (errorCode == ZIMErrorCode.CREATE_EXIST_ROOM.value()) {
-                                ToastUtils.showShort(R.string.toast_room_existed);
-                            } else {
-                                ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_fail, errorCode));
+                        ZegoTokenManager.getInstance().getToken(selfUser.getUserID(), new ZegoTokenCallback() {
+                            @Override
+                            public void onTokenCallback(int errorCode1, @Nullable String token) {
+                                /**
+                                 * create a room with room ID, room name and generate token, then join it.
+                                 */
+                                ZegoRoomManager.getInstance().roomService.createRoom(roomID, roomName, token, errorCode -> {
+                                    dialog.dismiss();
+                                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                                        LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
+                                        ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_success));
+                                    } else if (errorCode == ZIMErrorCode.CREATE_EXIST_ROOM.value()) {
+                                        ToastUtils.showShort(R.string.toast_room_existed);
+                                    } else {
+                                        ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_fail, errorCode));
+                                    }
+                                });
                             }
                         });
                     }

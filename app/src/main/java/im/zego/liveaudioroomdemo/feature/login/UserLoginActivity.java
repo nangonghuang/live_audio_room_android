@@ -5,12 +5,12 @@ import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
-
-import org.json.JSONException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,11 +18,11 @@ import java.util.regex.Pattern;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.constants.ZegoRoomErrorCode;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
-import im.zego.liveaudioroom.util.TokenServerAssistant;
-import im.zego.liveaudioroomdemo.App;
 import im.zego.liveaudioroomdemo.R;
 import im.zego.liveaudioroomdemo.feature.BaseActivity;
 import im.zego.liveaudioroomdemo.helper.PermissionHelper;
+import im.zego.liveaudioroomdemo.token.ZegoTokenCallback;
+import im.zego.liveaudioroomdemo.token.ZegoTokenManager;
 
 public class UserLoginActivity extends BaseActivity {
 
@@ -64,26 +64,22 @@ public class UserLoginActivity extends BaseActivity {
                 }
                 user.setUserID(userID);
                 user.setUserName(userName);
-                try {
-                    App app = (App) getApplication();
-                    // Call Chat Room SDK
-                    long appID = app.getAppID();
-                    String appSecret = app.getServerSecret();
-                    String token = TokenServerAssistant
-                        .generateToken(appID, userID, appSecret, 60 * 60 * 24).data;
-                    /**
-                     * Login room with user ID, user name and generate token
-                     */
-                    ZegoRoomManager.getInstance().userService.login(user, token, errorCode -> {
-                        if (errorCode == ZegoRoomErrorCode.SUCCESS) {
-                            ActivityUtils.startActivity(RoomLoginActivity.class);
-                        } else {
-                            ToastUtils.showShort(StringUtils.getString(R.string.toast_login_fail, errorCode));
-                        }
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+                ZegoTokenManager.getInstance().getToken(userID, new ZegoTokenCallback() {
+                    @Override
+                    public void onTokenCallback(int errorCode1, @Nullable String token) {
+                        /**
+                         * Login room with user ID, user name and generate token
+                         */
+                        ZegoRoomManager.getInstance().userService.login(user, token, errorCode -> {
+                            if (errorCode == ZegoRoomErrorCode.SUCCESS) {
+                                ActivityUtils.startActivity(RoomLoginActivity.class);
+                            } else {
+                                ToastUtils.showShort(StringUtils.getString(R.string.toast_login_fail, errorCode));
+                            }
+                        });
+                    }
+                });
             } else {
                 ToastUtils.showShort(StringUtils.getString(R.string.toast_userid_login_fail));
             }
