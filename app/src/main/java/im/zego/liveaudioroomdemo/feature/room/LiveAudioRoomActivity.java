@@ -168,7 +168,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                             if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                 final ZegoTextMessage text = new ZegoTextMessage();
                                 text.message = imText;
-                                text.userID = getMyUserID();
+                                text.senderUserID = getMyUserID();
                                 textMessageList.add(text);
                                 refreshMessageList();
                             } else {
@@ -638,17 +638,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     finish();
                 } else {
                     onUserMessageDisabled(roomInfo.isTextMessageDisabled());
-//                    if (isFirstIn) {
-//                        isFirstIn = false;
-//                        return;
-//                    }
-                    if (!UserInfoHelper.isSelfOwner()) {
-                        if (roomInfo.isTextMessageDisabled()) {
-                            ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
-                        } else {
-                            ToastUtils.showShort(R.string.toast_allow_text_chat_tips);
-                        }
-                    }
                 }
             }
 
@@ -684,12 +673,20 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     private void onUserMessageDisabled(boolean disable) {
+        boolean changed = isImDisabled != disable;
         isImDisabled = disable;
         if (imInputDialog != null) {
             imInputDialog.updateSendButtonState(!disable);
         }
         if (!UserInfoHelper.isSelfOwner()) {
             ivIm.setActivated(!disable);
+        }
+        if (!UserInfoHelper.isSelfOwner() && changed) {
+            if (disable) {
+                ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
+            } else {
+                ToastUtils.showShort(R.string.toast_allow_text_chat_tips);
+            }
         }
     }
 

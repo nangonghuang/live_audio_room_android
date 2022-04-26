@@ -8,6 +8,7 @@ import im.zego.liveaudioroom.model.ZegoTextMessage;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
 import im.zego.zim.entity.ZIMMessage;
+import im.zego.zim.entity.ZIMMessageSendConfig;
 import im.zego.zim.entity.ZIMTextMessage;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
@@ -47,9 +48,10 @@ public class ZegoMessageService {
             .getInstance().userService.localUserInfo;
         ZegoTextMessage textMessage = new ZegoTextMessage();
         textMessage.message = text;
-        textMessage.userID = localUserInfo.getUserID();
+        textMessage.senderUserID = localUserInfo.getUserID();
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
-        ZegoZIMManager.getInstance().zim.sendRoomMessage(textMessage, roomID, (message, errorInfo) -> {
+        ZIMMessageSendConfig config = new ZIMMessageSendConfig();
+        ZegoZIMManager.getInstance().zim.sendRoomMessage(textMessage, roomID,config,(message, errorInfo) -> {
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
                 messageList.add(textMessage);
             }
@@ -65,10 +67,9 @@ public class ZegoMessageService {
                 ZIMTextMessage zimTextMessage = (ZIMTextMessage) zimMessage;
                 ZegoTextMessage textMessage = new ZegoTextMessage();
                 textMessage.message = zimTextMessage.message;
-                textMessage.userID = zimTextMessage.userID;
+                textMessage.senderUserID = zimTextMessage.senderUserID;
                 textMessage.messageID = zimTextMessage.messageID;
                 textMessage.type = zimTextMessage.type;
-                textMessage.priority = zimTextMessage.priority;
                 textMessage.timestamp = zimTextMessage.timestamp;
                 messageList.add(textMessage);
                 if (messageServiceListener != null) {
