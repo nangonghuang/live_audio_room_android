@@ -112,7 +112,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
         tvGiftToast.setVisibility(View.INVISIBLE);
     };
 
-    private boolean isFirstIn = true;
+//    private boolean isFirstIn = true;
 
     @Override
     protected int getStatusBarColor() {
@@ -168,7 +168,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                             if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                 final ZegoTextMessage text = new ZegoTextMessage();
                                 text.message = imText;
-                                text.userID = getMyUserID();
+                                text.senderUserID = getMyUserID();
                                 textMessageList.add(text);
                                 refreshMessageList();
                             } else {
@@ -273,7 +273,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
             ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
             ZegoTextMessage textMessage = new ZegoTextMessage();
             textMessage.message = StringUtils
-                    .getString(R.string.room_page_joined_the_room, localUserInfo.getUserName());
+                .getString(R.string.room_page_joined_the_room, localUserInfo.getUserName());
             textMessageList.add(textMessage);
             refreshMessageList();
         }
@@ -393,9 +393,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     /**
-     * The business logic of leave seat:
-     * If it is a Host, you can leave any members on seat except yourself
-     * If it is a Speaker, you can only leave yourself seat
+     * The business logic of leave seat: If it is a Host, you can leave any members on seat except yourself If it is a
+     * Speaker, you can only leave yourself seat
      */
     private void speakerLeaveSeat() {
         DialogHelper.showToastDialog(LiveAudioRoomActivity.this,
@@ -450,9 +449,8 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     /**
-     * When Host invites you to be a speaker, you will see this dialog:
-     * If you accept, you will take the seat and be a speaker.
-     * If you decline, dialog will dismiss, and do nothing
+     * When Host invites you to be a speaker, you will see this dialog: If you accept, you will take the seat and be a
+     * speaker. If you decline, dialog will dismiss, and do nothing
      */
     private void showInviteDialog() {
         if (isSelfSpeaker()) {
@@ -639,17 +637,6 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     setResult(RESULT_OK);
                     finish();
                 } else {
-                    if (isFirstIn) {
-                        isFirstIn = false;
-                        return;
-                    }
-                    if (!UserInfoHelper.isSelfOwner()) {
-                        if (roomInfo.isTextMessageDisabled()) {
-                            ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
-                        } else {
-                            ToastUtils.showShort(R.string.toast_allow_text_chat_tips);
-                        }
-                    }
                     onUserMessageDisabled(roomInfo.isTextMessageDisabled());
                 }
             }
@@ -667,6 +654,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 });
             }
         });
+        onUserMessageDisabled(roomService.roomInfo.isTextMessageDisabled());
     }
 
     private void showDisconnectDialog() {
@@ -685,12 +673,20 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     private void onUserMessageDisabled(boolean disable) {
+        boolean changed = isImDisabled != disable;
         isImDisabled = disable;
         if (imInputDialog != null) {
             imInputDialog.updateSendButtonState(!disable);
         }
         if (!UserInfoHelper.isSelfOwner()) {
             ivIm.setActivated(!disable);
+        }
+        if (!UserInfoHelper.isSelfOwner() && changed) {
+            if (disable) {
+                ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
+            } else {
+                ToastUtils.showShort(R.string.toast_allow_text_chat_tips);
+            }
         }
     }
 
@@ -808,8 +804,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     /**
-     * When this activity destroyed, we need dismiss all showing Dialog
-     * and let self leave room
+     * When this activity destroyed, we need dismiss all showing Dialog and let self leave room
      */
     @Override
     protected void onDestroy() {

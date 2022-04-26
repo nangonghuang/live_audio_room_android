@@ -1,7 +1,7 @@
 package im.zego.liveaudioroom.model;
 
 import com.google.gson.annotations.SerializedName;
-import im.zego.zim.entity.ZIMCustomMessage;
+import im.zego.zim.entity.ZIMCommandMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Map;
  * <p>Description: This class contains the custom signaling related logics, such as send virtual gift, send seat-taking
  * invitation, etc.</>
  */
-public class ZegoCustomCommand extends ZIMCustomMessage {
+public class ZegoCustomCommand extends ZIMCommandMessage {
 
     public static final int INVITATION = 1;
     public static final int Gift = 2;

@@ -49,8 +49,8 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         ZegoRoomService roomService = ZegoRoomManager.getInstance().roomService;
         ZegoRoomInfo roomInfo = roomService.roomInfo;
-        boolean isHostMessage = Objects.equals(message.userID, roomInfo.getHostID());
-        String fromUserName = userService.getUserName(message.userID);
+        boolean isHostMessage = Objects.equals(message.senderUserID, roomInfo.getHostID());
+        String fromUserName = userService.getUserName(message.senderUserID);
         String content = message.message;
         Context context = holder.itemView.getContext();
         if (!TextUtils.isEmpty(fromUserName)) {
