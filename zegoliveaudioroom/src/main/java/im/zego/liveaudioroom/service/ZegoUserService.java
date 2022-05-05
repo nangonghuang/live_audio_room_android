@@ -212,7 +212,6 @@ public class ZegoUserService {
         ZegoCustomCommand command = new ZegoCustomCommand();
         command.actionType = ZegoCustomCommand.INVITATION;
         command.target = Collections.singletonList(userID);
-        command.senderUserID = localUserInfo.getUserID();
         String string = new Gson().toJson(command);
         Log.d(TAG, "sendInvitation: " + string);
         command.message = string.getBytes(StandardCharsets.UTF_8);
@@ -262,7 +261,7 @@ public class ZegoUserService {
         Log.d(TAG, "onReceivePeerMessage() called with: zim = [" + zim + "], messageList = [" + messageList
             + "], fromUserID = [" + fromUserID + "]");
         for (ZIMMessage zimMessage : messageList) {
-            if (zimMessage.type == ZIMMessageType.COMMAND) {
+            if (zimMessage.getType() == ZIMMessageType.COMMAND) {
                 ZIMCommandMessage zimCustomMessage = (ZIMCommandMessage) zimMessage;
                 ZegoCustomCommand command = new Gson()
                     .fromJson(new String(zimCustomMessage.message), ZegoCustomCommand.class);

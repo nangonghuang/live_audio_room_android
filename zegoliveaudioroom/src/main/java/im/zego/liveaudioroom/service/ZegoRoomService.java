@@ -119,24 +119,20 @@ public class ZegoRoomService {
                 this.roomInfo.setRoomName(roomInfo.baseInfo.roomName);
                 ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomID2,roomAttributes, errorInfo2) -> {
                     Log.d(TAG,
-                        "queryRoomAllAttributes() called with: roomID = [" + roomID + "], roomAttributes = [" + roomAttributes + "]");
-                    Set<String> keys = roomAttributes.keySet();
-                    for (String key : keys) {
-                        if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
-                            boolean firstInit = (this.roomInfo.getSeatNum() == 0);
-                            this.roomInfo = new Gson().fromJson(roomAttributes.get(key), ZegoRoomInfo.class);
-                            Log.d(TAG, "queryRoomAllAttributes: firstInit " + firstInit +",roomInfo.getSeatNum:" + this.roomInfo.getSeatNum());
-                            if (firstInit) {
-                                initRoomSeat();
+                        "queryRoomAllAttributes() called with: errorInfo2.code = [" + errorInfo2.code + "], errorInfo2 = [" + errorInfo2.message);
+                    if (errorInfo2.code != ZIMErrorCode.SUCCESS) {
+                        leaveRoom(null);
+                    }else {
+                        if (!roomAttributes.isEmpty()) {
+                            ZIMRoomAttributesUpdateInfo updateInfo = new ZIMRoomAttributesUpdateInfo();
+                            updateInfo.roomAttributes = roomAttributes;
+                            updateInfo.action = ZIMRoomAttributesUpdateAction.SET;
+                            onRoomAttributesUpdated(ZegoZIMManager.getInstance().zim, updateInfo, roomID);
+                            ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
+                            if (seatService != null) {
+                                seatService.onRoomAttributesUpdated(ZegoZIMManager.getInstance().zim, updateInfo, roomID);
                             }
                         }
-                    }
-                    ZIMRoomAttributesUpdateInfo updateInfo = new ZIMRoomAttributesUpdateInfo();
-                    updateInfo.roomAttributes = roomAttributes;
-                    updateInfo.action = ZIMRoomAttributesUpdateAction.SET;
-                    ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
-                    if (seatService != null) {
-                        seatService.onRoomAttributesUpdated(ZegoZIMManager.getInstance().zim, updateInfo, roomID);
                     }
                     if (callback != null) {
                         callback.roomCallback(errorInfo2.code.value());
@@ -174,6 +170,7 @@ public class ZegoRoomService {
      * @param callback callback refers to the callback for leave a room.
      */
     public void leaveRoom(final ZegoRoomCallback callback) {
+        Log.d(TAG, "leaveRoom() called with: callback = [" + callback + "]");
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         if (seatService != null) {
             seatService.leaveSeat(errorCode -> {
@@ -265,6 +262,9 @@ public class ZegoRoomService {
                     this.roomInfo = roomInfo;
                     if (firstInit) {
                         initRoomSeat();
+                    }
+                    if (listener != null) {
+                        listener.onReceiveRoomInfoUpdate(roomInfo);
                     }
                 }
             }
