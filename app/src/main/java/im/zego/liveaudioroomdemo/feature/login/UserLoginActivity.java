@@ -48,8 +48,8 @@ public class UserLoginActivity extends BaseActivity {
         btnLogin = findViewById(R.id.btn_login);
 
         btnLogin.setOnClickListener(v -> {
-            userID = etUserId.getText().toString();
-            userName = etUserName.getText().toString();
+            userID = etUserId.getText().toString().trim();
+            userName = etUserName.getText().toString().trim();
             if (TextUtils.isEmpty(userName)) {
                 userName = userID;
             }
@@ -57,7 +57,7 @@ public class UserLoginActivity extends BaseActivity {
             if (!(TextUtils.isEmpty(userID))) {
                 String regEx = "^[a-zA-Z\\d]+$";
                 Pattern p = Pattern.compile(regEx);
-                Matcher m = p.matcher(etUserId.getText().toString());
+                Matcher m = p.matcher(userID);
                 if (!m.matches()) {
                     ToastUtils.showShort(R.string.toast_user_id_error);
                     return;

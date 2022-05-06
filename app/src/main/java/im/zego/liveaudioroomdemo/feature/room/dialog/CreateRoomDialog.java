@@ -60,7 +60,7 @@ public class CreateRoomDialog extends BaseDialog {
         });
         mTvCreate.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onCreateClick(this, mEtRoomId.getText().toString(), mEtRoomName.getText().toString());
+                listener.onCreateClick(this, mEtRoomId.getText().toString().trim(), mEtRoomName.getText().toString().trim());
             }
         });
     }
