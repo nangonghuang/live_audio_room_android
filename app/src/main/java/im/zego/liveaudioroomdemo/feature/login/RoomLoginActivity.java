@@ -97,7 +97,7 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
         } else if (v.getId() == R.id.btn_create) {
             showCreateDialog();
         } else if (v.getId() == R.id.btn_join) {
-            String roomID = etRoomID.getText().toString().trim();
+            String roomID = etRoomID.getText().toString();
 
             if (TextUtils.isEmpty(roomID)) {
                 ToastUtils.showShort(StringUtils.getString(R.string.toast_room_id_enter_error));

@@ -48,8 +48,8 @@ public class UserLoginActivity extends BaseActivity {
         btnLogin = findViewById(R.id.btn_login);
 
         btnLogin.setOnClickListener(v -> {
-            userID = etUserId.getText().toString().trim();
-            userName = etUserName.getText().toString().trim();
+            userID = etUserId.getText().toString();
+            userName = etUserName.getText().toString();
             if (TextUtils.isEmpty(userName)) {
                 userName = userID;
             }

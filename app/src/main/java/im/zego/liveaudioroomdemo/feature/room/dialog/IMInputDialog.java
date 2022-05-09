@@ -32,7 +32,7 @@ public class IMInputDialog extends BaseDialog {
         sendButton.setOnClickListener(v -> {
             KeyboardUtils.hideSoftInput(imInputEditText);
             dismiss();
-            sendListener.onSend(imInputEditText.getText().toString().trim());
+            sendListener.onSend(imInputEditText.getText().toString());
         });
         sendButton.setEnabled(false);
         imInputEditText = findViewById(R.id.softinput_edittext);

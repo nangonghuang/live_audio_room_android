@@ -108,11 +108,13 @@ public class ZegoRoomService {
      * @param callback callback refers to the callback for join a room.
      */
     public void joinRoom(String roomID, final String token, final ZegoRoomCallback callback) {
+        Log.d(TAG, "joinRoom() called with: roomID = [" + roomID + "], token = [" + token + "], callback = [" + callback
+            + "]");
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         localUserInfo.setRole(ZegoRoomUserRole.Listener);
 
         ZegoZIMManager.getInstance().zim.joinRoom(roomID, (roomInfo, errorInfo) -> {
-            Log.d(TAG, "joinRoom() called with: roomID = [" + roomID + "], errorInfo = [" + errorInfo.message + "]");
+            Log.d(TAG, "joinRoom() called result: roomID = [" + roomID + "], errorInfo = [" + errorInfo.message + "]");
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
                 loginRTCRoom(roomID, token, localUserInfo);
                 this.roomInfo.setRoomID(roomInfo.baseInfo.roomID);
