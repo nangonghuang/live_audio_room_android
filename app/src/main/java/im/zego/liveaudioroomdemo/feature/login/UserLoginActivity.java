@@ -57,7 +57,7 @@ public class UserLoginActivity extends BaseActivity {
             if (!(TextUtils.isEmpty(userID))) {
                 String regEx = "^[a-zA-Z\\d]+$";
                 Pattern p = Pattern.compile(regEx);
-                Matcher m = p.matcher(etUserId.getText().toString());
+                Matcher m = p.matcher(userID);
                 if (!m.matches()) {
                     ToastUtils.showShort(R.string.toast_user_id_error);
                     return;

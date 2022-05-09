@@ -42,7 +42,6 @@ public class ZegoGiftService {
         ZegoCustomCommand command = new ZegoCustomCommand();
         command.actionType = ZegoCustomCommand.Gift;
         command.target = toUserList;
-        command.senderUserID = localUserInfo.getUserID();
         command.content.put("giftID", giftID);
         String string = new Gson().toJson(command);
         command.message = string.getBytes(StandardCharsets.UTF_8);
@@ -61,7 +60,7 @@ public class ZegoGiftService {
 
     public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
         for (ZIMMessage zimMessage : messageList) {
-            if (zimMessage.type == ZIMMessageType.COMMAND) {
+            if (zimMessage.getType() == ZIMMessageType.COMMAND) {
                 ZIMCommandMessage zimCustomMessage = (ZIMCommandMessage) zimMessage;
                 String json = new String(zimCustomMessage.message);
                 ZegoCustomCommand command = new Gson().fromJson(json, ZegoCustomCommand.class);
@@ -69,7 +68,7 @@ public class ZegoGiftService {
                     String giftID = command.content.get("giftID");
                     List<String> toUserList = command.target;
                     if (giftServiceListener != null) {
-                        giftServiceListener.onReceiveGift(giftID, zimCustomMessage.senderUserID, toUserList);
+                        giftServiceListener.onReceiveGift(giftID, zimCustomMessage.getSenderUserID(), toUserList);
                     }
                 }
             }

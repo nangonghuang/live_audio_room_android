@@ -168,7 +168,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                             if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                 final ZegoTextMessage text = new ZegoTextMessage();
                                 text.message = imText;
-                                text.senderUserID = getMyUserID();
+                                text.fromUserID = getMyUserID();
                                 textMessageList.add(text);
                                 refreshMessageList();
                             } else {
@@ -637,7 +637,15 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     setResult(RESULT_OK);
                     finish();
                 } else {
+                    boolean changed = isImDisabled != roomInfo.isTextMessageDisabled();
                     onUserMessageDisabled(roomInfo.isTextMessageDisabled());
+                    if (!UserInfoHelper.isSelfOwner() && changed) {
+                        if (roomInfo.isTextMessageDisabled()) {
+                            ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
+                        } else {
+                            ToastUtils.showShort(R.string.toast_allow_text_chat_tips);
+                        }
+                    }
                 }
             }
 
@@ -673,20 +681,12 @@ public class LiveAudioRoomActivity extends BaseActivity {
     }
 
     private void onUserMessageDisabled(boolean disable) {
-        boolean changed = isImDisabled != disable;
         isImDisabled = disable;
         if (imInputDialog != null) {
             imInputDialog.updateSendButtonState(!disable);
         }
         if (!UserInfoHelper.isSelfOwner()) {
             ivIm.setActivated(!disable);
-        }
-        if (!UserInfoHelper.isSelfOwner() && changed) {
-            if (disable) {
-                ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
-            } else {
-                ToastUtils.showShort(R.string.toast_allow_text_chat_tips);
-            }
         }
     }
 

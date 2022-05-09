@@ -1,5 +1,6 @@
 package im.zego.liveaudioroom.service;
 
+import android.util.Log;
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -48,7 +49,6 @@ public class ZegoMessageService {
             .getInstance().userService.localUserInfo;
         ZegoTextMessage textMessage = new ZegoTextMessage();
         textMessage.message = text;
-        textMessage.senderUserID = localUserInfo.getUserID();
         String roomID = ZegoRoomManager.getInstance().roomService.roomInfo.getRoomID();
         ZIMMessageSendConfig config = new ZIMMessageSendConfig();
         ZegoZIMManager.getInstance().zim.sendRoomMessage(textMessage, roomID,config,(message, errorInfo) -> {
@@ -63,15 +63,13 @@ public class ZegoMessageService {
 
     public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
         for (ZIMMessage zimMessage : messageList) {
-            if (zimMessage.type == ZIMMessageType.TEXT) {
+            if (zimMessage.getType() == ZIMMessageType.TEXT) {
                 ZIMTextMessage zimTextMessage = (ZIMTextMessage) zimMessage;
                 ZegoTextMessage textMessage = new ZegoTextMessage();
                 textMessage.message = zimTextMessage.message;
-                textMessage.senderUserID = zimTextMessage.senderUserID;
-                textMessage.messageID = zimTextMessage.messageID;
-                textMessage.type = zimTextMessage.type;
-                textMessage.timestamp = zimTextMessage.timestamp;
-                messageList.add(textMessage);
+                textMessage.fromUserID = zimMessage.getSenderUserID();
+                Log.d("TAG", "onReceiveRoomMessage() called with: zim = [" + zim + "], messageList = [" + messageList
+                    + "], zimMessage.getSenderUserID() = [" + zimMessage.getSenderUserID() + "]");
                 if (messageServiceListener != null) {
                     messageServiceListener.onReceiveTextMessage(textMessage);
                 }
