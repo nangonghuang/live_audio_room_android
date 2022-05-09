@@ -114,7 +114,7 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                     ZegoRoomManager.getInstance().roomService.joinRoom(roomID, token, errorCode -> {
                         if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                             LiveAudioRoomActivity.startActivityForResult(RoomLoginActivity.this, REQUEST_CODE_ROOM_ENDED);
-                        } else if (errorCode == ZIMErrorCode.ROOM_NOT_EXIST.value()) {
+                        } else if (errorCode == ZIMErrorCode.ROOM_DOES_NOT_EXIST.value()) {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_room_not_exist_fail));
                         } else {
                             ToastUtils.showShort(StringUtils.getString(R.string.toast_join_room_fail, errorCode));
@@ -180,7 +180,7 @@ public class RoomLoginActivity extends BaseActivity implements View.OnClickListe
                                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                                         LiveAudioRoomActivity.startActivity(RoomLoginActivity.this);
                                         ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_success));
-                                    } else if (errorCode == ZIMErrorCode.CREATE_EXIST_ROOM.value()) {
+                                    } else if (errorCode == ZIMErrorCode.CREATE_ROOM_ERROR.value()) {
                                         ToastUtils.showShort(R.string.toast_room_existed);
                                     } else {
                                         ToastUtils.showShort(StringUtils.getString(R.string.toast_create_room_fail, errorCode));

@@ -168,7 +168,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                             if (errorCode == ZegoRoomErrorCode.SUCCESS) {
                                 final ZegoTextMessage text = new ZegoTextMessage();
                                 text.message = imText;
-                                text.userID = getMyUserID();
+                                text.fromUserID = getMyUserID();
                                 textMessageList.add(text);
                                 refreshMessageList();
                             } else {
@@ -637,12 +637,9 @@ public class LiveAudioRoomActivity extends BaseActivity {
                     setResult(RESULT_OK);
                     finish();
                 } else {
+                    boolean changed = isImDisabled != roomInfo.isTextMessageDisabled();
                     onUserMessageDisabled(roomInfo.isTextMessageDisabled());
-//                    if (isFirstIn) {
-//                        isFirstIn = false;
-//                        return;
-//                    }
-                    if (!UserInfoHelper.isSelfOwner()) {
+                    if (!UserInfoHelper.isSelfOwner() && changed) {
                         if (roomInfo.isTextMessageDisabled()) {
                             ToastUtils.showShort(R.string.toast_disable_text_chat_tips);
                         } else {
@@ -665,6 +662,7 @@ public class LiveAudioRoomActivity extends BaseActivity {
                 });
             }
         });
+        onUserMessageDisabled(roomService.roomInfo.isTextMessageDisabled());
     }
 
     private void showDisconnectDialog() {

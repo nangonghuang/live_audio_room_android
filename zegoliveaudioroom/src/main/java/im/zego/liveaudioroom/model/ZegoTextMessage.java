@@ -4,4 +4,5 @@ import im.zego.zim.entity.ZIMTextMessage;
 
 public class ZegoTextMessage extends ZIMTextMessage {
 
+    public String fromUserID;
 }

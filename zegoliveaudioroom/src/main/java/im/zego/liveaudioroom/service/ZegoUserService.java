@@ -15,9 +15,14 @@ import im.zego.liveaudioroom.model.ZegoSpeakerSeatModel;
 import im.zego.liveaudioroom.model.ZegoSpeakerSeatStatus;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zim.ZIM;
-import im.zego.zim.entity.ZIMCustomMessage;
+import im.zego.zim.callback.ZIMMessageSentCallback;
+import im.zego.zim.callback.ZIMRoomMemberQueriedCallback;
+import im.zego.zim.callback.ZIMRoomOnlineMemberCountQueriedCallback;
+import im.zego.zim.entity.ZIMCommandMessage;
+import im.zego.zim.entity.ZIMError;
 import im.zego.zim.entity.ZIMMessage;
-import im.zego.zim.entity.ZIMQueryMemberConfig;
+import im.zego.zim.entity.ZIMMessageSendConfig;
+import im.zego.zim.entity.ZIMRoomMemberQueryConfig;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
@@ -207,12 +212,12 @@ public class ZegoUserService {
         ZegoCustomCommand command = new ZegoCustomCommand();
         command.actionType = ZegoCustomCommand.INVITATION;
         command.target = Collections.singletonList(userID);
-        command.userID = localUserInfo.getUserID();
         String string = new Gson().toJson(command);
         Log.d(TAG, "sendInvitation: " + string);
         command.message = string.getBytes(StandardCharsets.UTF_8);
-        ZegoZIMManager.getInstance().zim.sendPeerMessage(command, userID, (message, errorInfo) -> {
-            Log.d(TAG, "sendInvitation: " + errorInfo.code);
+        ZIMMessageSendConfig config = new ZIMMessageSendConfig();
+        ZegoZIMManager.getInstance().zim.sendPeerMessage(command, userID, config, (message, errorInfo) -> {
+            Log.d(TAG, "sendInvitation: " + errorInfo.message);
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
             }
@@ -228,11 +233,12 @@ public class ZegoUserService {
      */
     public void getOnlineRoomUsersNum(final ZegoOnlineRoomUsersNumCallback callback) {
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
-        ZegoZIMManager.getInstance().zim.queryRoomOnlineMemberCount(roomInfo.getRoomID(), (count, errorInfo) -> {
-            if (callback != null) {
-                callback.userCountCallback(errorInfo.code.value(), count);
-            }
-        });
+        ZegoZIMManager.getInstance().zim.queryRoomOnlineMemberCount(roomInfo.getRoomID(),
+            (roomID, count, errorInfo) -> {
+                if (callback != null) {
+                    callback.userCountCallback(errorInfo.code.value(), count);
+                }
+            });
     }
 
     /**
@@ -240,13 +246,12 @@ public class ZegoUserService {
      * <p>Description: Description: This method can be called to get the in-room user list.</>
      * <p>Call this method at:  After joining the room</>
      *
-     * @param config
      * @param callback refers to the callback for get the in-room user list.
      */
-    public void getOnlineRoomUsers(ZIMQueryMemberConfig config, ZegoOnlineRoomUsersCallback callback) {
+    public void getOnlineRoomUsers(ZIMRoomMemberQueryConfig config, ZegoOnlineRoomUsersCallback callback) {
         ZegoRoomInfo roomInfo = ZegoRoomManager.getInstance().roomService.roomInfo;
         ZegoZIMManager.getInstance().zim
-            .queryRoomMember(roomInfo.getRoomID(), config, (memberList, nextFlag, errorInfo) -> {
+            .queryRoomMemberList(roomInfo.getRoomID(), config, (roomID, memberList, nextFlag, errorInfo) -> {
                 List<ZegoUserInfo> zegoUserInfos = generateRoomUsers(memberList);
                 callback.onlineUserCallback(errorInfo.code.value(), nextFlag, zegoUserInfos);
             });
@@ -256,8 +261,8 @@ public class ZegoUserService {
         Log.d(TAG, "onReceivePeerMessage() called with: zim = [" + zim + "], messageList = [" + messageList
             + "], fromUserID = [" + fromUserID + "]");
         for (ZIMMessage zimMessage : messageList) {
-            if (zimMessage.type == ZIMMessageType.CUSTOM) {
-                ZIMCustomMessage zimCustomMessage = (ZIMCustomMessage) zimMessage;
+            if (zimMessage.getType() == ZIMMessageType.COMMAND) {
+                ZIMCommandMessage zimCustomMessage = (ZIMCommandMessage) zimMessage;
                 ZegoCustomCommand command = new Gson()
                     .fromJson(new String(zimCustomMessage.message), ZegoCustomCommand.class);
                 Log.d(TAG, "onReceivePeerMessage: command" + command.actionType);

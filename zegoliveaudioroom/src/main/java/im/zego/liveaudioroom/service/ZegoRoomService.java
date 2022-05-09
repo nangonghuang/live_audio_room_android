@@ -2,15 +2,7 @@ package im.zego.liveaudioroom.service;
 
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
 import im.zego.liveaudioroom.ZegoRoomManager;
 import im.zego.liveaudioroom.ZegoZIMManager;
 import im.zego.liveaudioroom.callback.ZegoRoomCallback;
@@ -35,6 +27,10 @@ import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
 import im.zego.zim.enums.ZIMRoomEvent;
 import im.zego.zim.enums.ZIMRoomState;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import org.json.JSONObject;
 
 /**
  * Class LiveAudioRoom information management.
@@ -112,22 +108,34 @@ public class ZegoRoomService {
      * @param callback callback refers to the callback for join a room.
      */
     public void joinRoom(String roomID, final String token, final ZegoRoomCallback callback) {
+        Log.d(TAG, "joinRoom() called with: roomID = [" + roomID + "], token = [" + token + "], callback = [" + callback
+            + "]");
         ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
         localUserInfo.setRole(ZegoRoomUserRole.Listener);
 
         ZegoZIMManager.getInstance().zim.joinRoom(roomID, (roomInfo, errorInfo) -> {
+            Log.d(TAG, "joinRoom() called result: roomID = [" + roomID + "], errorInfo = [" + errorInfo.message + "]");
             if (errorInfo.code == ZIMErrorCode.SUCCESS) {
                 loginRTCRoom(roomID, token, localUserInfo);
                 this.roomInfo.setRoomID(roomInfo.baseInfo.roomID);
                 this.roomInfo.setRoomName(roomInfo.baseInfo.roomName);
-                ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomAttributes, errorInfo2) -> {
-                    Set<String> keys = roomAttributes.keySet();
-                    for (String key : keys) {
-                        if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
-                            this.roomInfo = new Gson().fromJson(roomAttributes.get(key), ZegoRoomInfo.class);
+                ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomID2,roomAttributes, errorInfo2) -> {
+                    Log.d(TAG,
+                        "queryRoomAllAttributes() called with: errorInfo2.code = [" + errorInfo2.code + "], errorInfo2 = [" + errorInfo2.message);
+                    if (errorInfo2.code != ZIMErrorCode.SUCCESS) {
+                        leaveRoom(null);
+                    }else {
+                        if (!roomAttributes.isEmpty()) {
+                            ZIMRoomAttributesUpdateInfo updateInfo = new ZIMRoomAttributesUpdateInfo();
+                            updateInfo.roomAttributes = roomAttributes;
+                            updateInfo.action = ZIMRoomAttributesUpdateAction.SET;
+                            onRoomAttributesUpdated(ZegoZIMManager.getInstance().zim, updateInfo, roomID);
+                            ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
+                            if (seatService != null) {
+                                seatService.onRoomAttributesUpdated(ZegoZIMManager.getInstance().zim, updateInfo, roomID);
+                            }
                         }
                     }
-
                     if (callback != null) {
                         callback.roomCallback(errorInfo2.code.value());
                     }
@@ -164,6 +172,7 @@ public class ZegoRoomService {
      * @param callback callback refers to the callback for leave a room.
      */
     public void leaveRoom(final ZegoRoomCallback callback) {
+        Log.d(TAG, "leaveRoom() called with: callback = [" + callback + "]");
         ZegoSpeakerSeatService seatService = ZegoRoomManager.getInstance().speakerSeatService;
         if (seatService != null) {
             seatService.leaveSeat(errorCode -> {
@@ -190,7 +199,7 @@ public class ZegoRoomService {
 
         ZegoExpressEngine.getEngine().logoutRoom(roomInfo.getRoomID());
 
-        ZegoZIMManager.getInstance().zim.leaveRoom(roomInfo.getRoomID(), errorInfo -> {
+        ZegoZIMManager.getInstance().zim.leaveRoom(roomInfo.getRoomID(), (roomID,errorInfo) -> {
             Log.d(TAG, "leaveRoom() called with: errorInfo = [" + errorInfo.code + "]" + errorInfo.message);
             if (callback != null) {
                 callback.roomCallback(errorInfo.code.value());
@@ -224,7 +233,7 @@ public class ZegoRoomService {
         ZegoZIMManager.getInstance().zim.setRoomAttributes(
             ZegoRoomAttributesHelper.getRoomConfigByTextMessage(disable, roomInfo),
             roomInfo.getRoomID(),
-            ZegoRoomAttributesHelper.getAttributesSetConfig(), errorInfo -> {
+            ZegoRoomAttributesHelper.getAttributesSetConfig(), (roomID, errorKeys, errorInfo) -> {
                 Log.d(TAG, "disableTextMessage() called with: disable = [" + disable);
                 if (callback != null) {
                     callback.roomCallback(errorInfo.code.value());
@@ -251,7 +260,7 @@ public class ZegoRoomService {
                 if (key.equals(ZegoRoomConstants.KEY_ROOM_INFO)) {
                     ZegoRoomInfo roomInfo = new Gson().fromJson(info.roomAttributes.get(key), ZegoRoomInfo.class);
                     boolean firstInit = (this.roomInfo.getSeatNum() == 0);
-                    Log.d(TAG, "onRoomAttributesUpdated: firstInit " + firstInit);
+                    Log.d(TAG, "onRoomAttributesUpdated: firstInit " + firstInit +",roomInfo.getSeatNum:" + roomInfo.getSeatNum());
                     this.roomInfo = roomInfo;
                     if (firstInit) {
                         initRoomSeat();
@@ -275,10 +284,10 @@ public class ZegoRoomService {
         if (state == ZIMRoomState.CONNECTED) {
             boolean newInRoom = (this.roomInfo.getSeatNum() == 0);
             if (!newInRoom && !TextUtils.isEmpty(roomID)) {
-                ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomAttributes, errorInfo) -> {
+                ZegoZIMManager.getInstance().zim.queryRoomAllAttributes(roomID, (roomID1, roomAttributes, errorInfo) -> {
                     boolean hostLeft = errorInfo.getCode() == ZIMErrorCode.SUCCESS
                         && !roomAttributes.keySet().contains(ZegoRoomConstants.KEY_ROOM_INFO);
-                    boolean roomNotExisted = errorInfo.getCode() == ZIMErrorCode.ROOM_NOT_EXIST;
+                    boolean roomNotExisted = errorInfo.getCode() == ZIMErrorCode.ROOM_DOES_NOT_EXIST;
                     if (hostLeft || roomNotExisted) {
                         if (listener != null) {
                             listener.onReceiveRoomInfoUpdate(null);
