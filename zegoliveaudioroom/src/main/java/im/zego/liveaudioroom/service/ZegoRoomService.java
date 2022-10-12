@@ -14,6 +14,7 @@ import im.zego.liveaudioroom.model.ZegoRoomUserRole;
 import im.zego.liveaudioroom.model.ZegoUserInfo;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoUpdateType;
+import im.zego.zegoexpress.entity.ZegoCanvas;
 import im.zego.zegoexpress.entity.ZegoRoomConfig;
 import im.zego.zegoexpress.entity.ZegoStream;
 import im.zego.zegoexpress.entity.ZegoUser;
@@ -305,7 +306,7 @@ public class ZegoRoomService {
     public void onRoomStreamUpdate(String roomID, ZegoUpdateType updateType, List<ZegoStream> streamList) {
         for (ZegoStream zegoStream : streamList) {
             if (updateType == ZegoUpdateType.ADD) {
-                ZegoExpressEngine.getEngine().startPlayingStream(zegoStream.streamID, null);
+                ZegoExpressEngine.getEngine().startPlayingStream(zegoStream.streamID, (ZegoCanvas) null);
             } else {
                 ZegoExpressEngine.getEngine().stopPlayingStream(zegoStream.streamID);
             }
